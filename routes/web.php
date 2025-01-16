@@ -5,6 +5,13 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\LoanController;
+use App\Http\Controllers\LoanProviderController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\RepaymentController;
+use App\Http\Controllers\UserController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -27,14 +34,20 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
-})
-    ->name('dashboard');
-//    ->middleware(['auth', 'verified'])->name('dashboard');
+})->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::resource('companies', CompanyController::class);
+    Route::resource('employees', EmployeeController::class);
+    Route::resource('loans', LoanController::class);
+    Route::resource('loanProviders', LoanProviderController::class);
+    Route::resource('notifications', NotificationController::class);
+    Route::resource('repayments', RepaymentController::class);
+    Route::resource('users', UserController::class);
 });
 
 

@@ -22,9 +22,11 @@
     },
     "dependencies": {
         "chart.js": "^4.4.0",
+        "lucide-react": "^0.471.1",
         "primeflex": "^3.3.1",
         "primeicons": "^6.0.1",
         "primereact": "^10.0.9",
-        "react-transition-group": "^4.4.5"
+        "react-transition-group": "^4.4.5",
+        "sweetalert2": "^11.15.10"
     }
 }

@@ -3,16 +3,20 @@ import { classNames } from 'primereact/utils';
 import React, { useEffect, useContext } from 'react';
 import { CSSTransition } from 'react-transition-group';
 import { MenuContext } from './context/menucontext';
-import {Link} from "@inertiajs/react";
-
+import { Link } from "@inertiajs/react";
 
 const AppMenuitem = (props) => {
-    const pathname = route(route().current());
+    const url = window.location.pathname;
+    const pathname = url.split('/')[1]; // Get the first part of the URL path
+
     const searchParams = '';
     const { activeMenu, setActiveMenu } = useContext(MenuContext);
     const item = props.item;
     const key = props.parentKey ? props.parentKey + '-' + props.index : String(props.index);
-    const isActiveRoute = item.to && pathname === item.to;
+
+    // Use startsWith to handle partial matching for nested routes
+    const isActiveRoute = item.to && pathname.startsWith(item.to); 
+
     const active = activeMenu === key || activeMenu.startsWith(key + '-');
 
     const onRouteChange = (url) => {

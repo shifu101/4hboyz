@@ -19,8 +19,11 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'phone',
+        'role_id',
         'email',
         'password',
+        'company_id'
     ];
 
     /**
@@ -32,6 +35,10 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    public function company(){
+        return $this->hasOne('App\Models\Company', 'id', 'company_id');
+    }
 
     /**
      * The attributes that should be cast.
