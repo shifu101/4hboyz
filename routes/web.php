@@ -12,6 +12,7 @@ use App\Http\Controllers\LoanProviderController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\RepaymentController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\DashboardController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -50,6 +51,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('notifications', NotificationController::class);
     Route::resource('repayments', RepaymentController::class);
     Route::resource('users', UserController::class);
+
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
 
 
