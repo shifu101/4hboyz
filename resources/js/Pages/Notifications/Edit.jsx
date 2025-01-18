@@ -1,85 +1,58 @@
 import React, { useState } from 'react';
 import { useForm } from '@inertiajs/react';
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
+import Select from 'react-select';  
 
-const EditCompany = ({ company, errors }) => {
+const EditNotification = ({ notification, errors }) => {
+  const { users } = usePage().props; 
+
   const { data, setData, put, processing } = useForm({
-    name: company.name,
-    industry: company.industry,
-    address: company.address,
-    email: company.email,
-    phone: company.phone,
+    user_id: notification.user_id,
+    is_read: notification.is_read,
+    message: notification.message
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    put(route('companies.update', { company: company.id }));
+    put(route('notifications.update', { notification: notification.id }));
+  };
+
+  const userOptions = users.map(user => ({
+    value: user.id,
+    label: user.name
+  }));
+
+  const handleUserChange = (selectedOption) => {
+      setData('user_id', selectedOption ? selectedOption.value : ''); 
   };
 
   return (
     <Layout>
       <div>
-        <h1>Edit Company</h1>
+        <h1>Edit Notification</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Name Input */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Name</label>
-            <input
-              type="text"
-              value={data.name}
-              onChange={(e) => setData('name', e.target.value)}
+            <label className="block text-sm font-medium text-gray-700">Message</label>
+            <textarea
+              value={data.message}
+              onChange={(e) => setData('message', e.target.value)}
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-            {errors.name && <div className="text-sm text-red-500 mt-1">{errors.name}</div>}
+              style={{height: '200px'}}
+            ></textarea>
+            {errors.message && <div className="text-sm text-red-500 mt-1">{errors.message}</div>}
           </div>
 
-          {/* Industry Input */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Industry</label>
-            <input
-              type="text"
-              value={data.industry}
-              onChange={(e) => setData('industry', e.target.value)}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-            {errors.industry && <div className="text-sm text-red-500 mt-1">{errors.industry}</div>}
-          </div>
-
-          {/* Address Input */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Address</label>
-            <input
-              type="text"
-              value={data.address}
-              onChange={(e) => setData('address', e.target.value)}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-            {errors.address && <div className="text-sm text-red-500 mt-1">{errors.address}</div>}
-          </div>
-
-          {/* Email Input */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Email</label>
-            <input
-              type="email"
-              value={data.email}
-              onChange={(e) => setData('email', e.target.value)}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-            {errors.email && <div className="text-sm text-red-500 mt-1">{errors.email}</div>}
-          </div>
-
-          {/* Phone Input */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Phone</label>
-            <input
-              type="text"
-              value={data.phone}
-              onChange={(e) => setData('phone', e.target.value)}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-            {errors.phone && <div className="text-sm text-red-500 mt-1">{errors.phone}</div>}
+              <label className="block text-sm font-medium text-gray-700">User</label>
+              <Select
+                  options={userOptions}
+                  value={userOptions.find(option => option.value === data.user_id)} 
+                  onChange={handleUserChange}
+                  className="mt-1 block w-full py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  placeholder="Select a user"
+              />
+              {errors.user_id && <div className="text-sm text-red-500 mt-1">{errors.user_id}</div>}
           </div>
 
           {/* Submit Button */}
@@ -91,10 +64,10 @@ const EditCompany = ({ company, errors }) => {
             {processing ? 'Saving...' : 'Save'}
           </button>
         </form>
-        <Link href={route('companies.index')} className="mt-4 inline-block text-sm text-blue-600">Back to Companies</Link>
+        <Link href={route('notifications.index')} className="mt-4 inline-block text-sm text-blue-600">Back to Notifications</Link>
       </div>
     </Layout>
   );
 };
 
-export default EditCompany;
+export default EditNotification;

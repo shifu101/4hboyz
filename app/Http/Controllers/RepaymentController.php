@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreRepaymentRequest;
 use App\Http\Requests\UpdateRepaymentRequest;
 use App\Models\Repayment;
+use App\Models\Loan;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 
@@ -14,9 +15,15 @@ class RepaymentController extends Controller
     public function index()
     {
 
-        $repayments = Repayment::paginate(10);
+        $repayments = Repayment::with([
+            'loan',
+            'loan.loanProvider',
+            'loan.employee.user',
+            'loan.employee.company'
+        ])->paginate(10);
+        
 
-        return Inertia::render('Employees/Index', [
+        return Inertia::render('Repayments/Index', [
             'repayments' => $repayments->items(),
             'pagination' => $repayments,
             'flash' => session('flash'),
@@ -25,10 +32,10 @@ class RepaymentController extends Controller
 
     public function create()
     {
-        $repayments = Repayment::all();
+        $loans = Loan::all();
 
         return Inertia::render('Repayments/Create', [
-            'repayments' => $repayments,
+            'loans' => $loans,
         ]);
     }
 
@@ -42,7 +49,12 @@ class RepaymentController extends Controller
 
     public function show(Repayment $repayment)
     {
-        $repayment->load('repayment');
+        $repayment->load([
+            'loan',
+            'loan.loanProvider',
+            'loan.employee.user',
+            'loan.employee.company'
+        ]);
 
         return Inertia::render('Repayments/Show', [
             'repayment' => $repayment,
@@ -51,11 +63,11 @@ class RepaymentController extends Controller
 
     public function edit(Repayment $repayment)
     {
-        $repayments = Repayment::all();
+        $loans = Loan::all();
 
         return Inertia::render('Repayments/Edit', [
             'repayment' => $repayment,
-            'repayments' => $repayments,
+            'loans' => $loans,
         ]);
     }
 

@@ -22,7 +22,9 @@ class UpdateRepaymentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'amount' => 'nullable',
+            'payment_date' => 'nullable',
+            'loan_id' => 'nullable'
         ];
     }
 }

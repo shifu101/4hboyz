@@ -22,7 +22,10 @@ class UpdateEmployeeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'salary' => 'nullable',
+            'loan_limit' => 'nullable',
+            'user_id' => 'nullable',
+            'company_id' => 'nullable',
         ];
     }
 }

@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/react';
 
 const Index = () => {
-  const { companies, flash, pagination } = usePage().props; // Assuming pagination data is passed
+  const { repayments, flash, pagination } = usePage().props; // Assuming pagination data is passed
   const [searchTerm, setSearchTerm] = useState('');
 
   const {
@@ -18,7 +18,7 @@ const Index = () => {
   };
 
   // Function to handle delete confirmation
-  const handleDelete = (companyId) => {
+  const handleDelete = (repaymentId) => {
     Swal.fire({
       title: 'Are you sure?',
       text: 'This action cannot be undone.',
@@ -30,7 +30,7 @@ const Index = () => {
     }).then((result) => {
       if (result.isConfirmed) {
         // Use Inertia.delete for making the delete request
-        destroy(route('companies.destroy', companyId), {
+        destroy(route('repayments.destroy', repaymentId), {
           onSuccess: () => {
             // Optionally you can handle success actions here
           },
@@ -43,9 +43,9 @@ const Index = () => {
     });
   };
 
-  // Filtered companies based on search term
-  const filteredCompanies = companies.filter((company) =>
-    company.name.toLowerCase().includes(searchTerm.toLowerCase())
+  // Filtered repayments based on search term
+  const filteredRepayments = repayments.filter((repayment) =>
+    repayment?.loan?.employee?.user?.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -54,14 +54,14 @@ const Index = () => {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
           <div>
-            <h1 className="text-3xl font-semibold text-gray-900">Companies Directory</h1>
-            <p className="text-lg text-gray-600 mt-2">Manage and overview all registered companies</p>
+            <h1 className="text-3xl font-semibold text-gray-900">Repayments Directory</h1>
+            <p className="text-lg text-gray-600 mt-2">Manage and overview all registered repayments</p>
           </div>
           <Link
-            href={route('companies.create')}
+            href={route('repayments.create')}
             className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 gap-2 text-sm font-medium"
           >
-            <span className='my-auto'>Create New Company</span>
+            <span className='my-auto'>Create New Repayment</span>
           </Link>
         </div>
 
@@ -72,7 +72,7 @@ const Index = () => {
             value={searchTerm}
             onChange={handleSearchChange}
             className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
-            placeholder="Search companies..."
+            placeholder="Search repayments..."
           />
         </div>
 
@@ -84,38 +84,38 @@ const Index = () => {
           </div>
         )}
 
-        {/* Companies Table */}
+        {/* Repayments Table */}
         <div className="overflow-x-auto bg-white shadow-lg rounded-lg">
           <table className="min-w-full table-auto">
             <thead className="bg-gray-100">
               <tr>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Name</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Industry</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Address</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Email</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Phone</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Repayment Number</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Employee Name</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Company Name</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Loan amount</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Payment</th>
                 <th className="px-6 py-3 text-right text-sm font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {filteredCompanies.length > 0 ? (
-                filteredCompanies.map((company) => (
-                  <tr key={company.id}>
-                    <td className="px-6 py-4 whitespace-nowrap">{company.name}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{company.industry}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{company.address}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{company.email}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{company.phone}</td>
+              {filteredRepayments.length > 0 ? (
+                filteredRepayments.map((repayment) => (
+                  <tr key={repayment.id}>
+                    <td className="px-6 py-4 whitespace-nowrap">{repayment.number}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{repayment?.loan?.employee?.user?.name}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{repayment?.loan?.employee?.company?.name}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{repayment?.loan?.amount}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{repayment.amount}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-right">
                       <div className="flex justify-end gap-3">
                         <Link
-                          href={route('companies.show', company.id)}
+                          href={route('repayments.show', repayment.id)}
                           className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200"
                         >
                           View
                         </Link>
                         <Link
-                          href={route('companies.edit', company.id)}
+                          href={route('repayments.edit', repayment.id)}
                           className="inline-flex items-center px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition duration-200"
                         >
                           Edit
@@ -123,7 +123,7 @@ const Index = () => {
                         <form
                           onSubmit={(e) => {
                             e.preventDefault();
-                            handleDelete(company.id); // Call SweetAlert2 on delete
+                            handleDelete(repayment.id); // Call SweetAlert2 on delete
                           }}
                           className="inline"
                         >
@@ -137,7 +137,7 @@ const Index = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="6" className="text-center py-4">No companies found.</td>
+                  <td colSpan="6" className="text-center py-4">No repayments found.</td>
                 </tr>
               )}
             </tbody>

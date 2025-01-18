@@ -16,7 +16,7 @@ class LoanProviderController extends Controller
 
         $loanProviders = LoanProvider::paginate(10);
 
-        return Inertia::render('Employees/Index', [
+        return Inertia::render('LoanProviders/Index', [
             'loanProviders' => $loanProviders->items(),
             'pagination' => $loanProviders,
             'flash' => session('flash'),
@@ -27,7 +27,7 @@ class LoanProviderController extends Controller
     {
         $loanProviders = LoanProvider::all();
 
-        return Inertia::render('loanProviders/Create', [
+        return Inertia::render('LoanProviders/Create', [
             'loanProviders' => $loanProviders,
         ]);
     }
@@ -36,15 +36,13 @@ class LoanProviderController extends Controller
     {
         LoanProvider::create($request->validated());
 
-        return redirect()->route('loanProviders.index')->with('success', 'loanProvider created successfully.');
+        return redirect()->route('loanProviders.index')->with('success', 'loan provider created successfully.');
     }
 
 
     public function show(LoanProvider $loanProvider)
     {
-        $loanProvider->load('loanProvider');
-
-        return Inertia::render('loanProviders/Show', [
+        return Inertia::render('LoanProviders/Show', [
             'loanProvider' => $loanProvider,
         ]);
     }
@@ -53,7 +51,7 @@ class LoanProviderController extends Controller
     {
         $loanProviders = LoanProvider::all();
 
-        return Inertia::render('loanProviders/Edit', [
+        return Inertia::render('LoanProviders/Edit', [
             'loanProvider' => $loanProvider,
             'loanProviders' => $loanProviders,
         ]);
@@ -63,7 +61,7 @@ class LoanProviderController extends Controller
     {
         $loanProvider->update($request->validated());
 
-        return redirect()->route('loanProviders.index')->with('success', 'loanProvider updated successfully.');
+        return redirect()->route('loanProviders.index')->with('success', 'loan provider updated successfully.');
     }
 
 
@@ -71,6 +69,6 @@ class LoanProviderController extends Controller
     {
         $loanProvider->delete();
 
-        return redirect()->route('loanProviders.index')->with('success', 'loanProvider deleted successfully.');
+        return redirect()->route('loanProviders.index')->with('success', 'loan provider deleted successfully.');
     }
 }

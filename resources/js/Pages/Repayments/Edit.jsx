@@ -3,24 +3,24 @@ import { useForm } from '@inertiajs/react';
 import { Link } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
 
-const EditCompany = ({ company, errors }) => {
+const EditRepayment = ({ repayment, errors }) => {
   const { data, setData, put, processing } = useForm({
-    name: company.name,
-    industry: company.industry,
-    address: company.address,
-    email: company.email,
-    phone: company.phone,
+    name: repayment.name,
+    industry: repayment.industry,
+    address: repayment.address,
+    email: repayment.email,
+    phone: repayment.phone,
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    put(route('companies.update', { company: company.id }));
+    put(route('repayments.update', { repayment: repayment.id }));
   };
 
   return (
     <Layout>
       <div>
-        <h1>Edit Company</h1>
+        <h1>Edit Repayment</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Name Input */}
           <div>
@@ -91,10 +91,10 @@ const EditCompany = ({ company, errors }) => {
             {processing ? 'Saving...' : 'Save'}
           </button>
         </form>
-        <Link href={route('companies.index')} className="mt-4 inline-block text-sm text-blue-600">Back to Companies</Link>
+        <Link href={route('repayments.index')} className="mt-4 inline-block text-sm text-blue-600">Back to Repayments</Link>
       </div>
     </Layout>
   );
 };
 
-export default EditCompany;
+export default EditRepayment;

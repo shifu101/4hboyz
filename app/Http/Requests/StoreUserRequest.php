@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateNotificationRequest extends FormRequest
+class StoreUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,9 +22,12 @@ class UpdateNotificationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'message' => 'nullable',
-            'is_read' => 'nullable',
-            'user_id' => 'nullable'
+            'name' => 'required',
+            'phone' => 'required',
+            'role_id' => 'nullable',
+            'email' => 'required',
+            'password' => 'required',
+            'company_id' => 'nullable'
         ];
     }
 }

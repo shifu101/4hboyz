@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
+use App\Models\Company;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 
@@ -14,21 +15,26 @@ class UserController extends Controller
     public function index()
     {
 
-        $users = User::paginate(10);
+        $users = User::with([
+            'company'
+        ])->paginate(10);
 
-        return Inertia::render('Employees/Index', [
+        return Inertia::render('Users/Index', [
             'users' => $users->items(),
             'pagination' => $users,
             'flash' => session('flash'),
         ]);
     }
 
+
     public function create()
     {
         $users = User::all();
 
+        $companies = Company::all();
         return Inertia::render('Users/Create', [
             'users' => $users,
+            'companies' => $companies,
         ]);
     }
 
@@ -42,8 +48,6 @@ class UserController extends Controller
 
     public function show(User $user)
     {
-        $user->load('user');
-
         return Inertia::render('Users/Show', [
             'user' => $user,
         ]);
@@ -52,10 +56,12 @@ class UserController extends Controller
     public function edit(User $user)
     {
         $users = User::all();
+        $companies = Company::all();
 
         return Inertia::render('Users/Edit', [
             'user' => $user,
             'users' => $users,
+            'companies' => $companies,
         ]);
     }
 

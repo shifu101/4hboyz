@@ -45,7 +45,7 @@ const Index = () => {
 
   // Filtered companies based on search term
   const filteredCompanies = companies.filter((company) =>
-    company.name.toLowerCase().includes(searchTerm.toLowerCase())
+    company?.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (

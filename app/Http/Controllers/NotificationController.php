@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreNotificationRequest;
 use App\Http\Requests\UpdateNotificationRequest;
 use App\Models\Notification;
+use App\Models\User;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 
@@ -14,9 +15,9 @@ class NotificationController extends Controller
     public function index()
     {
 
-        $notifications = Notification::paginate(10);
+        $notifications = Notification::with('user')->paginate(10);
 
-        return Inertia::render('Employees/Index', [
+        return Inertia::render('Notifications/Index', [
             'notifications' => $notifications->items(),
             'pagination' => $notifications,
             'flash' => session('flash'),
@@ -26,9 +27,11 @@ class NotificationController extends Controller
     public function create()
     {
         $notifications = Notification::all();
+        $users = User::all();
 
         return Inertia::render('Notifications/Create', [
             'notifications' => $notifications,
+            'users'=> $users
         ]);
     }
 
@@ -42,8 +45,6 @@ class NotificationController extends Controller
 
     public function show(Notification $notification)
     {
-        $notification->load('notification');
-
         return Inertia::render('Notifications/Show', [
             'notification' => $notification,
         ]);
@@ -52,10 +53,12 @@ class NotificationController extends Controller
     public function edit(Notification $notification)
     {
         $notifications = Notification::all();
+        $users = User::all();
 
         return Inertia::render('Notifications/Edit', [
             'notification' => $notification,
             'notifications' => $notifications,
+            'users'=>$users
         ]);
     }
 

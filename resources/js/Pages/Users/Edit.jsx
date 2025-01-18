@@ -1,26 +1,41 @@
-import React, { useState } from 'react';
-import { useForm } from '@inertiajs/react';
-import { Link } from '@inertiajs/react';
+import React, { useState, useEffect } from 'react';
+import { useForm, usePage, Link } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
+import Select from 'react-select';
 
-const EditCompany = ({ company, errors }) => {
+const EditUSer = ({ errors }) => {
+  const { companies, user } = usePage().props; 
+
   const { data, setData, put, processing } = useForm({
-    name: company.name,
-    industry: company.industry,
-    address: company.address,
-    email: company.email,
-    phone: company.phone,
+    name: user.name,
+    email: user.email,
+    phone: user.phone,
+    company_id: user.company_id, 
   });
+
+  const [selectedCompany, setSelectedCompany] = useState(null);
+
+  useEffect(() => {
+    if (user.company_id) {
+      const defaultCompany = companies.find((c) => c.id === user?.company_id);
+      setSelectedCompany(defaultCompany);
+    }
+  }, [user, companies]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    put(route('companies.update', { company: company.id }));
+    put(route('users.update', { user: user.id })); 
+  };
+
+  const handleCompanyChange = (selectedOption) => {
+    setData('company_id', selectedOption ? selectedOption.value : '');
+    setSelectedCompany(selectedOption);
   };
 
   return (
     <Layout>
-      <div>
-        <h1>Edit Company</h1>
+      <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-6">
+        <h1 className="text-2xl font-bold text-gray-800 text-left mb-6">Edit User</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Name Input */}
           <div>
@@ -32,30 +47,6 @@ const EditCompany = ({ company, errors }) => {
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
             {errors.name && <div className="text-sm text-red-500 mt-1">{errors.name}</div>}
-          </div>
-
-          {/* Industry Input */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Industry</label>
-            <input
-              type="text"
-              value={data.industry}
-              onChange={(e) => setData('industry', e.target.value)}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-            {errors.industry && <div className="text-sm text-red-500 mt-1">{errors.industry}</div>}
-          </div>
-
-          {/* Address Input */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Address</label>
-            <input
-              type="text"
-              value={data.address}
-              onChange={(e) => setData('address', e.target.value)}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-            {errors.address && <div className="text-sm text-red-500 mt-1">{errors.address}</div>}
           </div>
 
           {/* Email Input */}
@@ -82,6 +73,21 @@ const EditCompany = ({ company, errors }) => {
             {errors.phone && <div className="text-sm text-red-500 mt-1">{errors.phone}</div>}
           </div>
 
+          {/* Company Select */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Company</label>
+            <Select
+              value={selectedCompany}
+              onChange={handleCompanyChange}
+              options={companies.map((company) => ({
+                value: company.id,
+                label: company.name
+              }))}
+              placeholder="Select a company"
+            />
+            {errors.company_id && <div className="text-sm text-red-500 mt-1">{errors.company_id}</div>}
+          </div>
+
           {/* Submit Button */}
           <button
             type="submit"
@@ -91,10 +97,10 @@ const EditCompany = ({ company, errors }) => {
             {processing ? 'Saving...' : 'Save'}
           </button>
         </form>
-        <Link href={route('companies.index')} className="mt-4 inline-block text-sm text-blue-600">Back to Companies</Link>
+        <Link href={route('users.index')} className="mt-4 inline-block text-sm text-blue-600">Back to Users</Link>
       </div>
     </Layout>
   );
 };
 
-export default EditCompany;
+export default EditUSer;

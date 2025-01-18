@@ -1,88 +1,94 @@
-import React, { useState } from 'react';
-import { useForm } from '@inertiajs/react';
-import { Link } from '@inertiajs/react';
+import React, { useState, useEffect } from 'react';
+import { useForm, usePage, Link } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
+import Select from 'react-select';
 
-const EditCompany = ({ company, errors }) => {
+const EditLoan = ({ errors }) => {
+  const { loan, loanProviders, employees } = usePage().props; 
+
   const { data, setData, put, processing } = useForm({
-    name: company.name,
-    industry: company.industry,
-    address: company.address,
-    email: company.email,
-    phone: company.phone,
+    amount: loan.amount,
+    status: loan.status,
+    disbursed_at: loan.disbursed_at,
+    employee_id: loan.employee_id,
+    loan_provider_id: loan.loan_provider_id
   });
+
+  const [selectedLoanProvider, setSelectedLoanProvider] = useState(null);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+
+  useEffect(() => {
+    if (loan.loan_provider_id) {
+      const defaultLoanProvider = loanProviders.find((c) => c.id === loan?.loan_provider_id);
+      setSelectedLoanProvider(defaultLoanProvider);
+    }
+
+    if (loan.employee_id) {
+      const defaultEmployee = employees.find((c) => c.id === loan?.employee_id);
+      setSelectedEmployee(defaultEmployee);
+    }
+  }, [loan, loanProviders, employees]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    put(route('companies.update', { company: company.id }));
+    put(route('loans.update', { loan: loan.id })); 
+  };
+
+  const handleLoanProviderChange = (selectedOption) => {
+    setData('loan_provider_id', selectedOption ? selectedOption.value : '');
+    setSelectedLoanProvider(selectedOption);
+  };
+
+  const handleEmployeeChange = (selectedOption) => {
+    setData('employee_id', selectedOption ? selectedOption.value : '');
+    setSelectedEmployee(selectedOption);
   };
 
   return (
     <Layout>
-      <div>
-        <h1>Edit Company</h1>
+      <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-6">
+        <h1 className="text-2xl font-bold text-gray-800 text-left mb-6">Edit Loan</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Name Input */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Name</label>
-            <input
-              type="text"
-              value={data.name}
-              onChange={(e) => setData('name', e.target.value)}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-            {errors.name && <div className="text-sm text-red-500 mt-1">{errors.name}</div>}
+              <label className="block text-sm font-medium text-gray-700">Amount</label>
+              <input
+                  type="number"
+                  step="any"
+                  value={data.amount}
+                  onChange={(e) => setData('amount', e.target.value)}
+                  className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+              {errors.amount && <div className="text-sm text-red-500 mt-1">{errors.amount}</div>}
           </div>
 
-          {/* Industry Input */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Industry</label>
-            <input
-              type="text"
-              value={data.industry}
-              onChange={(e) => setData('industry', e.target.value)}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            <label className="block text-sm font-medium text-gray-700">Loan Provider</label>
+            <Select
+              value={selectedLoanProvider}
+              onChange={handleLoanProviderChange}
+              options={loanProviders.map((loanProvider) => ({
+                value: loanProvider.id,
+                label: loanProvider.name
+              }))}
+              placeholder="Select a loanProvider"
             />
-            {errors.industry && <div className="text-sm text-red-500 mt-1">{errors.industry}</div>}
+            {errors.loan_provider_id && <div className="text-sm text-red-500 mt-1">{errors.loan_provider_id}</div>}
           </div>
 
-          {/* Address Input */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Address</label>
-            <input
-              type="text"
-              value={data.address}
-              onChange={(e) => setData('address', e.target.value)}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            <label className="block text-sm font-medium text-gray-700">Employee</label>
+            <Select
+              value={selectedEmployee}
+              onChange={handleEmployeeChange}
+              options={employees.map((employee) => ({
+                value: employee.id,
+                label: employee.user?.name
+              }))}
+              placeholder="Select a employee"
             />
-            {errors.address && <div className="text-sm text-red-500 mt-1">{errors.address}</div>}
+            {errors.employee_id && <div className="text-sm text-red-500 mt-1">{errors.employee_id}</div>}
           </div>
 
-          {/* Email Input */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Email</label>
-            <input
-              type="email"
-              value={data.email}
-              onChange={(e) => setData('email', e.target.value)}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-            {errors.email && <div className="text-sm text-red-500 mt-1">{errors.email}</div>}
-          </div>
-
-          {/* Phone Input */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Phone</label>
-            <input
-              type="text"
-              value={data.phone}
-              onChange={(e) => setData('phone', e.target.value)}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-            {errors.phone && <div className="text-sm text-red-500 mt-1">{errors.phone}</div>}
-          </div>
-
-          {/* Submit Button */}
           <button
             type="submit"
             className="w-full mt-4 py-2 px-4 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -91,10 +97,10 @@ const EditCompany = ({ company, errors }) => {
             {processing ? 'Saving...' : 'Save'}
           </button>
         </form>
-        <Link href={route('companies.index')} className="mt-4 inline-block text-sm text-blue-600">Back to Companies</Link>
+        <Link href={route('loans.index')} className="mt-4 inline-block text-sm text-blue-600">Back to Loans</Link>
       </div>
     </Layout>
   );
 };
 
-export default EditCompany;
+export default EditLoan;

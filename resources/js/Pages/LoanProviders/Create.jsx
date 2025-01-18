@@ -5,21 +5,20 @@ import Layout from "@/Layouts/layout/layout.jsx";
 const Create = () => {
   const { data, setData, post, errors } = useForm({
     name: '',
-    industry: '',
-    address: '',
+    api_url: '',
     email: '',
     phone: '',
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    post(route('companies.store'));
+    post(route('loanProviders.store'));
   };
 
   return (
     <Layout>
       <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md">
-        <h1 className="text-3xl font-semibold mb-6">Create Company</h1>
+        <h1 className="text-3xl font-semibold mb-6">Create Loan Provider</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700">Name</label>
@@ -33,25 +32,14 @@ const Create = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Industry</label>
+            <label className="block text-sm font-medium text-gray-700">Api_url</label>
             <input
               type="text"
-              value={data.industry}
-              onChange={(e) => setData('industry', e.target.value)}
+              value={data.api_url}
+              onChange={(e) => setData('api_url', e.target.value)}
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
-            {errors.industry && <div className="text-sm text-red-500 mt-1">{errors.industry}</div>}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Address</label>
-            <input
-              type="text"
-              value={data.address}
-              onChange={(e) => setData('address', e.target.value)}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-            {errors.address && <div className="text-sm text-red-500 mt-1">{errors.address}</div>}
+            {errors.api_url && <div className="text-sm text-red-500 mt-1">{errors.api_url}</div>}
           </div>
 
           <div>
@@ -85,8 +73,8 @@ const Create = () => {
         </form>
 
         <div className="mt-6 text-center">
-          <Link href={route('companies.index')} className="text-indigo-600 hover:text-indigo-800">
-            Back to Companies
+          <Link href={route('loanProviders.index')} className="text-indigo-600 hover:text-indigo-800">
+            Back to loan providers
           </Link>
         </div>
       </div>

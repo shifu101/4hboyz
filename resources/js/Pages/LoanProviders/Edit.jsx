@@ -3,27 +3,25 @@ import { useForm } from '@inertiajs/react';
 import { Link } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
 
-const EditCompany = ({ company, errors }) => {
+const EditLoanProvider = ({ loanProvider, errors }) => {
   const { data, setData, put, processing } = useForm({
-    name: company.name,
-    industry: company.industry,
-    address: company.address,
-    email: company.email,
-    phone: company.phone,
+    name: loanProvider.name,
+    api_url: loanProvider.api_url,
+    email: loanProvider.email,
+    phone: loanProvider.phone,
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    put(route('companies.update', { company: company.id }));
+    put(route('loanProviders.update', { loanProvider: loanProvider.id }));
   };
 
   return (
     <Layout>
       <div>
-        <h1>Edit Company</h1>
+        <h1>Edit loanProvider</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Name Input */}
-          <div>
+        <div>
             <label className="block text-sm font-medium text-gray-700">Name</label>
             <input
               type="text"
@@ -34,31 +32,17 @@ const EditCompany = ({ company, errors }) => {
             {errors.name && <div className="text-sm text-red-500 mt-1">{errors.name}</div>}
           </div>
 
-          {/* Industry Input */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Industry</label>
+            <label className="block text-sm font-medium text-gray-700">Api_url</label>
             <input
               type="text"
-              value={data.industry}
-              onChange={(e) => setData('industry', e.target.value)}
+              value={data.api_url}
+              onChange={(e) => setData('api_url', e.target.value)}
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
-            {errors.industry && <div className="text-sm text-red-500 mt-1">{errors.industry}</div>}
+            {errors.api_url && <div className="text-sm text-red-500 mt-1">{errors.api_url}</div>}
           </div>
 
-          {/* Address Input */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Address</label>
-            <input
-              type="text"
-              value={data.address}
-              onChange={(e) => setData('address', e.target.value)}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-            {errors.address && <div className="text-sm text-red-500 mt-1">{errors.address}</div>}
-          </div>
-
-          {/* Email Input */}
           <div>
             <label className="block text-sm font-medium text-gray-700">Email</label>
             <input
@@ -70,7 +54,6 @@ const EditCompany = ({ company, errors }) => {
             {errors.email && <div className="text-sm text-red-500 mt-1">{errors.email}</div>}
           </div>
 
-          {/* Phone Input */}
           <div>
             <label className="block text-sm font-medium text-gray-700">Phone</label>
             <input
@@ -91,10 +74,10 @@ const EditCompany = ({ company, errors }) => {
             {processing ? 'Saving...' : 'Save'}
           </button>
         </form>
-        <Link href={route('companies.index')} className="mt-4 inline-block text-sm text-blue-600">Back to Companies</Link>
+        <Link href={route('loanProviders.index')} className="mt-4 inline-block text-sm text-blue-600">Back to loan providers</Link>
       </div>
     </Layout>
   );
 };
 
-export default EditCompany;
+export default EditLoanProvider;

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreEmployeeRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
 use App\Models\Employee;
+use App\Models\Company;
+use App\Models\User;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 
@@ -25,12 +27,11 @@ class EmployeeController extends Controller
 
     public function create()
     {
-        $employees = Employee::paginate(10);
-
-        return Inertia::render('Employees/Index', [
-            'employees' => $employees->items(),
-            'pagination' => $employees,
-            'flash' => session('flash'),
+        $companies = Company::all();
+        $users = User::all();
+        return Inertia::render('Employees/Create', [
+            'companies' => $companies,
+            'users'=>$users
         ]);
     }
 
@@ -44,20 +45,25 @@ class EmployeeController extends Controller
 
     public function show(Employee $employee)
     {
-        $employee->load('employee');
+
+        $employee->load('user');
 
         return Inertia::render('Employees/Show', [
             'employee' => $employee,
+            'user' => $employee->user, 
+            'user' => $employee->user, 
+            'company' => $employee->company
         ]);
     }
 
     public function edit(Employee $employee)
     {
-        $employees = Employee::all();
-
+        $companies = Company::all();
+        $users = User::all();
         return Inertia::render('Employees/Edit', [
             'employee' => $employee,
-            'employees' => $employees,
+            'companies' => $companies,
+            'users'=>$users
         ]);
     }
 

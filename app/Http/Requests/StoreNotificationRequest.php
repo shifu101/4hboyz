@@ -11,7 +11,7 @@ class StoreNotificationRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,9 @@ class StoreNotificationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'message' => 'required',
+            'is_read' => 'required',
+            'user_id' => 'nullable'
         ];
     }
 }

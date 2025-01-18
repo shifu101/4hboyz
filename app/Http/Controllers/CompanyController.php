@@ -25,6 +25,7 @@ class CompanyController extends Controller
     {
         return Inertia::render('Companies/Create');
     }
+    
 
     public function store(StoreCompanyRequest $request)
     {
