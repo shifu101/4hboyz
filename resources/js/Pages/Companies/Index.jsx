@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, usePage } from '@inertiajs/react';
-import { Inertia } from '@inertiajs/inertia'; // Import Inertia
+import { Inertia } from '@inertiajs/inertia';
 import Layout from "@/Layouts/layout/layout.jsx";
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/react';
@@ -15,6 +15,7 @@ const Index = () => {
   const { companies, flash, pagination } = usePage().props;
   const [searchTerm, setSearchTerm] = useState('');
   const [dateRange, setDateRange] = useState(null);
+  const [filteredCompanies, setFilteredCompanies] = useState(companies); // Use state to track filtered companies
 
   const { delete: destroy } = useForm();
 
@@ -45,9 +46,13 @@ const Index = () => {
     });
   };
 
-  const filteredCompanies = companies.filter((company) =>
-    company?.name?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Update filteredCompanies whenever companies or searchTerm changes
+  useEffect(() => {
+    const updatedCompanies = companies.filter((company) =>
+      company?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredCompanies(updatedCompanies);
+  }, [companies, searchTerm]);
 
   const handleSelect = (range) => {
     setDateRange(range);
@@ -61,46 +66,46 @@ const Index = () => {
     }, {
       preserveState: true,
       preserveScroll: true,
+      onSuccess: (response) => {
+        // After the data is successfully fetched, update the filtered companies
+        const newCompanies = response.props.companies.filter((company) =>
+          company?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredCompanies(newCompanies); // Update the filtered companies
+      }
     });
   };
-  
 
   const generatePDF = () => {
     const doc = new jsPDF();
-  
-      const logoUrl = '/images/logo.png';
-      doc.addImage(logoUrl, 'PNG', 10, 10, 120, 30);
-
-      doc.setFontSize(14);
+    const logoUrl = '/images/logo.png';
+    doc.addImage(logoUrl, 'PNG', 10, 10, 120, 30);
+    doc.setFontSize(14);
+    doc.text(`All Companies Report`, 14, 50);
     
-      // Add title text
-      doc.text(`All Companies Report`, 14, 50);
-      // Define columns for the table
-      const columns = [
-          "Name", 
-          "Industry", 
-          "Address", 
-          "Email", 
-          "Phone"
-      ];
+    const columns = [
+      "Name", 
+      "Industry", 
+      "Address", 
+      "Email", 
+      "Phone"
+    ];
     
-      // Prepare rows by looping through the agents and their accounts
-      const rows = filteredCompanies.map(data => [
-          data.name, 
-          data.industry, 
-          data.address, 
-          data.email,
-          data.phone
-      ]); 
+    const rows = filteredCompanies.map(data => [
+      data.name, 
+      data.industry, 
+      data.address, 
+      data.email,
+      data.phone
+    ]);
     
-      // Create table with the agent and account data
-      doc.autoTable({
-          head: [columns],
-          body: rows,
-          startY: 60,
-      });
+    doc.autoTable({
+      head: [columns],
+      body: rows,
+      startY: 60,
+    });
     
-      doc.save("companies_reports.pdf");
+    doc.save("companies_reports.pdf");
   };
 
   const generateExcel = () => {
@@ -114,18 +119,14 @@ const Index = () => {
   
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Companies');
-
     XLSX.writeFile(wb, 'companies_report.xlsx');
   };
-  
 
   return (
     <Layout>
       <div className="max-w-7xl mx-auto p-6">
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-            {/* Date Range Picker Section */}
             <div className="lg:col-span-1">
               <DateRangePicker
                 value={dateRange}
@@ -137,7 +138,6 @@ const Index = () => {
               />
             </div>
 
-            {/* Actions Section */}
             <div className="lg:flex-row flex lg:items-center flex-col gap-3">
               <div className="lg:col-span-1">
                 <h1 className="text-2xl font-semibold text-gray-900">
