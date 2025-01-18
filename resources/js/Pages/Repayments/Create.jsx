@@ -30,7 +30,7 @@ const Create = () => {
   return (
     <Layout>
       <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md">
-        <h1 className="text-3xl font-semibold mb-6">Create Company</h1>
+        <h1 className="text-3xl font-semibold mb-6">Create Repayment</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700">Amount</label>

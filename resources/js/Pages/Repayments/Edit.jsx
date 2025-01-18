@@ -1,88 +1,67 @@
-import React, { useState } from 'react';
-import { useForm } from '@inertiajs/react';
-import { Link } from '@inertiajs/react';
+import React, { useState, useEffect } from 'react';
+import { useForm, usePage, Link } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
+import Select from 'react-select';
 
-const EditRepayment = ({ repayment, errors }) => {
+const EditRepayment = ({ errors }) => {
+  const { repayment, loans } = usePage().props; 
+
   const { data, setData, put, processing } = useForm({
-    name: repayment.name,
-    industry: repayment.industry,
-    address: repayment.address,
-    email: repayment.email,
-    phone: repayment.phone,
+    loan_id: repayment.loan_id,
+    amount: repayment.amount,
+    payment_date: repayment.payment_date,
   });
+
+  const [selectedLoan, setSelectedLoan] = useState(null);
+
+  useEffect(() => {
+    if (repayment.loan_id) {
+      const defaultLoan = loans.find((c) => c.id === repayment?.loan_id);
+      setSelectedLoan(defaultLoan);
+    }
+  }, [repayment, loans]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    put(route('repayments.update', { repayment: repayment.id }));
+    put(route('repayments.update', { repayment: repayment.id })); 
+  };
+
+  const handleLoanChange = (selectedOption) => {
+    setData('loan_id', selectedOption ? selectedOption.value : '');
+    setSelectedLoan(selectedOption);
   };
 
   return (
     <Layout>
-      <div>
-        <h1>Edit Repayment</h1>
+      <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-6">
+        <h1 className="text-2xl font-bold text-gray-800 text-left mb-6">Edit Repayment</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Name Input */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Name</label>
-            <input
-              type="text"
-              value={data.name}
-              onChange={(e) => setData('name', e.target.value)}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-            {errors.name && <div className="text-sm text-red-500 mt-1">{errors.name}</div>}
+              <label className="block text-sm font-medium text-gray-700">Amount</label>
+              <input
+                  type="number"
+                  step="any"
+                  value={data.amount}
+                  onChange={(e) => setData('amount', e.target.value)}
+                  className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+              {errors.amount && <div className="text-sm text-red-500 mt-1">{errors.amount}</div>}
           </div>
 
-          {/* Industry Input */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Industry</label>
-            <input
-              type="text"
-              value={data.industry}
-              onChange={(e) => setData('industry', e.target.value)}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            <label className="block text-sm font-medium text-gray-700">Loan</label>
+            <Select
+              value={selectedLoan}
+              onChange={handleLoanChange}
+              options={loans.map((loan) => ({
+                value: loan.id,
+                label: loan.number
+              }))}
+              placeholder="Select a loan"
             />
-            {errors.industry && <div className="text-sm text-red-500 mt-1">{errors.industry}</div>}
+            {errors.loan_id && <div className="text-sm text-red-500 mt-1">{errors.loan_id}</div>}
           </div>
 
-          {/* Address Input */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Address</label>
-            <input
-              type="text"
-              value={data.address}
-              onChange={(e) => setData('address', e.target.value)}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-            {errors.address && <div className="text-sm text-red-500 mt-1">{errors.address}</div>}
-          </div>
-
-          {/* Email Input */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Email</label>
-            <input
-              type="email"
-              value={data.email}
-              onChange={(e) => setData('email', e.target.value)}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-            {errors.email && <div className="text-sm text-red-500 mt-1">{errors.email}</div>}
-          </div>
-
-          {/* Phone Input */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Phone</label>
-            <input
-              type="text"
-              value={data.phone}
-              onChange={(e) => setData('phone', e.target.value)}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
-            {errors.phone && <div className="text-sm text-red-500 mt-1">{errors.phone}</div>}
-          </div>
-
-          {/* Submit Button */}
           <button
             type="submit"
             className="w-full mt-4 py-2 px-4 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
