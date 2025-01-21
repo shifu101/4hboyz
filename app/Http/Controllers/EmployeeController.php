@@ -9,6 +9,8 @@ use App\Models\Company;
 use App\Models\User;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Providers\RouteServiceProvider;
 
 class EmployeeController extends Controller
 {
@@ -37,11 +39,23 @@ class EmployeeController extends Controller
 
     public function store(StoreEmployeeRequest $request)
     {
-        Employee::create($request->validated());
+        $user = Auth::user();
 
-        return redirect()->route('employees.index')->with('success', 'Employee created successfully.');
+       $employee = Employee::create($request->validated());
+
+        if($user->role_id == "3") {
+
+            $user->update([
+                'company_id'=>$employee->company_id
+            ]);
+
+            Auth::login($user);
+
+            return redirect(RouteServiceProvider::HOME);
+        }else {
+            return redirect()->route('employees.index')->with('success', 'Employee created successfully.');
+        }
     }
-
 
     public function show(Employee $employee)
     {

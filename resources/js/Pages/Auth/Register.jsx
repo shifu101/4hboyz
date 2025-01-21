@@ -1,19 +1,17 @@
 import { useEffect } from 'react';
 import GuestLayout from '@/Layouts/GuestLayout';
 import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
 import { Head, Link, useForm } from '@inertiajs/react';
 import {InputText} from "primereact/inputtext";
-import {Checkbox} from "primereact/checkbox";
-import {Button} from "primereact/button";
 
 export default function Register() {
     const { data, setData, post, processing, errors, reset } = useForm({
         name: '',
         email: '',
         password: '',
+        role_id: 3,
+        phone: '',
         password_confirmation: '',
     });
 
@@ -34,7 +32,7 @@ export default function Register() {
             <Head title="Register" />
 
             <div className="flex align-items-center justify-content-center flex-column">
-                <img src="/images/logo/-dark.svg" alt="hyper" height={50} className="mb-3"/>
+                <img src="/images/logo/logo.png" alt="hyper" height={50} className="mb-3"/>
                 <div className="surface-card p-6 sm:p-4 shadow-2 border-round w-full lg:w-4">
                     <div className="text-center mb-5">
                         <div className="text-900 text-3xl font-medium mb-3">Register</div>
@@ -66,6 +64,20 @@ export default function Register() {
                                 />
                                 <InputError message={errors.email} className=""/>
                             </div>
+
+                            <div className="mb-3">
+                                <label htmlFor="phone" className="block text-900 font-medium mb-2">Phone</label>
+                                <InputText
+                                    id="phone"
+                                    type="tel"
+                                    placeholder="Phone number"
+                                    className="w-full"
+                                    value={data.phone}
+                                    onChange={(e) => setData('phone', e.target.value)}
+                                />
+                                <InputError message={errors.phone} className=""/>
+                            </div>
+
                             <div className="mb-3">
                                 <label htmlFor="password" className="block text-900 font-medium mb-2">Password</label>
                                 <InputText

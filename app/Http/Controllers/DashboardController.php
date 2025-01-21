@@ -7,6 +7,7 @@ use App\Models\Loan;
 use App\Models\Repayment;
 use Carbon\Carbon;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
@@ -19,6 +20,8 @@ class DashboardController extends Controller
         $repaidLoansValue = Repayment::sum('amount');
 
         $currentYear = Carbon::now()->year;
+
+        $user = Auth::user();
 
         // Get loan trends for all months
         $loanTrends = collect(range(1, 12))->map(function ($month) use ($currentYear) {
@@ -44,13 +47,22 @@ class DashboardController extends Controller
             ];
         });
 
-        return Inertia::render('Dashboard', [
-            'companyCount' => $companyCount,
-            'activeLoansCount' => $activeLoansCount,
-            'inactiveLoansCount' => $inactiveLoansCount,
-            'repaidLoansValue' => $repaidLoansValue,
-            'loanTrends' => $loanTrends,
-            'repaymentTrends' => $repaymentTrends,
-        ]);
+        if($user->role_id == "3" && $user->company == null) {
+            $companies = Company::all();
+            return Inertia::render('Employees/SelectCompany', [
+                'companies' => $companies,
+                'user'=>$user
+            ]);
+
+        }else {
+            return Inertia::render('Dashboard', [
+                'companyCount' => $companyCount,
+                'activeLoansCount' => $activeLoansCount,
+                'inactiveLoansCount' => $inactiveLoansCount,
+                'repaidLoansValue' => $repaidLoansValue,
+                'loanTrends' => $loanTrends,
+                'repaymentTrends' => $repaymentTrends,
+            ]);
+        }
     }
 }
