@@ -201,6 +201,7 @@ const Index = () => {
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">Address</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">Email</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">Phone</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">Loan percentage</th>
                 <th className="px-6 py-3 text-right text-sm font-semibold text-gray-600 uppercase">Actions</th>
               </tr>
             </thead>
@@ -213,6 +214,7 @@ const Index = () => {
                     <td className="px-6 py-4">{company.address}</td>
                     <td className="px-6 py-4">{company.email}</td>
                     <td className="px-6 py-4">{company.phone}</td>
+                    <td className="px-6 py-4">{company.percentage}</td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex gap-3">
                         <Link href={route('companies.show', company.id)} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">View</Link>

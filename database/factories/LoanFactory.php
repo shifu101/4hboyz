@@ -21,7 +21,7 @@ class LoanFactory extends Factory
             'status' => 'Active',
             'employee_id' => rand(1, 9),
             'disbursed_at' => now(),
-            'loan_provider_id' => rand(1, 9)
+            'loan_provider_id' => 1
         ];
     }
 }

@@ -10,6 +10,7 @@ const EditCompany = ({ company, errors }) => {
     address: company.address,
     email: company.email,
     phone: company.phone,
+    percentage: company.percentage
   });
 
   const handleSubmit = (e) => {
@@ -80,6 +81,17 @@ const EditCompany = ({ company, errors }) => {
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
             {errors.phone && <div className="text-sm text-red-500 mt-1">{errors.phone}</div>}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Loan percentage</label>
+            <input
+              type="text"
+              value={data.percentage}
+              onChange={(e) => setData('percentage', e.target.value)}
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            />
+            {errors.percentage && <div className="text-sm text-red-500 mt-1">{errors.percentage}</div>}
           </div>
 
           {/* Submit Button */}

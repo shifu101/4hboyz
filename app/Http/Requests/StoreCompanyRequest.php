@@ -27,6 +27,7 @@ class StoreCompanyRequest extends FormRequest
             'address' => 'nullable|string|max:255',
             'email' => 'required|email|unique:companies,email',
             'phone' => 'required|string|max:15',
+            'percentage' => 'required',
         ];
     }
 }

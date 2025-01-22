@@ -14,6 +14,6 @@ class LoanProviderSeeder extends Seeder
     public function run(): void
     {
         //
-        LoanProvider::factory()->count(10)->create();
+        LoanProvider::factory()->count(1)->create();
     }
 }

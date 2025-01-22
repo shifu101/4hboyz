@@ -4,12 +4,7 @@ import Layout from "@/Layouts/layout/layout.jsx";
 import Select from 'react-select';  
 
 const Create = () => {
-    const { loanProviders, employees } = usePage().props; 
-
-    const loanProviderOptions = loanProviders.map(loanProvider => ({
-        value: loanProvider.id,
-        label: loanProvider.name
-    }));
+    const { employees } = usePage().props; 
 
     const employeeOptions = employees.map(employee => ({
       value: employee.id,
@@ -27,10 +22,6 @@ const Create = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         post(route('loans.store'));
-    };
-
-    const handleLoanProviderChange = (selectedOption) => {
-        setData('loan_provider_id', selectedOption ? selectedOption.value : ''); 
     };
 
     const handleEmployeeChange = (selectedOption) => {
@@ -53,20 +44,6 @@ const Create = () => {
                             className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         />
                         {errors.amount && <div className="text-sm text-red-500 mt-1">{errors.amount}</div>}
-                    </div>
-
-
-                    {/* loanProvider Select (React Select) */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Loan Provider</label>
-                        <Select
-                            options={loanProviderOptions}
-                            value={loanProviderOptions.find(option => option.value === data.loan_provider_id)}  // Set selected option
-                            onChange={handleLoanProviderChange}
-                            className="mt-1 block w-full py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            placeholder="Select a loanProvider"
-                        />
-                        {errors.loan_provider_id && <div className="text-sm text-red-500 mt-1">{errors.loan_provider_id}</div>}
                     </div>
 
                     <div>

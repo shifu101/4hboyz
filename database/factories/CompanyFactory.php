@@ -17,6 +17,7 @@ class CompanyFactory extends Factory
             'address' => $this->faker->address,
             'email' => $this->faker->unique()->safeEmail,
             'phone' => $this->faker->phoneNumber,
+            'percentage' => rand(5, 10)
         ];
     }
 }

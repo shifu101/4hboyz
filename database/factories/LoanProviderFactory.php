@@ -17,9 +17,9 @@ class LoanProviderFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
-            'phone' => fake()->phoneNumber(),
+            'name' => 'Centiflow Company Limited',
+            'email' => 'info@centiflow.com',
+            'phone' => '0700000000',
             'api_url' => 'https://google.com', 
         ];
     }

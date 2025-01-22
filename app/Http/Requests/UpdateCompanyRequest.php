@@ -27,6 +27,7 @@ class UpdateCompanyRequest extends FormRequest
             'address' => 'nullable|string|max:255',
             'email' => 'nullable',
             'phone' => 'required|string|max:15',
+            'percentage' => 'required',
         ];
     }
 }

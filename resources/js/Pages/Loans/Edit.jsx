@@ -4,7 +4,7 @@ import Layout from "@/Layouts/layout/layout.jsx";
 import Select from 'react-select';
 
 const EditLoan = ({ errors }) => {
-  const { loan, loanProviders, employees } = usePage().props; 
+  const { loan, employees } = usePage().props; 
 
   const { data, setData, put, processing } = useForm({
     amount: loan.amount,
@@ -14,29 +14,19 @@ const EditLoan = ({ errors }) => {
     loan_provider_id: loan.loan_provider_id
   });
 
-  const [selectedLoanProvider, setSelectedLoanProvider] = useState(null);
+
   const [selectedEmployee, setSelectedEmployee] = useState(null);
 
   useEffect(() => {
-    if (loan.loan_provider_id) {
-      const defaultLoanProvider = loanProviders.find((c) => c.id === loan?.loan_provider_id);
-      setSelectedLoanProvider(defaultLoanProvider);
-    }
-
     if (loan.employee_id) {
       const defaultEmployee = employees.find((c) => c.id === loan?.employee_id);
       setSelectedEmployee(defaultEmployee);
     }
-  }, [loan, loanProviders, employees]);
+  }, [loan, employees]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     put(route('loans.update', { loan: loan.id })); 
-  };
-
-  const handleLoanProviderChange = (selectedOption) => {
-    setData('loan_provider_id', selectedOption ? selectedOption.value : '');
-    setSelectedLoanProvider(selectedOption);
   };
 
   const handleEmployeeChange = (selectedOption) => {
@@ -59,20 +49,6 @@ const EditLoan = ({ errors }) => {
                   className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
               {errors.amount && <div className="text-sm text-red-500 mt-1">{errors.amount}</div>}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Loan Provider</label>
-            <Select
-              value={selectedLoanProvider}
-              onChange={handleLoanProviderChange}
-              options={loanProviders.map((loanProvider) => ({
-                value: loanProvider.id,
-                label: loanProvider.name
-              }))}
-              placeholder="Select a loanProvider"
-            />
-            {errors.loan_provider_id && <div className="text-sm text-red-500 mt-1">{errors.loan_provider_id}</div>}
           </div>
 
           <div>

@@ -16,6 +16,7 @@ class Company extends Model
         'role_id',
         'email',
         'password',
-        'address'
+        'address',
+        'percentage'
     ];
 }
