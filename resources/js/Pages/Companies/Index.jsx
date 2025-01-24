@@ -1,27 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { Link, usePage } from '@inertiajs/react';
-import { Inertia } from '@inertiajs/inertia';
+import React, { useState } from 'react';
+import { Link, usePage, router } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/react';
-import DateRangePicker from "react-daterange-picker";
 import "react-daterange-picker/dist/css/react-calendar.css";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable"; 
 import * as XLSX from 'xlsx';
-import { FileText, FileSpreadsheet, Plus } from 'lucide-react';
+import { FileText, FileSpreadsheet, Plus, Filter, X } from 'lucide-react';
 
 const Index = () => {
   const { companies, flash, pagination } = usePage().props;
   const [searchTerm, setSearchTerm] = useState('');
-  const [dateRange, setDateRange] = useState(null);
-  const [filteredCompanies, setFilteredCompanies] = useState(companies); // Use state to track filtered companies
-
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const { delete: destroy } = useForm();
-
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-  };
+  const [loading, setLoading] = useState(false);
 
   const handleDelete = (companyId) => {
     Swal.fire({
@@ -46,40 +39,21 @@ const Index = () => {
     });
   };
 
-  // Update filteredCompanies whenever companies or searchTerm changes
-  useEffect(() => {
-    const updatedCompanies = companies.filter((company) =>
-      company?.name?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredCompanies(updatedCompanies);
-  }, [companies, searchTerm]);
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    setLoading(true);
 
-  const handleSelect = (range) => {
-    setDateRange(range);
-
-    const startDate = range.start.format("YYYY-MM-DD");
-    const endDate = range.end.format("YYYY-MM-DD");
-
-    Inertia.get(route('companies.index'), {
-      start_date: startDate,
-      end_date: endDate,
-    }, {
+    router.get(route('companies.index'), { search: e.target.value }, {
       preserveState: true,
-      preserveScroll: true,
-      onSuccess: (response) => {
-        // After the data is successfully fetched, update the filtered companies
-        const newCompanies = response.props.companies.filter((company) =>
-          company?.name?.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-        setFilteredCompanies(newCompanies); // Update the filtered companies
-      }
+      onFinish: () => setLoading(false),
     });
   };
 
+
   const generatePDF = () => {
     const doc = new jsPDF();
-    const logoUrl = '/images/logo.png';
-    doc.addImage(logoUrl, 'PNG', 10, 10, 120, 30);
+    const logoUrl = '/images/logo/logo.png';
+    doc.addImage(logoUrl, 'PNG', 10, 10, 80, 30);
     doc.setFontSize(14);
     doc.text(`All Companies Report`, 14, 50);
     
@@ -91,7 +65,7 @@ const Index = () => {
       "Phone"
     ];
     
-    const rows = filteredCompanies.map(data => [
+    const rows = companies.map(data => [
       data.name, 
       data.industry, 
       data.address, 
@@ -109,7 +83,7 @@ const Index = () => {
   };
 
   const generateExcel = () => {
-    const ws = XLSX.utils.json_to_sheet(filteredCompanies.map((data) => ({
+    const ws = XLSX.utils.json_to_sheet(companies.map((data) => ({
       Name: data.name,
       Industry: data.industry,
       Address: data.address,
@@ -124,64 +98,78 @@ const Index = () => {
 
   return (
     <Layout>
-      <div className="max-w-7xl mx-auto p-6">
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-1">
-              <DateRangePicker
-                value={dateRange}
-                onSelect={handleSelect}
-                singleDateRange={true}
-                numberOfCalendars={2}
-                selectionType="range"
-                className="w-full"
-              />
-            </div>
+      <div className="max-w-7xl mx-auto p-4 sm:p-6">
+        {/* Mobile Filters Toggle */}
+        <div className="lg:hidden mb-4">
+          <button 
+            onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
+            className="inline-flex items-center justify-center w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            {mobileFiltersOpen ? (
+              <>
+                <X className="w-5 h-5 mr-2" /> Close Filters
+              </>
+            ) : (
+              <>
+                <Filter className="w-5 h-5 mr-2" /> Open Filters
+              </>
+            )}
+          </button>
+        </div>
 
-            <div className="lg:flex-row flex lg:items-center flex-col gap-3">
-              <div className="lg:col-span-1">
-                <h1 className="text-2xl font-semibold text-gray-900">
-                  Companies Directory
-                </h1>
-                <p className="text-sm text-gray-600 mt-1 mb-4">
-                  Manage and overview all registered companies
-                </p>
-              </div>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={searchTerm}
-                  onChange={handleSearchChange}
-                  className="w-full px-2 h-fit py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                  placeholder="Search companies..."
-                />
-              </div>
+        {/* Top Section - Responsive */}
+        <div className={`
+          ${mobileFiltersOpen ? 'block' : 'hidden'} 
+          lg:block bg-white p-4 rounded-lg shadow-sm border border-gray-100 mb-4
+        `}>
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <h1 className="text-2xl font-semibold text-gray-900 w-full sm:w-auto my-auto">
+              Companies Directory
+            </h1>
+            
+            <div className="flex flex-wrap justify-center gap-2 w-full sm:w-auto">
               <Link
                 href={route('companies.create')}
-                className="inline-flex items-center w-fit h-fit justify-center px-4 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm font-medium"
+                className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
               >
-                <Plus className="w-4 h-4 mr-2" />
-                Create New Company
+                <Plus className="w-4 h-4 mr-2 my-auto" />
+                <span className='my-auto'>
+                Create
+                </span>
               </Link>
-
               <button
                 onClick={generatePDF}
-                disabled={filteredCompanies.length === 0}
-                className="inline-flex items-center justify-center px-4 w-fit h-fit py-1 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={companies.length === 0}
+                className="flex cursor-pointer items-center justify-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm disabled:opacity-50"
               >
-                <FileText className="w-4 h-4 mr-2" />
-                Download PDF
+                <FileText className="w-4 h-4 mr-2 my-auto" />
+                <span className='my-auto'>
+                  PDF
+                </span>
               </button>
-
               <button
                 onClick={generateExcel}
-                disabled={filteredCompanies.length === 0}
-                className="inline-flex items-center w-fit h-fit justify-center px-4 py-1 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors duration-200 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={companies.length === 0}
+                className="inline-flex cursor-pointer items-center justify-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm disabled:opacity-50"
               >
-                <FileSpreadsheet className="w-4 h-4 mr-2" />
-                Download Excel
+                <FileSpreadsheet className="w-4 h-4 mr-2 my-auto" />
+                <span className='my-auto'>
+                  Excel
+                </span>
               </button>
             </div>
+          </div>
+
+          {/* Search Input */}
+          <div className="mt-4">
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Search companies..."
+            />
+            {loading && <p className="text-sm text-gray-500 mt-2">Searching...</p>}
           </div>
         </div>
 
@@ -197,7 +185,6 @@ const Index = () => {
             <thead className="bg-gray-100">
               <tr>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">Name</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">Industry</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">Address</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">Email</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">Phone</th>
@@ -206,22 +193,34 @@ const Index = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {filteredCompanies.length > 0 ? (
-                filteredCompanies.map((company) => (
+              {companies.length > 0 ? (
+                companies.map((company) => (
                   <tr key={company.id}>
                     <td className="px-6 py-4">{company.name}</td>
-                    <td className="px-6 py-4">{company.industry}</td>
                     <td className="px-6 py-4">{company.address}</td>
                     <td className="px-6 py-4">{company.email}</td>
                     <td className="px-6 py-4">{company.phone}</td>
                     <td className="px-6 py-4">{company.percentage}</td>
                     <td className="px-6 py-4 text-right">
-                      <div className="flex gap-3">
-                        <Link href={route('companies.show', company.id)} className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">View</Link>
-                        <Link href={route('companies.edit', company.id)} className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600">Edit</Link>
-                        <form onSubmit={(e) => { e.preventDefault(); handleDelete(company.id); }}>
-                          <button type="submit" className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">Delete</button>
-                        </form>
+                      <div className="flex justify-end gap-2">
+                        <Link 
+                          href={route('companies.show', company.id)} 
+                          className="bg-blue-600 text-white rounded-lg text-xs hover:bg-blue-700 flex items-center"
+                        >
+                          <span className="my-auto px-4 py-2">View</span>
+                        </Link>
+                        <Link 
+                          href={route('companies.edit', company.id)} 
+                          className="flex items-center bg-yellow-500 text-white rounded-lg text-xs hover:bg-yellow-600"
+                        >
+                          <span className="my-auto px-4 py-2">Edit</span>
+                        </Link>
+                        <button
+                          onClick={() => handleDelete(company.id)}
+                          className="flex items-center cursor-pointer bg-red-600 text-white rounded-lg text-xs hover:bg-red-700"
+                        >
+                         <span className="my-auto px-4 py-2">Delete</span> 
+                        </button>
                       </div>
                     </td>
                   </tr>

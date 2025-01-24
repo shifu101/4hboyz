@@ -1,7 +1,7 @@
 import React from 'react';
-import { useForm, usePage, Link } from '@inertiajs/react';
-import Layout from "@/Layouts/layout/layout.jsx";
+import { useForm, usePage } from '@inertiajs/react';
 import Select from 'react-select';  
+import GuestLayout from '@/Layouts/GuestLayout';
 
 const SelectCompany = () => {
     const { companies, user } = usePage().props; 
@@ -28,11 +28,10 @@ const SelectCompany = () => {
     };
 
     return (
-        <Layout>
-            <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md">
+        <GuestLayout>
+            <div className="max-w-fit my-auto  mx-auto bg-white p-6 rounded-lg shadow-md">
                 <h1 className="text-3xl font-semibold mb-6">Fill In Your Employee Details</h1>
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Company Select (React Select) */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Company</label>
                         <Select
@@ -45,7 +44,6 @@ const SelectCompany = () => {
                         {errors.company_id && <div className="text-sm text-red-500 mt-1">{errors.company_id}</div>}
                     </div>
 
-                    {/* Name Input */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Salary</label>
                         <input
@@ -58,7 +56,6 @@ const SelectCompany = () => {
                         {errors.salary && <div className="text-sm text-red-500 mt-1">{errors.salary}</div>}
                     </div>
 
-                    {/* Submit Button */}
                     <button
                         type="submit"
                         className="w-full mt-4 bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -67,7 +64,7 @@ const SelectCompany = () => {
                     </button>
                 </form>
             </div>
-        </Layout>
+        </GuestLayout>
     );
 };
 

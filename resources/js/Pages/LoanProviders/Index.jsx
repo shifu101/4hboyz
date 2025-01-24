@@ -1,47 +1,16 @@
 import React, { useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
-import Swal from 'sweetalert2';
-import { useForm } from '@inertiajs/react';
 
 const Index = () => {
   const { loanProviders, flash, pagination } = usePage().props; // Assuming pagination data is passed
   const [searchTerm, setSearchTerm] = useState('');
-
-  const {
-    delete: destroy,
-  } = useForm();
 
   // Handle search input change
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
 
-  // Function to handle delete confirmation
-  const handleDelete = (loanProviderId) => {
-    Swal.fire({
-      title: 'Are you sure?',
-      text: 'This action cannot be undone.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Use Inertia.delete for making the delete request
-        destroy(route('loanProviders.destroy', loanProviderId), {
-          onSuccess: () => {
-            // Optionally you can handle success actions here
-          },
-          onError: (err) => {
-            // Optionally handle errors
-            console.error('Delete error:', err);
-          },
-        });
-      }
-    });
-  };
 
   // Filtered loanProviders based on search term
   const filteredLoanProviders = loanProviders.filter((loanProvider) =>
@@ -57,12 +26,13 @@ const Index = () => {
             <h1 className="text-3xl font-semibold text-gray-900">Loan Providers Directory</h1>
             <p className="text-lg text-gray-600 mt-2">Manage and overview all registered loanProviders</p>
           </div>
+          {filteredLoanProviders.length <= 0 &&
           <Link
             href={route('loanProviders.create')}
             className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 gap-2 text-sm font-medium"
           >
             <span className='my-auto'>Create New Loan Provider</span>
-          </Link>
+          </Link>}
         </div>
 
         {/* Search Input */}
@@ -116,17 +86,6 @@ const Index = () => {
                         >
                           Edit
                         </Link>
-                        <form
-                          onSubmit={(e) => {
-                            e.preventDefault();
-                            handleDelete(loanProvider.id); // Call SweetAlert2 on delete
-                          }}
-                          className="inline"
-                        >
-                          <button type="submit" className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200">
-                            Delete
-                          </button>
-                        </form>
                       </div>
                     </td>
                   </tr>

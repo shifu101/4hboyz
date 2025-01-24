@@ -15,17 +15,35 @@ use App\Providers\RouteServiceProvider;
 class EmployeeController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
+        $user = Auth::user();
 
-        $employees = Employee::with('user')->paginate(10);
+        $query = Employee::with('user');
+    
 
+        if ($user->role_id == 2) {
+            $query->where('company_id', '=', $user->company_id);
+        }
+
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->whereHas('user', function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%$search%")
+                  ->orWhere('email', 'LIKE', "%$search%");
+            });
+        }
+
+        $employees = $query->paginate(10);
+    
         return Inertia::render('Employees/Index', [
             'employees' => $employees->items(),
             'pagination' => $employees,
             'flash' => session('flash'),
         ]);
     }
+    
+    
 
     public function create()
     {

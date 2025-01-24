@@ -8,21 +8,42 @@ use App\Models\Notification;
 use App\Models\User;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class NotificationController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
-
-        $notifications = Notification::with('user')->paginate(10);
-
+        $user = Auth::user();
+    
+        $query = Notification::with('user');
+    
+        if ($user->role_id == 2) {
+            $query->whereHas('user', function ($q) use ($user) {
+                $q->where('company_id', '=', $user->company_id);
+            });
+        } elseif ($user->role_id == 3) {
+            $query->where('user_id', '=', $user->id);
+        }
+    
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->whereHas('user', function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%$search%")
+                  ->orWhere('email', 'LIKE', "%$search%");
+            });
+        }
+    
+        $notifications = $query->paginate(10);
+    
         return Inertia::render('Notifications/Index', [
             'notifications' => $notifications->items(),
             'pagination' => $notifications,
             'flash' => session('flash'),
         ]);
     }
+    
 
     public function create()
     {

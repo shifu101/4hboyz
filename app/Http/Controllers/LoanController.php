@@ -9,21 +9,69 @@ use App\Models\Employee;
 use App\Models\LoanProvider;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class LoanController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
-
-         $loans = Loan::with(['loanProvider', 'employee.user'])->paginate(10);
-
+        $user = Auth::user();
+    
+        $query = Loan::with(['loanProvider', 'employee.user', 'employee.company']);
+    
+        // Filter based on role
+        if ($user->role_id == 2) {
+            $query->whereHas('employee.user', function ($q) use ($user) {
+                $q->where('company_id', '=', $user->company_id);
+            });
+        } elseif ($user->role_id == 3) {
+            $query->whereHas('employee.user', function ($q) use ($user) {
+                $q->where('id', '=', $user->id);
+            });
+        }
+    
+        // Search functionality
+        if ($request->has('search')) {
+            $search = trim($request->input('search'));
+    
+            $query->where(function ($q) use ($search) {
+                // Direct loan fields
+                $q->where('amount', 'LIKE', "%$search%")
+                  ->orWhere('number', 'LIKE', "%$search%")
+                  ->orWhere('status', 'LIKE', "%$search%");
+    
+                // Search within related loan provider fields
+                $q->orWhereHas('loanProvider', function ($q) use ($search) {
+                    $q->where('name', 'LIKE', "%$search%");
+                });
+    
+                // Search within employee and related fields
+                $q->orWhereHas('employee', function ($q) use ($search) {
+                    $q->where('loan_limit', 'LIKE', "%$search%")
+                      ->orWhereHas('user', function ($q) use ($search) {
+                          $q->where('name', 'LIKE', "%$search%")
+                            ->orWhere('email', 'LIKE', "%$search%");
+                      })
+                      ->orWhereHas('company', function ($q) use ($search) {
+                          $q->where('name', 'LIKE', "%$search%");
+                      });
+                });
+            });
+        }
+        
+    
+        // Paginate results
+        $loans = $query->paginate(10);
+    
         return Inertia::render('Loans/Index', [
             'loans' => $loans->items(),
             'pagination' => $loans,
             'flash' => session('flash'),
         ]);
     }
+    
+    
 
     public function create()
     {

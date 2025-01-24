@@ -10,23 +10,24 @@ use Illuminate\Http\Request;
 
 class CompanyController extends Controller
 {
-public function index(Request $request)
-{
-    $query = Company::query();
-
-    if ($request->has('start_date') && $request->has('end_date')) {
-        $query->whereBetween('created_at', [$request->start_date, $request->end_date]);
+    public function index(Request $request)
+    {
+        $query = Company::query();
+    
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->where('name', 'LIKE', "%$search%");
+        }
+    
+        $companies = $query->paginate(10);
+    
+        return Inertia::render('Companies/Index', [
+            'companies' => $companies->items(),
+            'pagination' => $companies,
+            'flash' => session('flash'),
+        ]);
     }
-
-    $companies = $query->paginate(10);
-
-    return Inertia::render('Companies/Index', [
-        'companies' => $companies->items(),
-        'pagination' => $companies,
-        'flash' => session('flash'),
-    ]);
-}
-
+    
 
     public function create()
     {

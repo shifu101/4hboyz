@@ -19,7 +19,7 @@ const EditLoanProvider = ({ loanProvider, errors }) => {
   return (
     <Layout>
       <div>
-        <h1>Edit loanProvider</h1>
+        <h1>Edit loan provider</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
         <div>
             <label className="block text-sm font-medium text-gray-700">Name</label>
