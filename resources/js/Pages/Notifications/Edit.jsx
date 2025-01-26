@@ -29,7 +29,7 @@ const EditNotification = ({ notification, errors }) => {
 
   return (
     <Layout>
-      <div>
+      <div className="max-w-2xl bg-white p-6 rounded-lg shadow-md">
         <h1>Edit Notification</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
@@ -49,7 +49,7 @@ const EditNotification = ({ notification, errors }) => {
                   options={userOptions}
                   value={userOptions.find(option => option.value === data.user_id)} 
                   onChange={handleUserChange}
-                  className="mt-1 block w-full py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="mt-1 block w-full py-2"
                   placeholder="Select a user"
               />
               {errors.user_id && <div className="text-sm text-red-500 mt-1">{errors.user_id}</div>}

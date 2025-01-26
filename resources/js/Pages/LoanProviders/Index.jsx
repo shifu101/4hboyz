@@ -19,7 +19,7 @@ const Index = () => {
 
   return (
     <Layout>
-      <div className="max-w-7xl mx-auto p-6">
+      <div className="w-full">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
           <div>
@@ -101,7 +101,7 @@ const Index = () => {
 
         {/* Pagination */}
         {pagination && pagination.total > pagination.per_page && (
-          <div className="mt-6 flex justify-center">
+          <div className="my-6 flex justify-center">
             <div className="inline-flex gap-2">
               {pagination.prev_page_url && (
                 <Link

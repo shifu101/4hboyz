@@ -31,7 +31,7 @@ const Create = () => {
 
     return (
         <Layout>
-            <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md">
+            <div className="max-w-2xl bg-white p-6 rounded-lg shadow-md">
                 <h1 className="text-3xl font-semibold mb-6">Create User</h1>
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Name Input */}
@@ -77,7 +77,7 @@ const Create = () => {
                             options={companyOptions}
                             value={companyOptions.find(option => option.value === data.company_id)}  // Set selected option
                             onChange={handleCompanyChange}
-                            className="mt-1 block w-full py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            className="mt-1 block w-full py-2"
                             placeholder="Select a company"
                         />
                         {errors.company_id && <div className="text-sm text-red-500 mt-1">{errors.company_id}</div>}

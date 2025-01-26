@@ -36,7 +36,7 @@ const EditLoan = ({ errors }) => {
 
   return (
     <Layout>
-      <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-6">
+      <div className="max-w-4xl bg-white shadow-md rounded-lg p-6">
         <h1 className="text-2xl font-bold text-gray-800 text-left mb-6">Edit Loan</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>

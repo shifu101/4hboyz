@@ -1,20 +1,30 @@
 import React, { useState } from 'react';
-import { Link, usePage } from '@inertiajs/react';
+import { Link, usePage,useForm, router } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
 import Swal from 'sweetalert2';
-import { useForm } from '@inertiajs/react';
+import { FileText, FileSpreadsheet, Plus, Filter, X } from 'lucide-react';
+import { jsPDF } from "jspdf";
+import "jspdf-autotable"; 
+import * as XLSX from 'xlsx';
 
 const Index = () => {
   const { users, flash, pagination } = usePage().props; // Assuming pagination data is passed
   const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   const {
     delete: destroy,
   } = useForm();
 
-  // Handle search input change
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
+    setLoading(true);
+
+    router.get(route('users.index'), { search: e.target.value }, {
+      preserveState: true,
+      onFinish: () => setLoading(false),
+    });
   };
 
   // Function to handle delete confirmation
@@ -43,38 +53,124 @@ const Index = () => {
     });
   };
 
-  // Filtered users based on search term
-  const filteredUsers = users.filter((user) =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+
+  const generatePDF = () => {
+    const doc = new jsPDF();
+    const logoUrl = '/images/logo/logo.png';
+    doc.addImage(logoUrl, 'PNG', 10, 10, 80, 30);
+    doc.setFontSize(14);
+    doc.text(`Users Report`, 14, 50);
+    
+    const columns = ["Name", "Email", "Phone", "Company Email", "Company Phone"];
+    
+    const rows = users.map(data => [
+      data.name, 
+      data.email, 
+      data.phone, 
+      data.company?.email,
+      data.company?.phone
+    ]);
+    
+    doc.autoTable({
+      head: [columns],
+      body: rows,
+      startY: 60,
+    });
+    
+    doc.save("users_reports.pdf");
+  };
+
+  const generateExcel = () => {
+    const ws = XLSX.utils.json_to_sheet(users.map((data) => ({
+      Name:data.name, 
+      Email:data.email, 
+      Phone:data.phone, 
+      Company_Email:data.company?.email,
+      Company_Phone:data.company?.phone
+    })));
+  
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Users');
+    XLSX.writeFile(wb, 'users_report.xlsx');
+  };
+
 
   return (
     <Layout>
-      <div className="max-w-7xl mx-auto p-6">
+      <div className="w-full">
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-          <div>
-            <h1 className="text-3xl font-semibold text-gray-900">Users Directory</h1>
-            <p className="text-lg text-gray-600 mt-2">Manage and overview all registered users</p>
+          <div className="lg:hidden mb-4">
+            <button 
+              onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
+              className="inline-flex items-center justify-center w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              {mobileFiltersOpen ? (
+                <>
+                  <X className="w-5 h-5 mr-2" /> Close Filters
+                </>
+              ) : (
+                <>
+                  <Filter className="w-5 h-5 mr-2" /> Open Filters
+                </>
+              )}
+            </button>
           </div>
-          <Link
-            href={route('users.create')}
-            className="inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 gap-2 text-sm font-medium"
-          >
-            <span className='my-auto'>Create New User</span>
-          </Link>
-        </div>
 
-        {/* Search Input */}
-        <div className="mb-4">
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={handleSearchChange}
-            className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
-            placeholder="Search users..."
-          />
-        </div>
+          {/* Top Section - Responsive */}
+          <div className={`
+            ${mobileFiltersOpen ? 'block' : 'hidden'} 
+            lg:block bg-white p-4 rounded-lg shadow-sm border border-gray-100 mb-4
+          `}>
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+              <h1 className="text-2xl font-semibold text-gray-900 w-full sm:w-auto my-auto">
+                Users Directory
+              </h1>
+              
+              <div className="flex flex-wrap justify-center gap-2 w-full sm:w-auto">
+                <Link
+                  href={route('users.create')}
+                  className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                >
+                  <Plus className="w-4 h-4 mr-2 my-auto" />
+                  <span className='my-auto'>
+                  Create
+                  </span>
+                </Link>
+                <button
+                  onClick={generatePDF}
+                  disabled={users.length === 0}
+                  className="flex cursor-pointer items-center justify-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm disabled:opacity-50"
+                >
+                  <FileText className="w-4 h-4 mr-2 my-auto" />
+                  <span className='my-auto'>
+                    PDF
+                  </span>
+                </button>
+                <button
+                  onClick={generateExcel}
+                  disabled={users.length === 0}
+                  className="inline-flex cursor-pointer items-center justify-center px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm disabled:opacity-50"
+                >
+                  <FileSpreadsheet className="w-4 h-4 mr-2 my-auto" />
+                  <span className='my-auto'>
+                    Excel
+                  </span>
+                </button>
+              </div>
+          </div>
+
+          {/* Search Input */}
+          <div className="mt-4">
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={handleSearchChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Search users..."
+            />
+            {loading && <p className="text-sm text-gray-500 mt-2">Searching...</p>}
+          </div>
+      </div>
 
         {/* Flash Message */}
         {flash?.success && (
@@ -98,8 +194,8 @@ const Index = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {filteredUsers.length > 0 ? (
-                filteredUsers.map((user) => (
+              {users.length > 0 ? (
+                users.map((user) => (
                   <tr key={user.id}>
                     <td className="px-6 py-4 whitespace-nowrap">{user.name}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{user.email}</td>
@@ -146,7 +242,7 @@ const Index = () => {
 
         {/* Pagination */}
         {pagination && pagination.total > pagination.per_page && (
-          <div className="mt-6 flex justify-center">
+          <div className="my-6 flex justify-center">
             <div className="inline-flex gap-2">
               {pagination.prev_page_url && (
                 <Link

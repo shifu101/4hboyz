@@ -12,19 +12,32 @@ use Illuminate\Http\Request;
 class UserController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
-
-        $users = User::with([
-            'company'
-        ])->paginate(10);
-
+        // Start the query with eager loading
+        $query = User::with(['company']); // Eager-load company, whether it exists or not
+    
+        if ($request->has('search')) {
+            $search = $request->input('search');
+    
+            // Apply search conditions to the existing query
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%$search%")
+                  ->orWhere('email', 'LIKE', "%$search%");
+            });
+        }
+    
+        // Paginate the query
+        $users = $query->paginate(10);
+    
         return Inertia::render('Users/Index', [
             'users' => $users->items(),
             'pagination' => $users,
             'flash' => session('flash'),
         ]);
     }
+    
+    
 
 
     public function create()

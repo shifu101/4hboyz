@@ -22,10 +22,17 @@ class StoreEmployeeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'salary' => 'required',
-            'loan_limit' => 'required',
+            'salary' => 'nullable',
+            'loan_limit' => 'nullable',
             'user_id' => 'nullable',
             'company_id' => 'nullable',
+            'passport_number' => 'nullable',
+            'id_number' => 'nullable',
+            'id_front' => 'nullable',
+            'id_back' => 'nullable',
+            'passport_front' => 'nullable',
+            'passport_back' => 'nullable',
+            'approved' => 'nullable'
         ];
     }
 }

@@ -11,10 +11,11 @@ import DateRangePicker from 'react-daterange-picker';
 import 'react-daterange-picker/dist/css/react-calendar.css';
 
 const Index = () => {
-  const { loans, flash, pagination } = usePage().props; 
+  const { loans, flash, pagination, auth } = usePage().props; 
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const roleId = auth.user?.role_id;
 
   // Function to handle delete confirmation
   const handleDelete = (loanId) => {
@@ -94,7 +95,7 @@ const Index = () => {
 
   return (
     <Layout>
-      <div className="max-w-7xl mx-auto p-4 sm:p-6">
+      <div className="w-full">
           {/* Mobile Filters Toggle */}
           <div className="lg:hidden mb-4">
             <button 
@@ -129,8 +130,8 @@ const Index = () => {
                   className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
                 >
                   <Plus className="w-4 h-4 mr-2 my-auto" />
-                  <span className='my-auto'>
-                  Create
+                  <span className='my-auto flex items-center'>
+                  Request for a loan
                   </span>
                 </Link>
                 <button
@@ -185,6 +186,8 @@ const Index = () => {
               <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Loan number</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Employee Name</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Amount</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Eventual pay</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Current balance</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Status</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Loan provider</th>
                 <th className="px-6 py-3 text-right text-sm font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
@@ -197,6 +200,8 @@ const Index = () => {
                     <td className="px-6 py-4 whitespace-nowrap">{loan.number}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{loan.employee?.user?.name}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{loan.amount}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{loan.eventualPay}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{loan.currentBalance}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{loan.status}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{loan.loan_provider?.name}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-right">
@@ -207,23 +212,29 @@ const Index = () => {
                         >
                           View
                         </Link>
-                        <Link
-                          href={route('loans.edit', loan.id)}
-                          className="inline-flex items-center px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition duration-200"
-                        >
-                          Edit
-                        </Link>
-                        <form
-                          onSubmit={(e) => {
-                            e.preventDefault();
-                            handleDelete(loan.id); 
-                          }}
-                          className="inline"
-                        >
-                          <button type="submit" className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200">
-                            Delete
-                          </button>
-                        </form>
+                        {roleId !== 3 &&
+                        <>
+                          <Link
+                            href={route('loans.edit', loan.id)}
+                            className="inline-flex items-center px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition duration-200"
+                          >
+                            Edit
+                          </Link>
+                          {roleId === 1 &&
+                          <form
+                              onSubmit={(e) => {
+                                e.preventDefault();
+                                handleDelete(loan.id); 
+                              }}
+                              className="inline"
+                            >
+                              <button type="submit" className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200">
+                                Delete
+                              </button>
+            
+                          </form>}
+                          </>
+                        }
                       </div>
                     </td>
                   </tr>

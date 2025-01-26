@@ -5,7 +5,7 @@ import Layout from "@/Layouts/layout/layout.jsx";
 const Show = ({ employee, user, company }) => {
   return (
     <Layout>
-      <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-6">
+      <div className="max-w-4xl bg-white shadow-md rounded-lg p-6">
         <h1 className="text-2xl font-bold text-gray-800 text-left mb-6">Employee Details</h1>
         
         <div className="space-y-4">
@@ -32,6 +32,18 @@ const Show = ({ employee, user, company }) => {
           <div className="flex justify-between">
             <strong className="text-gray-600">Company:</strong> 
             <span className="text-gray-800">{company.name}</span>
+          </div>
+          <div className="flex justify-between">
+            <strong className="text-gray-600">Approved:</strong> 
+            <span className="text-gray-800">{employee.approved}</span>
+          </div>
+          <div className="flex justify-between">
+            <strong className="text-gray-600">Unpaid loans:</strong> 
+            <span className="text-gray-800">{employee.unpaid_loans_count}</span>
+          </div>
+          <div className="flex justify-between">
+            <strong className="text-gray-600">Total loan balance:</strong> 
+            <span className="text-gray-800">{employee.total_loan_balance}</span>
           </div>
         </div>
 

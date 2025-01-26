@@ -8,10 +8,11 @@ import "jspdf-autotable";
 import * as XLSX from 'xlsx';
 
 const Index = () => {
-  const { repayments, flash, pagination } = usePage().props; // Assuming pagination data is passed
+  const { repayments, flash, pagination, auth } = usePage().props; // Assuming pagination data is passed
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const roleId = auth.user?.role_id;
 
   // Function to handle delete confirmation
   const handleDelete = (repaymentId) => {
@@ -91,7 +92,7 @@ const Index = () => {
 
   return (
     <Layout>
-      <div className="max-w-7xl mx-auto p-6">
+      <div className="w-full">
           {/* Mobile Filters Toggle */}
           <div className="lg:hidden mb-4">
             <button 
@@ -121,6 +122,7 @@ const Index = () => {
               </h1>
               
               <div className="flex flex-wrap justify-center gap-2 w-full sm:w-auto">
+                {roleId === 1 &&
                 <Link
                   href={route('repayments.create')}
                   className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
@@ -129,7 +131,7 @@ const Index = () => {
                   <span className='my-auto'>
                   Create
                   </span>
-                </Link>
+                </Link>}
                 <button
                   onClick={generatePDF}
                   disabled={repayments.length === 0}
@@ -204,12 +206,14 @@ const Index = () => {
                         >
                           View
                         </Link>
+                        {roleId === 1 &&
                         <Link
                           href={route('repayments.edit', repayment.id)}
                           className="inline-flex items-center px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition duration-200"
                         >
                           Edit
-                        </Link>
+                        </Link>}
+                        {roleId === 1 &&
                         <form
                           onSubmit={(e) => {
                             e.preventDefault();
@@ -220,7 +224,7 @@ const Index = () => {
                           <button type="submit" className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200">
                             Delete
                           </button>
-                        </form>
+                        </form>}
                       </div>
                     </td>
                   </tr>
@@ -236,7 +240,7 @@ const Index = () => {
 
         {/* Pagination */}
         {pagination && pagination.total > pagination.per_page && (
-          <div className="mt-6 flex justify-center">
+          <div className="my-6 flex justify-center">
             <div className="inline-flex gap-2">
               {pagination.prev_page_url && (
                 <Link

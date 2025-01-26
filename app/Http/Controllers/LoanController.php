@@ -6,6 +6,7 @@ use App\Http\Requests\StoreLoanRequest;
 use App\Http\Requests\UpdateLoanRequest;
 use App\Models\Loan;
 use App\Models\Employee;
+use App\Models\Company;
 use App\Models\LoanProvider;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
@@ -75,14 +76,21 @@ class LoanController extends Controller
 
     public function create()
     {
-        $employees = Employee::with(['user'])->get();
+        $employees = Employee::with(['user', 'loans'])->get()
+            ->map(function ($employee) {
+                return $employee->append('unpaid_loans_count', 'total_loan_balance');
+            });
+    
         $loanProviders = LoanProvider::all();
-
+        $companies = Company::all();
+    
         return Inertia::render('Loans/Create', [
             'employees' => $employees,
-            'loanProviders'=> $loanProviders
+            'loanProviders' => $loanProviders,
+            'companies' => $companies
         ]);
     }
+    
 
     public function store(StoreLoanRequest $request)
     {

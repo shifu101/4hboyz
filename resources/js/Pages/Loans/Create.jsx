@@ -1,22 +1,32 @@
-import React from 'react';
+import React, {useState,useEffect} from 'react';
 import { useForm, usePage, Link } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
 import Select from 'react-select';  
+import DashboardInfoCard from "@/Components/DashboardInfoCard.jsx";
 
 const Create = () => {
-    const { employees } = usePage().props; 
+    const { employees, auth, companies } = usePage().props; 
+    const roleId = auth.user?.role_id;
+    const [selectedEmployee, setSelectedEmployee] = useState(null);
+    const [selectedCompany, setSelectedCompany] = useState(null);
 
-    const employeeOptions = employees.map(employee => ({
+    const employeeOptions = employees?.map(employee => ({
       value: employee.id,
       label: employee.user?.name
     }));
+
+    const companyOptions = companies?.map(data => ({
+        value: data.id,
+        label: data.name
+      }));
 
     const { data, setData, post, errors } = useForm({
       amount: '',
       status: 'Active',
       disbursed_at: new Date().toISOString().slice(0, 19).replace('T', ' '),
       employee_id: '',
-      loan_provider_id: 1
+      loan_provider_id: 1,
+      company_id: '',
     });
 
     const handleSubmit = (e) => {
@@ -28,10 +38,100 @@ const Create = () => {
         setData('employee_id', selectedOption ? selectedOption.value : ''); 
     };
 
+    const handleCompanyChange = (selectedOption) => {
+        setData('company_id', selectedOption ? selectedOption.value : ''); 
+    };
+
+    useEffect(() => {
+        if(roleId === 3) {
+            const employee = employees.find(emp => emp.user_id === auth.user?.id);
+            setSelectedEmployee(employee || null);
+            setData((prev) => ({
+                ...prev,
+                employee_id: employee.id,
+            }));
+            
+        }
+
+        if(data.employee_id !== '') {
+            const employee = employees.find(emp => emp.id === data.employee_id);
+            setSelectedEmployee(employee || null);
+        }
+
+        if(data.company_id !== '') {
+            const company = companies.find(emp => emp.id === data.company_id);
+            setSelectedCompany(company || null);
+        }
+
+        if(roleId !== 1) {
+            const company = companies.find(emp => emp.id === auth.user?.company_id);
+            setSelectedCompany(company || null);
+        }
+    }, [employees, auth, data.employee_id, data.company_id]);
+
     return (
         <Layout>
-            <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md">
-                <h1 className="text-3xl font-semibold mb-6">Create Loan</h1>
+            {selectedEmployee !== null && 
+            <div className="grid">
+                <DashboardInfoCard
+                    title="Salary"
+                    value={selectedEmployee?.salary}
+                    icon="map-marker"
+                    iconColor="blue"
+                    descriptionValue="Salary"
+                    descriptionText="per month"
+                />
+                <DashboardInfoCard
+                    title="Loan limit"
+                    value={selectedEmployee?.loan_limit}
+                    icon="map-marker"
+                    iconColor="blue"
+                    descriptionValue="The maximum amount"
+                    descriptionText="you can borrow"
+                />
+                <DashboardInfoCard
+                    title="Number of unpaid loans"
+                    value={selectedEmployee?.unpaid_loans_count}
+                    icon="map-marker"
+                    iconColor="blue"
+                    descriptionValue="The number"
+                    descriptionText="of loans not fully paid"
+                />
+                <DashboardInfoCard
+                    title="Value of unpaid loans"
+                    value={selectedEmployee?.total_loan_balance}
+                    icon="map-marker"
+                    iconColor="blue"
+                    descriptionValue="The value"
+                    descriptionText="of loans not fully paid"
+                />
+                <DashboardInfoCard
+                    title="Loan float"
+                    value={selectedEmployee?.loan_limit - selectedEmployee?.total_loan_balance}
+                    icon="map-marker"
+                    iconColor="blue"
+                    descriptionValue="The value"
+                    descriptionText="of that can still be borrowed"
+                />
+                <DashboardInfoCard
+                    title="New loan repayment amount"
+                    value={parseFloat(((parseFloat(data?.amount) || 0) + (parseFloat(data?.amount) || 0) * (parseFloat(selectedCompany?.percentage) || 0) / 100).toFixed(2))}
+                    icon="map-marker"
+                    iconColor="blue"
+                    descriptionValue="The value"
+                    descriptionText="to pay for this new loan"
+                />
+                <DashboardInfoCard
+                    title="Loan percentage rate"
+                    value={`${selectedCompany?.percentage}%`}
+                    icon="map-marker"
+                    iconColor="blue"
+                    descriptionValue="The amount in percentage"
+                    descriptionText="added to the loan"
+                />
+            </div>}
+            <div className="max-w-2xl bg-white p-6 rounded-lg shadow-md my-4">
+                <h1 className="text-3xl font-semibold mb-6">Request for a loan</h1>
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Name Input */}
                     <div>
@@ -46,24 +146,38 @@ const Create = () => {
                         {errors.amount && <div className="text-sm text-red-500 mt-1">{errors.amount}</div>}
                     </div>
 
+                    {roleId !== 3 &&
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Employee</label>
                         <Select
                             options={employeeOptions}
                             value={employeeOptions.find(option => option.value === data.employee_id)} 
                             onChange={handleEmployeeChange}
-                            className="mt-1 block w-full py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            className="mt-1 block w-full py-2"
                             placeholder="Select a employee"
                         />
                         {errors.employee_id && <div className="text-sm text-red-500 mt-1">{errors.employee_id}</div>}
-                    </div>
+                    </div>}
+
+                    {roleId === 1 &&
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Company</label>
+                        <Select
+                            options={companyOptions}
+                            value={companyOptions.find(option => option.value === data.company_id)} 
+                            onChange={handleCompanyChange}
+                            className="mt-1 block w-full py-2"
+                            placeholder="Select a company"
+                        />
+                        {errors.employee_id && <div className="text-sm text-red-500 mt-1">{errors.employee_id}</div>}
+                    </div>}
 
                     {/* Submit Button */}
                     <button
                         type="submit"
                         className="w-full mt-4 bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     >
-                        Create Loan
+                        Request for a loan
                     </button>
                 </form>
 

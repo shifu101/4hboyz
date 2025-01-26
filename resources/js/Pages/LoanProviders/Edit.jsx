@@ -18,7 +18,7 @@ const EditLoanProvider = ({ loanProvider, errors }) => {
 
   return (
     <Layout>
-      <div>
+      <div className="max-w-2xl bg-white p-6 rounded-lg shadow-md">
         <h1>Edit loan provider</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
         <div>

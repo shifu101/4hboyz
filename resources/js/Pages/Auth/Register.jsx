@@ -1,9 +1,6 @@
-import { useEffect } from 'react';
-import GuestLayout from '@/Layouts/GuestLayout';
-import InputError from '@/Components/InputError';
-import PrimaryButton from '@/Components/PrimaryButton';
-import { Head, Link, useForm } from '@inertiajs/react';
-import {InputText} from "primereact/inputtext";
+import React, { useEffect } from 'react';
+import { useForm, Link, Head } from '@inertiajs/react';
+import { CheckCircle } from 'lucide-react';
 
 export default function Register() {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -23,101 +20,105 @@ export default function Register() {
 
     const submit = (e) => {
         e.preventDefault();
-
         post(route('register'));
     };
 
     return (
-        <GuestLayout>
+        <div className="min-h-screen flex flex-col items-center justify-center p-4">
             <Head title="Register" />
 
-            <div className="flex align-items-center justify-content-center flex-column">
-                <img src="/images/logo/logo.png" alt="hyper" height={50} className="mb-3"/>
-                <div className="surface-card p-6 sm:p-4 shadow-2 border-round w-full lg:w-4">
-                    <div className="text-center mb-5">
-                        <div className="text-900 text-3xl font-medium mb-3">Register</div>
-                    </div>
-                    <form onSubmit={submit}>
-                        <div>
-                                <div className="mb-3">
-                                    <label htmlFor="name" className="block text-900 font-medium mb-2">Name</label>
-                                    <InputText
-                                        id="name"
-                                        type="text"
-                                        placeholder="Name"
-                                        className="w-full"
-                                        value={data.name}
-                                        onChange={(e) => setData('name', e.target.value)}
-                                    />
-                                    <InputError message={errors.email} className=""/>
-                                </div>
+            <div className="w-full max-w-lg space-y-8">
+                <ol className="flex justify-between text-sm font-medium text-gray-500">
+                    {[
+                        { step: 1, label: 'Account', active: true },
+                        { step: 2, label: 'KYC', active: false },
+                        { step: 3, label: 'Verification', active: false }
+                    ].map(({ step, label, active }) => (
+                        <li 
+                            key={step} 
+                            className={`flex items-center space-x-2 ${active ? 'text-blue-600' : ''}`}
+                        >
+                            {active && <CheckCircle className="w-5 h-5" />}
+                            <span className='flex items-center'>{step}.</span>
+                            <span className='flex items-center'>{label}</span>
+                        </li>
+                    ))}
+                </ol>
 
-                            <div className="mb-3">
-                                <label htmlFor="email" className="block text-900 font-medium mb-2">Email</label>
-                                <InputText
-                                    id="email"
-                                    type="text"
-                                    placeholder="Email address"
-                                    className="w-full"
-                                    value={data.email}
-                                    onChange={(e) => setData('email', e.target.value)}
+                <div className="bg-white shadow-md rounded-lg p-8">
+                    <h2 className="text-center text-3xl font-bold mb-6">Set up your account</h2>
+                    
+                    <form onSubmit={submit} className="space-y-4">
+                        {[
+                            { 
+                                name: 'name', 
+                                label: 'Name', 
+                                type: 'text', 
+                                placeholder: 'Enter your name'
+                            },
+                            { 
+                                name: 'email', 
+                                label: 'Email', 
+                                type: 'email', 
+                                placeholder: 'Enter your email'
+                            },
+                            { 
+                                name: 'phone', 
+                                label: 'Phone', 
+                                type: 'tel', 
+                                placeholder: 'Enter your phone number'
+                            },
+                            { 
+                                name: 'password', 
+                                label: 'Password', 
+                                type: 'password', 
+                                placeholder: 'Enter your password'
+                            },
+                            { 
+                                name: 'password_confirmation', 
+                                label: 'Confirm Password', 
+                                type: 'password', 
+                                placeholder: 'Confirm your password'
+                            }
+                        ].map(({ name, label, type, placeholder }) => (
+                            <div key={name}>
+                                <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-2">
+                                    {label}
+                                </label>
+                                <input
+                                    id={name}
+                                    name={name}
+                                    type={type}
+                                    placeholder={placeholder}
+                                    value={data[name]}
+                                    onChange={(e) => setData(name, e.target.value)}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
-                                <InputError message={errors.email} className=""/>
+                                {errors[name] && (
+                                    <p className="text-red-500 text-xs mt-1">{errors[name]}</p>
+                                )}
                             </div>
+                        ))}
 
-                            <div className="mb-3">
-                                <label htmlFor="phone" className="block text-900 font-medium mb-2">Phone</label>
-                                <InputText
-                                    id="phone"
-                                    type="tel"
-                                    placeholder="Phone number"
-                                    className="w-full"
-                                    value={data.phone}
-                                    onChange={(e) => setData('phone', e.target.value)}
-                                />
-                                <InputError message={errors.phone} className=""/>
-                            </div>
-
-                            <div className="mb-3">
-                                <label htmlFor="password" className="block text-900 font-medium mb-2">Password</label>
-                                <InputText
-                                    id="password"
-                                    type="password"
-                                    placeholder="Password"
-                                    className="w-full"
-                                    value={data.password}
-                                    onChange={(e) => setData('password', e.target.value)}
-                                />
-                                <InputError message={errors.password} className=""/>
-                            </div>
-                            <div className="mb-3">
-                                <label htmlFor="password_confirmation" className="block text-900 font-medium mb-2">Confirm Password</label>
-                                <InputText
-                                    id="password_confirmation"
-                                    type="password"
-                                    placeholder="Confirm Password"
-                                    className="w-full"
-                                    value={data.password_confirmation}
-                                    onChange={(e) => setData('password_confirmation', e.target.value)}
-                                />
-                                <InputError message={errors.password_confirmation} className=""/>
-                            </div>
-
-                            <div className="flex align-items-center justify-content-end mb-4">
-                                <Link
-                                    href={route('login')}
-                                    className=""
-                                >
-                                    Already registered?
-                                </Link>
-
-                            </div>
-
-                            <PrimaryButton label="Register" className="w-full" disabled={processing}/>
+                        <div className="flex justify-end mb-4">
+                            <Link 
+                                href={route('login')} 
+                                className="text-sm text-blue-600 hover:underline"
+                            >
+                                Already registered?
+                            </Link>
                         </div>
+
+                        <button 
+                            type="submit" 
+                            disabled={processing}
+                            className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                        >
+                            Register
+                        </button>
                     </form>
                 </div>
             </div>
-        </GuestLayout>
+        </div>
     );
 }

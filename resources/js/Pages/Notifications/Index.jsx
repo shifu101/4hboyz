@@ -7,10 +7,11 @@ import "jspdf-autotable";
 import * as XLSX from 'xlsx';
 
 const Index = () => {
-  const { notifications, flash, pagination } = usePage().props; // Assuming pagination data is passed
+  const { notifications, flash, pagination, auth } = usePage().props; // Assuming pagination data is passed
   const [searchTerm, setSearchTerm] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const roleId = auth.user?.role_id;
 
   // Function to handle delete confirmation
   const handleDelete = (notificationId) => {
@@ -48,45 +49,45 @@ const Index = () => {
     });
   };
 
-    const generatePDF = () => {
-      const doc = new jsPDF();
-      const logoUrl = '/images/logo/logo.png';
-      doc.addImage(logoUrl, 'PNG', 10, 10, 80, 30);
-      doc.setFontSize(14);
-      doc.text(`Notifications Report`, 14, 50);
-      
-      const columns = ["User", "Message", "Is read"];
-      
-      const rows = notifications.map(data => [
-        data.user?.name, 
-        data.message, 
-        data.is_read
-      ]);
-      
-      doc.autoTable({
-        head: [columns],
-        body: rows,
-        startY: 60,
-      });
-      
-      doc.save("notifications_reports.pdf");
-    };
-  
-    const generateExcel = () => {
-      const ws = XLSX.utils.json_to_sheet(notifications.map((data) => ({
-        Name: data.user?.name,
-        Message: data.message,
-        IsRead: data.is_read
-      })));
+  const generatePDF = () => {
+    const doc = new jsPDF();
+    const logoUrl = '/images/logo/logo.png';
+    doc.addImage(logoUrl, 'PNG', 10, 10, 80, 30);
+    doc.setFontSize(14);
+    doc.text(`Notifications Report`, 14, 50);
     
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'Notifications');
-      XLSX.writeFile(wb, 'notifications_report.xlsx');
-    };
+    const columns = ["User", "Message", "Is read"];
+    
+    const rows = notifications.map(data => [
+      data.user?.name, 
+      data.message, 
+      data.is_read
+    ]);
+    
+    doc.autoTable({
+      head: [columns],
+      body: rows,
+      startY: 60,
+    });
+    
+    doc.save("notifications_reports.pdf");
+  };
+
+  const generateExcel = () => {
+    const ws = XLSX.utils.json_to_sheet(notifications.map((data) => ({
+      Name: data.user?.name,
+      Message: data.message,
+      IsRead: data.is_read
+    })));
+  
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Notifications');
+    XLSX.writeFile(wb, 'notifications_report.xlsx');
+  };
 
   return (
     <Layout>
-      <div className="max-w-7xl mx-auto p-4 sm:p-6">
+      <div className="w-full">
           {/* Mobile Filters Toggle */}
           <div className="lg:hidden mb-4">
             <button 
@@ -116,6 +117,7 @@ const Index = () => {
               </h1>
               
               <div className="flex flex-wrap justify-center gap-2 w-full sm:w-auto">
+                {roleId !== 3 &&
                 <Link
                   href={route('notifications.create')}
                   className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
@@ -124,7 +126,7 @@ const Index = () => {
                   <span className='my-auto'>
                   Create
                   </span>
-                </Link>
+                </Link>}
                 <button
                   onClick={generatePDF}
                   disabled={notifications.length === 0}
@@ -221,7 +223,7 @@ const Index = () => {
 
         {/* Pagination */}
         {pagination && pagination.total > pagination.per_page && (
-          <div className="mt-6 flex justify-center">
+          <div className="my-6 flex justify-center">
             <div className="inline-flex gap-2">
               {pagination.prev_page_url && (
                 <Link

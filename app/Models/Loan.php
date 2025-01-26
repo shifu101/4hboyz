@@ -15,16 +15,47 @@ class Loan extends Model
         'disbursed_at',
         'employee_id',
         'loan_provider_id',
-        'loan'
+        'loan',
     ];
 
-    public function employee(){
+    protected $appends = ['eventualPay', 'currentBalance'];
+
+    // Relationship with Employee
+    public function employee()
+    {
         return $this->hasOne('App\Models\Employee', 'id', 'employee_id');
     }
 
-    public function loanProvider(){
+    // Relationship with LoanProvider
+    public function loanProvider()
+    {
         return $this->hasOne('App\Models\LoanProvider', 'id', 'loan_provider_id');
     }
+
+    // Relationship with Repayment
+    public function repayments()
+    {
+        return $this->hasMany('App\Models\Repayment', 'loan_id');
+    }
+
+    public function getEventualPayAttribute()
+    {
+        $employee = $this->employee;
+        if ($employee && $employee->company) {
+            $percentage = $employee->company->percentage;
+            return round($this->amount + ($this->amount * $percentage / 100), 2);
+        }
+    
+        return round($this->amount, 2);
+    }
+    
+    public function getCurrentBalanceAttribute()
+    {
+        $totalRepayments = $this->repayments()->sum('amount');
+    
+        return round($this->eventualPay - $totalRepayments, 2);
+    }
+    
 
     protected static function boot()
     {

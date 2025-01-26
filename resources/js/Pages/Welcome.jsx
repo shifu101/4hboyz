@@ -11,10 +11,10 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
             <PrimeReactProvider>
                 <LayoutProvider>
             <Head title="Welcome" />
-            <div className="relative sm:flex sm:justify-center sm:items-center min-h-screen bg-dots-darker bg-center bg-gray-100 dark:bg-dots-lighter dark:bg-gray-900 selection:bg-red-500 selection:text-white">
+            <div className="relative sm:flex sm:justify-center min-h-screen bg-dots-darker bg-center bg-gray-100 dark:bg-dots-lighter dark:bg-gray-900 selection:bg-red-500 selection:text-white">
                 <div className="sm:fixed sm:top-0 sm:left-0 p-6">
 
-                    <div className="flex align-items-center">
+                    <div className="flex align-items-center container mx-auto">
                         <img src={`/images/logo/logo.png`} width="100.22px" height={'35px'} alt="logo" className="mr-3"/>
 
                         {auth.user ? (
@@ -45,19 +45,20 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                 </div>
 
 
-                <div className="grid grid-nogutter surface-0 text-800">
+                <div className="grid grid-nogutter surface-0 text-800 overflow-hidden">
                     <div className="col-12 md:col-6 p-6 text-center md:text-left flex align-items-center ">
                         <section>
-                            <span className="block text-6xl font-bold mb-1">Create the dashboard</span>
-                            <div className="text-6xl text-primary font-bold mb-3">your clients deserve to see</div>
-                            <p className="mt-0 mb-4 text-700 line-height-3">Craft a visually stunning and user-centric dashboard that showcases the information your clients deserve with bold, impactful design elements.</p>
-
-                            <Button label="Learn More" type="button" className="mr-3 p-button-raised" />
-                            <Button label="Live Demo" type="button" className="p-button-outlined" />
+                            <span className="block text-5xl font-bold mb-1">End month seems far and in need of urgent loans?</span>
+                            <div className="text-5xl text-primary font-bold mb-3">You are at the right place!</div>
+                            <p className="text-lg text-700 leading-relaxed mb-5">
+                                Discover a seamless and reliable way to access loans tailored to your needs. With our platform, you can find the perfect financial solution in no time.
+                            </p>
+                            <Button label="Learn More" type="button" className="mr-3 p-button-raised text-gray-700 hover:text-white" />
+                            <Button label="Get started" type="button" className="p-button-outlined" />
                         </section>
                     </div>
                     <div className="col-12 md:col-6 overflow-hidden">
-                        <img src="/images/hero/hero-1.png" alt="hero-1" className="md:ml-auto block md:h-full" style={{ clipPath: 'polygon(8% 0, 100% 0%, 100% 100%, 0 100%)' }} />
+                        <img src="/images/loan.jpg" alt="hero-1" className="md:ml-auto block object-cover md:h-full" style={{ clipPath: 'polygon(8% 0, 100% 0%, 100% 100%, 0 100%)' }} />
                     </div>
                 </div>
 

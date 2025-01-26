@@ -9,10 +9,11 @@ import { usePage } from '@inertiajs/react';
 
 const Dashboard = ({ auth }) => {
     // Get data from the page props
-    const { companyCount, activeLoansCount, inactiveLoansCount, repaidLoansValue, loanTrends, repaymentTrends } = usePage().props;
+    const { companyCount, activeLoansCount, inactiveLoansCount, repaidLoansValue,activeLoansValue, inactiveLoansValue, loanTrends, repaymentTrends, employee } = usePage().props;
     
     const [lineOptions, setLineOptions] = useState({});
     const { layoutConfig } = useContext(LayoutContext);
+    const roleId = auth.user?.role_id;
 
     const applyLightTheme = () => {
         const lineOptions = {
@@ -114,6 +115,7 @@ const Dashboard = ({ auth }) => {
     return (
         <Layout>
             <div className="grid">
+                {roleId === 1 && 
                 <DashboardInfoCard
                     title="Companies"
                     value={companyCount}
@@ -121,18 +123,36 @@ const Dashboard = ({ auth }) => {
                     iconColor="blue"
                     descriptionValue="Total Companies"
                     descriptionText="in the system"
-                />
+                />}
+                 {roleId === 3 && 
+                <DashboardInfoCard
+                    title="Salary"
+                    value={employee?.salary}
+                    icon="map-marker"
+                    iconColor="blue"
+                    descriptionValue="The salary"
+                    descriptionText="you earn"
+                />}
+                {roleId === 3 && 
+                <DashboardInfoCard
+                    title="Loan limit"
+                    value={employee?.loan_limit}
+                    icon="map-marker"
+                    iconColor="blue"
+                    descriptionValue="The maximum amount"
+                    descriptionText="you can borrow"
+                />}
                 <DashboardInfoCard
                     title="Active Loans"
-                    value={activeLoansCount}
+                    value={`${activeLoansCount} (${activeLoansValue})`}
                     icon="map-marker"
                     iconColor="orange"
                     descriptionValue="Active Loans"
                     descriptionText="currently active"
                 />
                 <DashboardInfoCard
-                    title="Inactive Loans"
-                    value={inactiveLoansCount}
+                    title="Declined Loans"
+                    value={`${inactiveLoansCount} (${inactiveLoansValue})`}
                     icon="inbox"
                     iconColor="cyan"
                     descriptionValue="Inactive Loans"
@@ -146,7 +166,9 @@ const Dashboard = ({ auth }) => {
                     descriptionValue="Total Repaid"
                     descriptionText="loan repayments"
                 />
+            </div>
 
+            <div className="grid">
                 <div className="col-12 xl:col-6">
                     <div className="card">
                         <h5>Loan and Repayment Trends</h5>

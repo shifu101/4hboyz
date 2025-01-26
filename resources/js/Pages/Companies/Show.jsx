@@ -5,7 +5,7 @@ import Layout from "@/Layouts/layout/layout.jsx";
 const Show = ({ company }) => {
   return (
     <Layout>
-      <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-6">
+      <div className="max-w-4xl bg-white shadow-md rounded-lg p-6">
         <h1 className="text-2xl font-bold text-gray-800 text-left mb-6">Company Details</h1>
         
         <div className="space-y-4">
