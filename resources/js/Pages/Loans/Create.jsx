@@ -22,7 +22,7 @@ const Create = () => {
 
     const { data, setData, post, errors } = useForm({
       amount: '',
-      status: 'Active',
+      status: 'Pending',
       disbursed_at: new Date().toISOString().slice(0, 19).replace('T', ' '),
       employee_id: '',
       loan_provider_id: 1,

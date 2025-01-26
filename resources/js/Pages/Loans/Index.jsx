@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Link, usePage, router } from '@inertiajs/react';
+import { Link, usePage, router, useForm } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
 import Swal from 'sweetalert2';
-import { FileText, FileSpreadsheet, Plus, Filter, X } from 'lucide-react';
+import { FileText, FileSpreadsheet, Plus, Filter, X, Check, XCircle } from 'lucide-react';
 import { jsPDF } from "jspdf";
 import "jspdf-autotable"; 
 import * as XLSX from 'xlsx';
@@ -16,6 +16,10 @@ const Index = () => {
   const [loading, setLoading] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const roleId = auth.user?.role_id;
+
+  const { data, setData, put, processing } = useForm({
+    status: ''
+  });
 
   // Function to handle delete confirmation
   const handleDelete = (loanId) => {
@@ -90,6 +94,43 @@ const Index = () => {
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, 'Loans');
       XLSX.writeFile(wb, 'loans_report.xlsx');
+    };
+
+    const handleStatusUpdate = (e, id, status) => {
+      e.preventDefault();
+      
+      // Create a form data object with the specific status
+      const formData = {
+        _method: 'PUT', // Laravel method spoofing for PUT request
+        status: status,
+        id: id
+      };
+    
+      Swal.fire({
+        title: `Are you sure you want to ${status.toLowerCase()} this loan?`,
+        text: 'This action will update the loan status.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: status === 'Approved' ? '#3085d6' : '#d33',
+        cancelButtonColor: '#gray',
+        confirmButtonText: `Yes, ${status.toLowerCase()} it!`,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          router.post(route('loans.update', id), formData, {
+            onSuccess: () => {
+              Swal.fire(
+                `${status}!`, 
+                `The loan has been ${status.toLowerCase()}.`, 
+                'success'
+              );
+            },
+            onError: (err) => {
+              console.error(`${status} error:`, err);
+              Swal.fire('Error', 'There was a problem updating the loan status.', 'error');
+            }
+          });
+        }
+      });
     };
 
 
@@ -212,7 +253,7 @@ const Index = () => {
                         >
                           View
                         </Link>
-                        {roleId !== 3 &&
+                        {roleId === 1 &&
                         <>
                           <Link
                             href={route('loans.edit', loan.id)}
@@ -235,6 +276,24 @@ const Index = () => {
                           </form>}
                           </>
                         }
+                        {(loan.status === 'Pending' && roleId !== 3) && (
+                          <>
+                            <button
+                              onClick={(e) => handleStatusUpdate(e, loan.id, 'Approved')}
+                              disabled={processing}
+                              className="inline-flex items-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-200 disabled:opacity-50"
+                            >
+                              <Check className="w-4 h-4 mr-2" /> Approve
+                            </button>
+                            <button
+                              onClick={(e) => handleStatusUpdate(e, loan.id, 'Declined')}
+                              disabled={processing}
+                              className="inline-flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-200 disabled:opacity-50"
+                            >
+                              <XCircle className="w-4 h-4 mr-2" /> Decline
+                            </button>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>

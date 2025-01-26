@@ -18,7 +18,7 @@ class LoanFactory extends Factory
     {
         return [
             'amount' => rand(2, 100099),
-            'status' => 'Active',
+            'status' => 'Pending',
             'employee_id' => rand(1, 9),
             'disbursed_at' => now(),
             'loan_provider_id' => 1
