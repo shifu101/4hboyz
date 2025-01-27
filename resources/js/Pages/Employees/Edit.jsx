@@ -117,8 +117,8 @@ const EditEmployee = ({ errors }) => {
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
               <option value="">Select approval...</option>
-              <option value="Yes">Yes</option>
-              <option value="No">No</option>
+              <option value="Approved">Approved</option>
+              <option value="Declined">Declined</option>
             </select>
             {errors.approved && <div className="text-sm text-red-500 mt-1">{errors.approved}</div>}
           </div>

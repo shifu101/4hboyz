@@ -19,6 +19,8 @@ class DashboardController extends Controller
 
         $currentYear = Carbon::now()->year;
 
+        $companies = Company::all();
+
         $user = Auth::user();
 
 
@@ -154,7 +156,7 @@ class DashboardController extends Controller
 
             $employee = Employee::where('user_id', '=', $user->id)->first();
 
-            if ($employee && $employee->approved != 'Yes') {
+            if ($employee && $employee->approved != 'Approved') {
                 return Inertia::render('Employees/ProcessedRequest', [
                     'companies' => $companies,
                     'user' => $user,

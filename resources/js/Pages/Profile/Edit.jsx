@@ -29,9 +29,10 @@ export default function Edit({ auth, mustVerifyEmail, status, employee }) {
                     <DeleteUserForm className="max-w-xl" />
                 </div>}
 
+                {employee &&
                 <div className="card">
                     <Documents employee={employee} />
-                </div>
+                </div>}
             </div>
         </Layout>
     );

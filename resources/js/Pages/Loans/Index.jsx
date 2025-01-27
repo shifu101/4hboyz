@@ -11,14 +11,13 @@ import DateRangePicker from 'react-daterange-picker';
 import 'react-daterange-picker/dist/css/react-calendar.css';
 
 const Index = () => {
-  const { loans, flash, pagination, auth } = usePage().props; 
+  const { loans, flash, pagination, auth, params } = usePage().props; 
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const roleId = auth.user?.role_id;
   const [selectedLoans, setSelectedLoans] = useState([]);
-  const { params } = usePage();
-    const status = params?.status || 'All';
+  const status = params?.status || 'All';
 
   const { processing } = useForm({
     status: ''

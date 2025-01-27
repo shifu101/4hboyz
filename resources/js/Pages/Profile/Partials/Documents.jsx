@@ -3,10 +3,10 @@ import { usePage } from '@inertiajs/react';
 
 const Documents = ({ employee }) => {
     const [previews] = useState({
-        id_front: employee.id_front ? `/storage/${employee?.id_front}` : null,
-        id_back: employee.id_back ? `/storage/${employee?.id_back}` : null,
-        passport_front: employee.passport_front ? `/storage/${employee?.passport_front}` : null,
-        passport_back: employee.passport_back ? `/storage/${employee?.passport_back}` : null,
+        id_front: employee?.id_front ? `/storage/${employee?.id_front}` : null,
+        id_back: employee?.id_back ? `/storage/${employee?.id_back}` : null,
+        passport_front: employee?.passport_front ? `/storage/${employee?.passport_front}` : null,
+        passport_back: employee?.passport_back ? `/storage/${employee?.passport_back}` : null,
     });
 
     return (
