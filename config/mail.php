@@ -1,3 +1,5 @@
+<?php
+
 return [
 
     /*
@@ -35,11 +37,11 @@ return [
         'smtp' => [
             'transport' => 'smtp',
             'url' => env('MAIL_URL'),
-            'host' => env('MAIL_HOST', 'mail.vermsol.co.ke'), // Your SMTP server
-            'port' => env('MAIL_PORT', 465), // Port for SSL
-            'encryption' => env('MAIL_ENCRYPTION', 'ssl'), // SSL encryption
-            'username' => env('MAIL_USERNAME', 'info@vermsol.co.ke'), // Your email address
-            'password' => env('MAIL_PASSWORD'), // Your email password
+            'host' => env('MAIL_HOST', 'smtp.mailgun.org'),
+            'port' => env('MAIL_PORT', 587),
+            'encryption' => env('MAIL_ENCRYPTION', 'tls'),
+            'username' => env('MAIL_USERNAME'),
+            'password' => env('MAIL_PASSWORD'),
             'timeout' => null,
             'local_domain' => env('MAIL_EHLO_DOMAIN'),
         ],
@@ -50,10 +52,16 @@ return [
 
         'mailgun' => [
             'transport' => 'mailgun',
+            // 'client' => [
+            //     'timeout' => 5,
+            // ],
         ],
 
         'postmark' => [
             'transport' => 'postmark',
+            // 'client' => [
+            //     'timeout' => 5,
+            // ],
         ],
 
         'sendmail' => [
@@ -91,8 +99,8 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'info@vermsol.co.ke'), // Use your email address
-        'name' => env('MAIL_FROM_NAME', 'Vermsol'),
+        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
+        'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
     /*
@@ -115,4 +123,3 @@ return [
     ],
 
 ];
-
