@@ -23,7 +23,7 @@ class DashboardController extends Controller
 
 
         $activeLoansQuery = Loan::with(['loanProvider', 'employee.user', 'employee.company'])
-        ->where('status', '!=', 'Paid');
+        ->where('status', '=', 'Approved');
     
         if ($user->role_id == 2) {
             $activeLoansQuery->whereHas('employee.user', function ($q) use ($user) {
@@ -88,9 +88,11 @@ class DashboardController extends Controller
 
         // Get loan trends for all months
         $loanTrends = collect(range(1, 12))->map(function ($month) use ($currentYear, $user) {
-            $loanQuery = Loan::with(['loanProvider', 'employee.user', 'employee.company'])->whereYear('created_at', $currentYear)
+            $loanQuery = Loan::with(['loanProvider', 'employee.user', 'employee.company'])
+                ->whereYear('created_at', $currentYear)
+                ->where('status', '!=', 'Declined')
                 ->whereMonth('created_at', $month);
-
+        
             if ($user->role_id == 2) {
                 $loanQuery->whereHas('employee.user', function ($q) use ($user) {
                     $q->where('company_id', '=', $user->company_id);
@@ -100,14 +102,19 @@ class DashboardController extends Controller
                     $q->where('id', '=', $user->id);
                 });
             }
-
-            $count = $loanQuery->count();
-
+        
+            // Fetch loans and compute the total of eventualPay
+            $loans = $loanQuery->get();
+            $eventualPaySum = $loans->sum(function ($loan) {
+                return $loan->eventualPay; // Access the computed attribute
+            });
+        
             return [
                 'month' => Carbon::create($currentYear, $month, 1)->format('M'), // Convert to month name
-                'loan_count' => $count
+                'loan_count' => $eventualPaySum
             ];
         });
+        
 
         // Get repayment trends for all months
         $repaymentTrends = collect(range(1, 12))->map(function ($month) use ($currentYear, $user) {

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\Employee;
 
 class ProfileController extends Controller
 {
@@ -18,11 +19,20 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): Response
     {
+        $user = Auth::user();
+        $employee = null; 
+    
+        if ($user->role_id == 3) {
+            $employee = Employee::where('user_id', '=', $user->id)->first();
+        }
+    
         return Inertia::render('Profile/Edit', [
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
+            'employee' => $employee, 
         ]);
     }
+    
 
     /**
      * Update the user's profile information.

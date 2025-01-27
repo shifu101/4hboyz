@@ -22,10 +22,11 @@ class UpdateLoanRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'nullable',
-            'email' => 'nullable',
-            'phone' => 'nullable',
-            'api_url' => 'nullable'
+            'amount' => 'nullable',
+            'status' => 'nullable',
+            'disbursed_at' => 'nullable',
+            'employee_id' => 'nullable',
+            'loan_provider_id' => 'nullable'
         ];
     }
 }

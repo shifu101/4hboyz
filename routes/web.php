@@ -47,6 +47,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('employees', EmployeeController::class);
     Route::resource('loans', LoanController::class);
+    Route::post('/loans/bulk-update', [LoanController::class, 'bulkUpdate'])->name('loans.bulkUpdate');
     Route::resource('loanProviders', LoanProviderController::class);
     Route::resource('notifications', NotificationController::class);
     Route::resource('repayments', RepaymentController::class);

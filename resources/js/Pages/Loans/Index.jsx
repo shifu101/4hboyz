@@ -16,8 +16,11 @@ const Index = () => {
   const [loading, setLoading] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const roleId = auth.user?.role_id;
+  const [selectedLoans, setSelectedLoans] = useState([]);
+  const { params } = usePage();
+    const status = params?.status || 'All';
 
-  const { data, setData, put, processing } = useForm({
+  const { processing } = useForm({
     status: ''
   });
 
@@ -133,6 +136,50 @@ const Index = () => {
       });
     };
 
+    const handleSelectLoan = (id) => {
+      setSelectedLoans((prev) =>
+        prev.includes(id) ? prev.filter((loanId) => loanId !== id) : [...prev, id]
+      );
+    };
+  
+    const handleSelectAll = () => {
+      if (selectedLoans.length === loans.length) {
+        setSelectedLoans([]);
+      } else {
+        setSelectedLoans(loans.map((loan) => loan.id));
+      }
+    };
+  
+    const handleBulkAction = () => {
+      if (selectedLoans.length === 0) {
+        Swal.fire('No loans selected', 'Please select at least one loan.', 'warning');
+        return;
+      }
+  
+      Swal.fire({
+        title: 'Are you sure?',
+        text: `This will mark ${selectedLoans.length} loan(s) as Paid and create repayment records.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, mark as Paid!',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          router.post(route('loans.bulkUpdate'), { loanIds: selectedLoans }, {
+            onSuccess: () => {
+              Swal.fire('Success', 'Loans marked as Paid successfully!', 'success');
+              setSelectedLoans([]);
+            },
+            onError: (err) => {
+              console.error('Bulk update error:', err);
+              Swal.fire('Error', 'Failed to update loans.', 'error');
+            },
+          });
+        }
+      });
+    };
+
 
   return (
     <Layout>
@@ -162,7 +209,7 @@ const Index = () => {
           `}>
             <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
               <h1 className="text-2xl font-semibold text-gray-900 w-full sm:w-auto my-auto">
-                Loans Directory
+              {status} Loans Directory
               </h1>
               
               <div className="flex flex-wrap justify-center gap-2 w-full sm:w-auto">
@@ -195,6 +242,13 @@ const Index = () => {
                     Excel
                   </span>
                 </button>
+                {roleId === 1 &&
+                <button
+                  onClick={handleBulkAction}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Mark as Paid
+                </button>}
               </div>
           </div>
 
@@ -224,7 +278,15 @@ const Index = () => {
           <table className="min-w-full table-auto">
             <thead className="bg-gray-100">
               <tr>
-              <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Loan number</th>
+                {roleId === 1 &&
+                <th className="px-4 py-3">
+                  <input
+                    type="checkbox"
+                    checked={selectedLoans.length === loans.length}
+                    onChange={handleSelectAll}
+                  />
+                </th>}
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Loan number</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Employee Name</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Amount</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Eventual pay</th>
@@ -238,6 +300,14 @@ const Index = () => {
               {loans.length > 0 ? (
                 loans.map((loan) => (
                   <tr key={loan.id}>
+                      {roleId === 1 &&
+                    <td className="px-4 py-4">
+                      <input
+                        type="checkbox"
+                        checked={selectedLoans.includes(loan.id)}
+                        onChange={() => handleSelectLoan(loan.id)}
+                      />
+                    </td>}
                     <td className="px-6 py-4 whitespace-nowrap">{loan.number}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{loan.employee?.user?.name}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{loan.amount}</td>

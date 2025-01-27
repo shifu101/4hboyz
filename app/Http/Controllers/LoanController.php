@@ -7,10 +7,12 @@ use App\Http\Requests\UpdateLoanRequest;
 use App\Models\Loan;
 use App\Models\Employee;
 use App\Models\Company;
+use App\Models\Repayment;
 use App\Models\LoanProvider;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class LoanController extends Controller
 {
@@ -18,7 +20,6 @@ class LoanController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
-    
         $query = Loan::with(['loanProvider', 'employee.user', 'employee.company']);
     
         // Filter based on role
@@ -30,6 +31,12 @@ class LoanController extends Controller
             $query->whereHas('employee.user', function ($q) use ($user) {
                 $q->where('id', '=', $user->id);
             });
+        }
+    
+        // Filter by status
+        if ($request->has('status')) {
+            $status = $request->input('status');
+            $query->where('status', $status);
         }
     
         // Search functionality
@@ -60,7 +67,6 @@ class LoanController extends Controller
                 });
             });
         }
-        
     
         // Paginate results
         $loans = $query->paginate(10);
@@ -71,6 +77,7 @@ class LoanController extends Controller
             'flash' => session('flash'),
         ]);
     }
+    
     
     
 
@@ -99,6 +106,38 @@ class LoanController extends Controller
 
         return redirect()->route('loans.index')->with('success', 'Loan created successfully.');
     }
+
+    public function bulkUpdate(Request $request)
+    {
+        $validated = $request->validate([
+            'loanIds' => 'required|array',
+            'loanIds.*' => 'exists:loans,id',
+        ]);
+    
+        $loanIds = $validated['loanIds'];
+    
+        DB::transaction(function () use ($loanIds) {
+            $loans = Loan::whereIn('id', $loanIds)->get();
+    
+            foreach ($loans as $loan) {
+                $loan->status = ($loan->currentBalance > 0 && $loan->currentBalance < $loan->eventualPay)
+                    ? 'Partially Paid'
+                    : 'Paid';
+                $loan->save();
+
+                if ($loan->currentBalance > 0) {
+                    Repayment::create([
+                        'loan_id' => $loan->id,
+                        'amount' => $loan->currentBalance,
+                        'status' => 'Paid',
+                    ]);
+                }
+            }
+        });
+
+        return redirect()->route('loans.index')->with('success', 'Loan paid successfully.');
+    }
+    
 
 
     public function show(Loan $loan)
