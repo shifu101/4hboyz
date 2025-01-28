@@ -11,6 +11,9 @@ use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Providers\RouteServiceProvider;
+use App\Mail\EmployeeApprovalMail;
+use App\Mail\EmployeeDeclinedMail;
+use Illuminate\Support\Facades\Mail;
 
 class EmployeeController extends Controller
 {
@@ -131,14 +134,15 @@ class EmployeeController extends Controller
     {
         $validatedData = $request->validated();
         $fileFields = ['id_front', 'id_back', 'passport_front', 'passport_back'];
-        
+    
+        $oldApprovedStatus = $employee->approved;
+        $newApprovedStatus = $request->input('approved');
+    
         foreach ($fileFields as $field) {
             if ($request->hasFile($field)) {
-                // Delete old file if it exists
                 if ($employee->$field) {
                     \Storage::disk('public')->delete($employee->$field);
                 }
-                // Store new file
                 $file = $request->file($field);
                 $path = $file->store('employee_documents', 'public');
                 $validatedData[$field] = $path;
@@ -147,8 +151,19 @@ class EmployeeController extends Controller
     
         $employee->update($validatedData);
     
+        if ($oldApprovedStatus !== $newApprovedStatus) {
+            if ($newApprovedStatus === 'Approved') {
+                // Send approval email
+                Mail::to($employee->user->email)->send(new EmployeeApprovalMail($employee));
+            } elseif ($newApprovedStatus === 'Declined') {
+                // Send declined email
+                Mail::to($employee->user->email)->send(new EmployeeDeclinedMail($employee));
+            }
+        }
+    
         return redirect()->route('employees.index')->with('success', 'Employee updated successfully.');
     }
+    
 
 
     public function destroy(Employee $employee)

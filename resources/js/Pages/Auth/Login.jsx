@@ -34,7 +34,7 @@ export default function Login({status, canResetPassword}) {
                     alt="hyper" 
                     className="h-12 mb-3"
                 />
-                <div className="w-full max-w-md p-6 rounded-lg shadow-md">
+                <div className="w-full p-6 rounded-lg shadow-md">
                     <div className="text-center mb-5">
                         <h2 className="text-3xl font-medium text-gray-900 mb-3">Welcome Back</h2>
                         <p className="text-gray-600">
