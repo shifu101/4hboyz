@@ -10,6 +10,9 @@ use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+use App\Mail\LoanRepaymentMail;
+use Illuminate\Support\Facades\Mail;
+
 class RepaymentController extends Controller
 {
 
@@ -81,10 +84,25 @@ class RepaymentController extends Controller
 
     public function store(StoreRepaymentRequest $request)
     {
-        Repayment::create($request->validated());
-
+        // Create repayment and load related data
+        $repayment = Repayment::create($request->validated());
+    
+        // Ensure related data is loaded
+        $repayment->load([
+            'loan',
+            'loan.loanProvider',
+            'loan.employee.user',
+            'loan.employee.company',
+        ]);
+    
+        // Send the repayment email
+        Mail::to($repayment->loan->employee->user->email)
+            ->send(new LoanRepaymentMail($repayment));
+    
         return redirect()->route('repayments.index')->with('success', 'Repayment created successfully.');
     }
+    
+    
 
 
     public function show(Repayment $repayment)

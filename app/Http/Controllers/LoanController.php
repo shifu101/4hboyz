@@ -19,6 +19,8 @@ use App\Mail\LoanApprovalMail;
 use App\Mail\LoanDeclinedMail;
 use Illuminate\Support\Facades\Mail;
 
+use App\Mail\LoanRepaymentMail;
+
 class LoanController extends Controller
 {
 
@@ -139,11 +141,21 @@ class LoanController extends Controller
                 $loan->save();
 
                 if ($loan->currentBalance > 0) {
-                    Repayment::create([
+                    $repayment = Repayment::create([
                         'loan_id' => $loan->id,
                         'amount' => $loan->currentBalance,
                         'status' => 'Paid',
                     ]);
+
+                    $repayment->load([
+                        'loan',
+                        'loan.loanProvider',
+                        'loan.employee.user',
+                        'loan.employee.company',
+                    ]);
+
+                    Mail::to($repayment->loan->employee->user->email)
+                    ->send(new LoanRepaymentMail($repayment));
                 }
             }
         });
