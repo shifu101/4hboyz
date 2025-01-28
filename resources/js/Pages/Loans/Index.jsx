@@ -345,24 +345,24 @@ const Index = () => {
                           </form>}
                           </>
                         }
-                        {(loan.status === 'Pending' && roleId !== 3) && (
-                          <>
-                            <button
-                              onClick={(e) => handleStatusUpdate(e, loan.id, 'Approved')}
-                              disabled={processing}
-                              className="inline-flex items-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-200 disabled:opacity-50"
-                            >
-                              <Check className="w-4 h-4 mr-2" /> Approve
-                            </button>
-                            <button
-                              onClick={(e) => handleStatusUpdate(e, loan.id, 'Declined')}
-                              disabled={processing}
-                              className="inline-flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-200 disabled:opacity-50"
-                            >
-                              <XCircle className="w-4 h-4 mr-2" /> Decline
-                            </button>
-                          </>
-                        )}
+                        <>
+                        {((loan.status === 'Pending' || loan.status === 'Declined') && roleId !== 3) && (
+                          <button
+                            onClick={(e) => handleStatusUpdate(e, loan.id, 'Approved')}
+                            disabled={processing}
+                            className="inline-flex items-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-200 disabled:opacity-50"
+                          >
+                            <Check className="w-4 h-4 mr-2" /> Approve
+                          </button>)}
+                          {((loan.status === 'Pending' || loan.status === 'Approved') && roleId !== 3) && (
+                          <button
+                            onClick={(e) => handleStatusUpdate(e, loan.id, 'Declined')}
+                            disabled={processing}
+                            className="inline-flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-200 disabled:opacity-50"
+                          >
+                            <XCircle className="w-4 h-4 mr-2" /> Decline
+                          </button>)}
+                        </>
                       </div>
                     </td>
                   </tr>

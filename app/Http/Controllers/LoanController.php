@@ -13,6 +13,11 @@ use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Mail\LoanRequestMail;
+
+use App\Mail\LoanApprovalMail;
+use App\Mail\LoanDeclinedMail;
+use Illuminate\Support\Facades\Mail;
 
 class LoanController extends Controller
 {
@@ -102,8 +107,15 @@ class LoanController extends Controller
 
     public function store(StoreLoanRequest $request)
     {
-
-        Loan::create($request->validated());
+        $loan = Loan::create($request->validated());
+    
+        if ($loan->status === 'Pending') {
+            $employee = Employee::find($loan->employee_id); 
+    
+            if ($employee) {
+                Mail::to($employee->user->email)->send(new LoanRequestMail($employee));
+            }
+        }
 
         return redirect()->route('loans.index')->with('success', 'Loan created successfully.');
     }
@@ -164,10 +176,23 @@ class LoanController extends Controller
 
     public function update(UpdateLoanRequest $request, Loan $loan)
     {
-        $loan->update($request->validated());
+        $oldStatus = $loan->status;
+    
+        $loan->load(['loanProvider', 'employee.user', 'employee.company']);
 
+        $loan->update($request->validated());
+    
+        if ($loan->status !== $oldStatus) {
+            if ($loan->status === 'Approved') {
+                Mail::to($loan->employee->user->email)->send(new LoanApprovalMail($loan));
+            } elseif ($loan->status === 'Declined') {
+                Mail::to($loan->employee->user->email)->send(new LoanDeclinedMail($loan));
+            }
+        }
+    
         return redirect()->route('loans.index')->with('success', 'Loan updated successfully.');
     }
+    
 
 
     public function destroy(Loan $loan)

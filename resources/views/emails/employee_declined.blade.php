@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -17,10 +18,10 @@
     </style>
 </head>
 <body>
-    <h2>Dear {{ $employee->user->name }},</h2>
-    <p>We regret to inform you that your details have been declined after review.</p>
-    <p>Please feel free to reach out if you would like further information or have any questions regarding this decision.</p>
-    <p>We appreciate your understanding, and thank you for your time and effort.</p>
+    <h2>Dear {{ $loan->employee->user->name }},</h2>
+    <p>We regret to inform you that after a review, your loan request has been declined.</p>
+    <p>If you have any questions or need more information regarding this decision, feel free to reach out to us. We are happy to assist you in understanding the reasoning behind our decision.</p>
+    <p>We appreciate your understanding and thank you for your time and effort.</p>
     <p>Best regards,</p>
     <p><strong>The Vermsol Team</strong></p>
 </body>
