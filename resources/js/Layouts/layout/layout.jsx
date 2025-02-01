@@ -12,7 +12,7 @@ import AppTopbar from "@/Layouts/layout/AppTopbar.jsx";
 import AppConfig from "@/Layouts/layout/AppConfig.jsx";
 import { LayoutContext } from "./context/layoutcontext";
 import { PrimeReactContext } from "primereact/api";
-// import { usePathname, useSearchParams } from "next/navigation";
+import { useState } from "react";
 
 const Layout = ({ children }) => {
     const { layoutConfig, layoutState, setLayoutState } = useContext(LayoutContext);
@@ -20,29 +20,52 @@ const Layout = ({ children }) => {
     const topbarRef = useRef(null);
     const sidebarRef = useRef(null);
 
-    const [bindMenuOutsideClickListener, unbindMenuOutsideClickListener] =
-        useEventListener({
-            type: "click",
-            listener: (event) => {
-                const isOutsideClicked = !(
-                    sidebarRef.current?.isSameNode(event.target) ||
-                    sidebarRef.current?.contains(event.target) ||
-                    topbarRef.current?.menubutton?.isSameNode(event.target) ||
-                    topbarRef.current?.menubutton?.contains(event.target)
-                );
-
-                if (isOutsideClicked) {
-                    hideMenu();
-                }
-            },
-        });
+    const [reloaded, setReloaded] = useState(false)
 
     const pathname = route().current();
-    // const searchParams = useSearchParams();
+
+    useEffect(() => {
+        const reloadCSS = () => {
+            const cssLinks = document.querySelectorAll('link[rel="stylesheet"]');
+        
+            cssLinks.forEach((link) => {
+                const newLink = document.createElement("link");
+                newLink.rel = "stylesheet";
+                newLink.href = link.href.split("?")[0] + "?v=" + new Date().getTime();
+                newLink.onload = () => link.remove(); 
+        
+                document.head.appendChild(newLink);
+            });
+        };
+        
+
+        reloadCSS();
+    
+    }, [pathname]);
+
     useEffect(() => {
         hideMenu();
         hideProfileMenu();
     }, [pathname]);
+
+    const [
+        bindMenuOutsideClickListener,
+        unbindMenuOutsideClickListener,
+    ] = useEventListener({
+        type: "click",
+        listener: (event) => {
+            const isOutsideClicked = !(
+                sidebarRef.current?.isSameNode(event.target) ||
+                sidebarRef.current?.contains(event.target) ||
+                topbarRef.current?.menubutton?.isSameNode(event.target) ||
+                topbarRef.current?.menubutton?.contains(event.target)
+            );
+
+            if (isOutsideClicked) {
+                hideMenu();
+            }
+        },
+    });
 
     const [
         bindProfileMenuOutsideClickListener,

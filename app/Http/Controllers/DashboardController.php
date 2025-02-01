@@ -23,6 +23,13 @@ class DashboardController extends Controller
 
         $user = Auth::user();
 
+        if ($user->email_verified_at == null) {
+            return Inertia::render('Auth/VerifyEmail', [
+                'companies' => $companies,
+                'user' => $user
+            ]);
+        }
+
 
         $activeLoansQuery = Loan::with(['loanProvider', 'employee.user', 'employee.company'])
         ->where('status', '=', 'Approved');

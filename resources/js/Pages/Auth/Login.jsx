@@ -28,11 +28,11 @@ export default function Login({status, canResetPassword}) {
 
             {status && <div className="mb-4 text-sm font-medium text-green-600">{status}</div>}
 
-            <div className="flex flex-col items-center justify-center">
+            <div className="flex min-h-screen max-w-4xl mx-auto flex-col items-center justify-center py-[200px]">
                 <img 
-                    src="/images/logo/logo.png" 
+                    src="/images/logo-dark.png" 
                     alt="hyper" 
-                    className="h-12 mb-3"
+                    className="h-14 mb-3"
                 />
                 <div className="w-full p-6 rounded-lg shadow-md">
                     <div className="text-center mb-5">
@@ -111,13 +111,13 @@ export default function Login({status, canResetPassword}) {
                                 )}
                             </div>
 
-                            <PrimaryButton 
+                            <button 
                                 type="submit" 
-                                className="flex w-full text-center" 
                                 disabled={processing}
+                                className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
                             >
-                                <span className='mx-auto'>Sign In</span>
-                            </PrimaryButton>
+                                Login
+                            </button>
                         </div>
                     </form>
                 </div>

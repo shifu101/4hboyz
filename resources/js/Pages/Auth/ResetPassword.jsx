@@ -30,7 +30,8 @@ export default function ResetPassword({ token, email }) {
         <GuestLayout>
             <Head title="Reset Password" />
 
-            <form onSubmit={submit}>
+            <div className='flex flex-col min-h-screen py-[200px]'>
+            <form onSubmit={submit} className='mx-auto max-w-5xl'>
                 <div>
                     <InputLabel htmlFor="email" value="Email" />
 
@@ -85,6 +86,7 @@ export default function ResetPassword({ token, email }) {
                     </PrimaryButton>
                 </div>
             </form>
+            </div>
         </GuestLayout>
     );
 }

@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useForm, Link, Head } from '@inertiajs/react';
 import { CheckCircle } from 'lucide-react';
+import Guest from '@/Layouts/GuestLayout';
 
 export default function Register() {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -24,10 +25,11 @@ export default function Register() {
     };
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center p-4">
+        <Guest>
+        <div className="min-h-screen flex flex-col items-center justify-center px-4 py-[150px]">
             <Head title="Register" />
 
-            <div className="w-full max-w-lg space-y-8">
+            <div className="w-full max-w-4xl space-y-8">
                 <ol className="flex justify-between text-sm font-medium text-gray-500">
                     {[
                         { step: 1, label: 'Account', active: true },
@@ -38,7 +40,7 @@ export default function Register() {
                             key={step} 
                             className={`flex items-center space-x-2 ${active ? 'text-blue-600' : ''}`}
                         >
-                            {active && <CheckCircle className="w-5 h-5" />}
+                            {active && <span className='flex items-center'><CheckCircle className="w-10 h-10" /></span>}
                             <span className='flex items-center'>{step}.</span>
                             <span className='flex items-center'>{label}</span>
                         </li>
@@ -120,5 +122,6 @@ export default function Register() {
                 </div>
             </div>
         </div>
+        </Guest>
     );
 }

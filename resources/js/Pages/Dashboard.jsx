@@ -9,7 +9,7 @@ import { usePage } from '@inertiajs/react';
 
 const Dashboard = ({ auth }) => {
     // Get data from the page props
-    const { companyCount, activeLoansCount, inactiveLoansCount, repaidLoansValue,activeLoansValue, inactiveLoansValue, loanTrends, repaymentTrends, employee } = usePage().props;
+    const { companyCount, activeLoansCount, inactiveLoansCount,reloadPage, repaidLoansValue,activeLoansValue, inactiveLoansValue, loanTrends, repaymentTrends, employee } = usePage().props;
     
     const [lineOptions, setLineOptions] = useState({});
     const { layoutConfig } = useContext(LayoutContext);
@@ -45,6 +45,7 @@ const Dashboard = ({ auth }) => {
         };
         setLineOptions(lineOptions);
     };
+
 
     const applyDarkTheme = () => {
         const lineOptions = {
@@ -111,6 +112,7 @@ const Dashboard = ({ auth }) => {
             }
         ]
     };
+
 
     return (
         <Layout>

@@ -1,10 +1,15 @@
+import Footer from "@/Components/Footer";
+import Header from "@/Components/Header";
+import "../../css/index.css";
+
 export default function Guest({ children }) {
     return (
-        <div className="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-white">
-
-            <div className="w-full sm:max-w-md px-2 md:px-6 my-auto py-4 shadow-md overflow-hidden sm:rounded-lg">
+        <div className="min-h-screen relative">
+            <Header />
+            <div className="w-full guest-layout guestLayout">
                 {children}
             </div>
+            <Footer />
         </div>
     );
 }
