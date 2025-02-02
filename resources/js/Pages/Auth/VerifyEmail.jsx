@@ -18,9 +18,9 @@ export default function VerifyEmail({ status }) {
             <div className='w-full flex flex-col min-h-screen'>
             <div className='w-full flex flex-col py-[200px]'>
 
-                <div className="mb-4 text-sm text-gray-600 max-w-4xl mx-auto">
+                <div className="mb-4 text-sm text-gray-600 max-w-3xl mx-auto">
                     Thanks for signing up! Before getting started, could you verify your email address by clicking on the
-                    link we just emailed to you? If you didn't receive the email, we will gladly send you another.
+                    link we will email to you when you click the send verification code button below?.
                 </div>
 
                 {status === 'verification-link-sent' && (
@@ -31,7 +31,7 @@ export default function VerifyEmail({ status }) {
 
                 <form onSubmit={submit} className='max-w-4xl mx-auto'>
                     <div className="mt-4 flex gap-4 items-center justify-between">
-                        <PrimaryButton disabled={processing}>Resend Verification Email</PrimaryButton>
+                        <button className='bg-black text-white rounded-md hover:bg-green-700 hover:text-white' disabled={processing}>Send Verification Email</button>
 
                         <Link
                             href={route('logout')}

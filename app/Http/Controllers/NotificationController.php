@@ -34,6 +34,8 @@ class NotificationController extends Controller
                   ->orWhere('email', 'LIKE', "%$search%");
             });
         }
+
+        $query->orderBy('created_at', 'desc');
     
         $notifications = $query->paginate(10);
     

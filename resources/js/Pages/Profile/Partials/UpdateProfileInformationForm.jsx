@@ -1,15 +1,20 @@
+import React, { useState } from 'react';
 import InputError from '@/Components/InputError';
 import PrimaryButton from '@/Components/PrimaryButton';
 import { Link, useForm, usePage } from '@inertiajs/react';
 import { Transition } from '@headlessui/react';
 import {InputText} from "primereact/inputtext";
 
-export default function UpdateProfileInformation({ mustVerifyEmail, status, className = '' }) {
+export default function UpdateProfileInformation({ mustVerifyEmail, status, className = '', employee }) {
     const user = usePage().props.auth.user;
 
     const { data, setData, patch, errors, processing, recentlySuccessful } = useForm({
         name: user.name,
         email: user.email,
+    });
+
+    const [previews] = useState({
+        passport_front: employee?.passport_front ? `/storage/${employee?.passport_front}` : null
     });
 
     const submit = (e) => {
@@ -22,6 +27,18 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
         <section className={className}>
             <header>
                 <h2 className="text-lg font-medium">Profile Information</h2>
+
+                {previews.passport_front && (
+                    <div className="card relative flex flex-col">
+                        <img
+                            src={previews.passport_front}
+                            alt="ID Front"
+                            className="w-full h-[20vh] object-cover rounded-md"
+                        />
+                    </div>
+                )}
+
+                <p className="text-lg font-medium">Passport photo</p>
 
                 <p className="mt-1 text-sm text-gray-600">
                     Update your account's profile information and email address.

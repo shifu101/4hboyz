@@ -19,7 +19,7 @@ const ProcessedRequest = () => {
                             href={route('logout')} 
                             method="post" 
                             as="button" 
-                            className="text-sm text-gray-600 hover:text-red-500 transition-colors"
+                            className="text-sm bg-black text-white rounded-md hover:text-red-500 transition-colors"
                         >
                             Logout
                         </Link>

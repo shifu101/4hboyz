@@ -18,7 +18,7 @@ const Show = ({ loan }) => {
             <span className="text-gray-800">{loan.employee?.user?.name}</span>
           </div>
           <div className="flex justify-between">
-            <strong className="text-gray-600">Amount:</strong> 
+            <strong className="text-gray-600">Principle:</strong> 
             <span className="text-gray-800">{loan.amount}</span>
           </div>
           <div className="flex justify-between">
@@ -38,7 +38,7 @@ const Show = ({ loan }) => {
             <span className="text-gray-800">{loan.currentBalance}</span>
           </div>
           <div className="flex justify-between">
-            <strong className="text-gray-600">Eventual pay:</strong> 
+            <strong className="text-gray-600">Loan due:</strong> 
             <span className="text-gray-800">{loan.eventualPay}</span>
           </div>
           <div className="flex justify-between">

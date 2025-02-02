@@ -258,6 +258,8 @@ const Index = () => {
                         >
                          <span className="my-auto px-4 py-2">Delete</span> 
                         </button>}
+                        {employee.salary &&
+                        <>
                         {(employee.approved !== 'Approved' && roleId !== 3) &&
                           <button
                             onClick={(e) => handleApprovedUpdate(e, employee.id, 'Approved')}
@@ -275,7 +277,7 @@ const Index = () => {
                         >
                           <XCircle className="w-4 h-4 mr-2" /> Decline
                         </button>}
-                        
+                        </>}
                       </div>
                     </td>
                   </tr>

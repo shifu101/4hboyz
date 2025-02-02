@@ -24,6 +24,7 @@ class StoreLoanRequest extends FormRequest
         return [
             'amount' => 'required',
             'status' => 'required',
+            'otp' => 'nullable',
             'disbursed_at' => 'nullable',
             'employee_id' => 'nullable',
             'loan_provider_id' => 'nullable'

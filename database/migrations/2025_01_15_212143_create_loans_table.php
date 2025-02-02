@@ -16,6 +16,7 @@ return new class extends Migration
             $table->double('amount')->nullable();
             $table->string('status')->nullable();
             $table->string('number')->nullable();
+            $table->string('otp')->nullable();
             $table->dateTime('disbursed_at')->nullable();
             $table->unsignedBigInteger('employee_id');
             $table->foreign('employee_id')->references('id')->on('employees')->onDelete('cascade');

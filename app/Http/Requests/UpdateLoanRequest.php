@@ -24,6 +24,7 @@ class UpdateLoanRequest extends FormRequest
         return [
             'amount' => 'nullable',
             'status' => 'nullable',
+            'otp' => 'nullable',
             'disbursed_at' => 'nullable',
             'employee_id' => 'nullable',
             'loan_provider_id' => 'nullable'

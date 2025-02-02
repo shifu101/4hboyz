@@ -14,10 +14,10 @@
     </style>
 </head>
 <body>
-    <h2>Welcome to Vermsol, {{ $user->name }}!</h2>
+    <h2>Welcome to Centiflow, {{ $user->name }}!</h2>
     <p>Thank you for registering with us. We're excited to have you on board.</p>
     <p>If you have any questions or need assistance, feel free to contact us at any time.</p>
     <p>Best regards,</p>
-    <p><strong>The Vermsol Team</strong></p>
+    <p><strong>The Centiflow Team</strong></p>
 </body>
 </html>

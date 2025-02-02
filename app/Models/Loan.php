@@ -16,6 +16,7 @@ class Loan extends Model
         'employee_id',
         'loan_provider_id',
         'loan',
+        'otp'
     ];
 
     protected $appends = ['eventualPay', 'currentBalance'];

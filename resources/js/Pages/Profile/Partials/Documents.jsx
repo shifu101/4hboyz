@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { usePage } from '@inertiajs/react';
+import React, { useState } from 'react';
 
 const Documents = ({ employee }) => {
     const [previews] = useState({
         id_front: employee?.id_front ? `/storage/${employee?.id_front}` : null,
         id_back: employee?.id_back ? `/storage/${employee?.id_back}` : null,
-        passport_front: employee?.passport_front ? `/storage/${employee?.passport_front}` : null,
-        passport_back: employee?.passport_back ? `/storage/${employee?.passport_back}` : null,
+        passport_front: employee?.passport_front ? `/storage/${employee?.passport_front}` : null
     });
 
     return (
@@ -43,26 +41,6 @@ const Documents = ({ employee }) => {
                                         className="w-full h-[20vh] object-cover rounded-md"
                                     />
                                     <p>ID back</p>
-                                </div>
-                            )}
-                            {previews.passport_front && (
-                                <div className="card relative flex flex-col">
-                                    <img
-                                        src={previews.passport_front}
-                                        alt="Passport Front"
-                                        className="w-full h-[20vh] object-cover rounded-md"
-                                    />
-                                    <p>Passport front</p>
-                                </div>
-                            )}
-                            {previews.passport_back && (
-                                <div className="card relative flex flex-col">
-                                    <img
-                                        src={previews.passport_back}
-                                        alt="Passport Back"
-                                        className="w-full h-[20vh] object-cover rounded-md"
-                                    />
-                                    <p>Passport back</p>
                                 </div>
                             )}
                         </div>

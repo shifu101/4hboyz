@@ -31,8 +31,17 @@ const Create = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        
+        const loanFloat = selectedEmployee?.loan_limit - selectedEmployee?.total_loan_balance;
+        
+        if (parseFloat(data.amount) > loanFloat) {
+            alert("Loan amount cannot exceed the available loan float.");
+            return;
+        }
+    
         post(route('loans.store'));
     };
+    
 
     const handleEmployeeChange = (selectedOption) => {
         setData('employee_id', selectedOption ? selectedOption.value : ''); 
@@ -110,16 +119,8 @@ const Create = () => {
                     value={selectedEmployee?.loan_limit - selectedEmployee?.total_loan_balance}
                     icon="map-marker"
                     iconColor="blue"
-                    descriptionValue="The value"
-                    descriptionText="of that can still be borrowed"
-                />
-                <DashboardInfoCard
-                    title="New loan repayment amount"
-                    value={parseFloat(((parseFloat(data?.amount) || 0) + (parseFloat(data?.amount) || 0) * (parseFloat(selectedCompany?.percentage) || 0) / 100).toFixed(2))}
-                    icon="map-marker"
-                    iconColor="blue"
-                    descriptionValue="The value"
-                    descriptionText="to pay for this new loan"
+                    descriptionValue="The amount"
+                    descriptionText="you can still borrow"
                 />
                 <DashboardInfoCard
                     title="Loan percentage rate"
@@ -130,9 +131,10 @@ const Create = () => {
                     descriptionText="added to the loan"
                 />
             </div>}
-            <div className="max-w-2xl bg-white p-6 rounded-lg shadow-md my-4">
-                <h1 className="text-3xl font-semibold mb-6">Request for a loan</h1>
-                <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="max-w-full my-4">
+                <h1 className="text-3xl font-semibold">Request for a loan</h1>
+                <div className="grid gap-2">
+                <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-md mt-2">
                     {/* Name Input */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Amount</label>
@@ -143,6 +145,11 @@ const Create = () => {
                             onChange={(e) => setData('amount', e.target.value)}
                             className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         />
+                        {parseFloat(data.amount) > (selectedEmployee?.loan_limit - selectedEmployee?.total_loan_balance) && (
+                            <div className="text-sm text-red-500 mt-1">
+                                Loan amount cannot exceed the available loan float.
+                            </div>
+                        )}
                         {errors.amount && <div className="text-sm text-red-500 mt-1">{errors.amount}</div>}
                     </div>
 
@@ -173,13 +180,26 @@ const Create = () => {
                     </div>}
 
                     {/* Submit Button */}
-                    <button
-                        type="submit"
-                        className="w-full mt-4 bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    >
-                        Request for a loan
-                    </button>
+                    {parseFloat(data.amount) <= (selectedEmployee?.loan_limit - selectedEmployee?.total_loan_balance) && (
+                        <button
+                            type="submit"
+                            className="w-full mt-4 bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        >
+                            Request for a loan
+                        </button>
+                    )}
                 </form>
+
+                <DashboardInfoCard
+                    title="New loan repayment amount"
+                    value={parseFloat(((parseFloat(data?.amount) || 0) + (parseFloat(data?.amount) || 0) * (parseFloat(selectedCompany?.percentage) || 0) / 100).toFixed(2))}
+                    icon="map-marker"
+                    iconColor="blue"
+                    descriptionValue="The value"
+                    descriptionText="to pay for this new loan"
+                />
+
+                </div>
 
                 {/* Link to Go Back */}
                 <div className="mt-6 text-center">

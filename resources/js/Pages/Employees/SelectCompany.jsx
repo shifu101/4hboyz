@@ -130,7 +130,7 @@ const SelectCompany = () => {
                             href={route('logout')} 
                             method="post" 
                             as="button" 
-                            className="text-sm text-gray-600 hover:text-red-500 transition-colors"
+                            className="text-sm bg-black text-white rounded-md hover:text-red-500 transition-colors"
                         >
                             Logout
                         </Link>
@@ -177,22 +177,11 @@ const SelectCompany = () => {
                             {errors.id_number && <div className="text-sm text-red-500 mt-1">{errors.id_number}</div>}
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">Passport number</label>
-                            <input
-                                type="text"
-                                value={data.passport_number}
-                                onChange={(e) => setData('passport_number', e.target.value)}
-                                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            />
-                            {errors.passport_number && <div className="text-sm text-red-500 mt-1">{errors.passport_number}</div>}
-                        </div>
 
                         <div className="grid md:grid-cols-2 gap-4">
                             <FileUploadPreview field="id_front" label="ID Front Side" />
                             <FileUploadPreview field="id_back" label="ID Back Side" />
-                            <FileUploadPreview field="passport_front" label="Passport Front Page" />
-                            <FileUploadPreview field="passport_back" label="Passport Back Page" />
+                            <FileUploadPreview field="passport_front" label="Passport photo" />
                         </div>
 
                         <button

@@ -12,15 +12,13 @@ import AppTopbar from "@/Layouts/layout/AppTopbar.jsx";
 import AppConfig from "@/Layouts/layout/AppConfig.jsx";
 import { LayoutContext } from "./context/layoutcontext";
 import { PrimeReactContext } from "primereact/api";
-import { useState } from "react";
 
 const Layout = ({ children }) => {
     const { layoutConfig, layoutState, setLayoutState } = useContext(LayoutContext);
     const { setRipple } = useContext(PrimeReactContext);
     const topbarRef = useRef(null);
     const sidebarRef = useRef(null);
-
-    const [reloaded, setReloaded] = useState(false)
+    
 
     const pathname = route().current();
 

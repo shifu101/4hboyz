@@ -3,8 +3,8 @@ import React, { useContext } from 'react';
 const AppFooter = () => {
     return (
         <div className="layout-footer">
-            <span>Made with <span className="text-red-500">&#10084;&#65039;</span> by</span>
-            <span className="font-medium ml-2">aB</span>
+            <span>Powered by</span>
+            <a href='https://kenyawebsitedesigners.co.ke' target='_blank' className="font-medium ml-2">Kenya Website Designers</a>
         </div>
     );
 };

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, usePage, router, useForm } from '@inertiajs/react';
+import { Link, usePage, router } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
 import Swal from 'sweetalert2';
 import { FileText, FileSpreadsheet, Plus, Filter, X, Check, XCircle } from 'lucide-react';
@@ -18,10 +18,6 @@ const Index = () => {
   const roleId = auth.user?.role_id;
   const [selectedLoans, setSelectedLoans] = useState([]);
   const status = params?.status || 'All';
-
-  const { processing } = useForm({
-    status: ''
-  });
 
   // Function to handle delete confirmation
   const handleDelete = (loanId) => {
@@ -65,12 +61,13 @@ const Index = () => {
       doc.setFontSize(14);
       doc.text(`Loans Report`, 14, 50);
       
-      const columns = ["Loan number", "Employee name", "Amount", "Status", "Loan provider"];
+      const columns = ["Loan number", "Employee name", "Principle","Loan due", "Status", "Loan provider"];
       
       const rows = loans.map(data => [
         data.number, 
         data.employee?.user?.name, 
         data.amount, 
+        data.eventualPay,
         data.status,
         data.loan_provider?.name
       ]);
@@ -88,7 +85,8 @@ const Index = () => {
       const ws = XLSX.utils.json_to_sheet(loans.map((data) => ({
         Loan_Number:data.number, 
         Employee_Name:data.employee?.user?.name, 
-        Amount:data.amount, 
+        Principle:data.amount, 
+        Loan_due: eventualPay,
         Status:data.status,
         Loan_Provider:data.loan_provider?.name
       })));
@@ -96,43 +94,6 @@ const Index = () => {
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, 'Loans');
       XLSX.writeFile(wb, 'loans_report.xlsx');
-    };
-
-    const handleStatusUpdate = (e, id, status) => {
-      e.preventDefault();
-      
-      // Create a form data object with the specific status
-      const formData = {
-        _method: 'PUT', // Laravel method spoofing for PUT request
-        status: status,
-        id: id
-      };
-    
-      Swal.fire({
-        title: `Are you sure you want to ${status.toLowerCase()} this loan?`,
-        text: 'This action will update the loan status.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: status === 'Approved' ? '#3085d6' : '#d33',
-        cancelButtonColor: '#gray',
-        confirmButtonText: `Yes, ${status.toLowerCase()} it!`,
-      }).then((result) => {
-        if (result.isConfirmed) {
-          router.post(route('loans.update', id), formData, {
-            onSuccess: () => {
-              Swal.fire(
-                `${status}!`, 
-                `The loan has been ${status.toLowerCase()}.`, 
-                'success'
-              );
-            },
-            onError: (err) => {
-              console.error(`${status} error:`, err);
-              Swal.fire('Error', 'There was a problem updating the loan status.', 'error');
-            }
-          });
-        }
-      });
     };
 
     const handleSelectLoan = (id) => {
@@ -286,9 +247,10 @@ const Index = () => {
                   />
                 </th>}
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Loan number</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Employee Name</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Amount</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Eventual pay</th>
+                {roleId !== 3 &&
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Employee Name</th>}
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Principle</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Loan due</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Current balance</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Status</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Loan provider</th>
@@ -308,7 +270,8 @@ const Index = () => {
                       />
                     </td>}
                     <td className="px-6 py-4 whitespace-nowrap">{loan.number}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{loan.employee?.user?.name}</td>
+                    {roleId !== 3 &&
+                    <td className="px-6 py-4 whitespace-nowrap">{loan.employee?.user?.name}</td>}
                     <td className="px-6 py-4 whitespace-nowrap">{loan.amount}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{loan.eventualPay}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{loan.currentBalance}</td>
@@ -347,21 +310,12 @@ const Index = () => {
                         }
                         <>
                         {((loan.status === 'Pending' || loan.status === 'Declined') && roleId !== 3) && (
-                          <button
-                            onClick={(e) => handleStatusUpdate(e, loan.id, 'Approved')}
-                            disabled={processing}
-                            className="inline-flex items-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-200 disabled:opacity-50"
+                          <Link
+                            href={route('loans.approval', loan.id)}
+                            className="inline-flex items-center px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition duration-200"
                           >
-                            <Check className="w-4 h-4 mr-2" /> Approve
-                          </button>)}
-                          {((loan.status === 'Pending' || loan.status === 'Approved') && roleId !== 3) && (
-                          <button
-                            onClick={(e) => handleStatusUpdate(e, loan.id, 'Declined')}
-                            disabled={processing}
-                            className="inline-flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-200 disabled:opacity-50"
-                          >
-                            <XCircle className="w-4 h-4 mr-2" /> Decline
-                          </button>)}
+                            Approve
+                          </Link>)}
                         </>
                       </div>
                     </td>

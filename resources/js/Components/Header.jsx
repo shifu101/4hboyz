@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from '@inertiajs/react';
+import "../../css/index.scss";
 
 function Header() {
 
@@ -10,6 +11,7 @@ function Header() {
     };
 
   return (
+    <div className='home-layout-wrapper'>
     <div className="ekit-template-content-markup ekit-template-content-header ekit-template-content-theme-support fixed bg-green-700 w-full z-10">
         <div
         data-elementor-type="wp-post"
@@ -185,6 +187,7 @@ function Header() {
             </div>
         </section> 
         </div>
+    </div>
     </div>
   )
 }

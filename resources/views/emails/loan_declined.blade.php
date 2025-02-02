@@ -57,8 +57,8 @@
 
     <div class="footer">
         <p>Best regards,</p>
-        <p><strong>The Vermsol Team</strong></p>
-        <p><a href="mailto:info@vermsol.co.ke">Contact Support</a></p>
+        <p><strong>The Centiflow Team</strong></p>
+        <p><a href="mailto:info@Centiflow.co.ke">Contact Support</a></p>
     </div>
 </div>
 

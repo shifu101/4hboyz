@@ -27,6 +27,8 @@ class UserController extends Controller
             });
         }
     
+        $query->orderBy('created_at', 'desc');
+        
         // Paginate the query
         $users = $query->paginate(10);
     

@@ -1,9 +1,9 @@
 import React from 'react'
 import { Link } from '@inertiajs/react';
-
+import "../../css/index.scss";
 function Footer() {
   return (
-
+    <div className='home-layout-wrapper'>
     <div className="ekit-template-content-markup ekit-template-content-footer ekit-template-content-theme-support">
     <div
       data-elementor-type="wp-post"
@@ -318,6 +318,7 @@ function Footer() {
         </div>
       </section>
     </div>
+  </div>
   </div>
 
   )

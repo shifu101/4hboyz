@@ -57,6 +57,8 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('employees', EmployeeController::class);
     Route::resource('loans', LoanController::class);
+    Route::get('/loans/{loan}/approve', [LoanController::class, 'approve'])->name('loans.approval');
+    Route::post('/loans/{loan}/loanApproval', [LoanController::class, 'approveLoan'])->name('loans.approveLoan');
     Route::post('/loans/bulk-update', [LoanController::class, 'bulkUpdate'])->name('loans.bulkUpdate');
     Route::resource('loanProviders', LoanProviderController::class);
     Route::resource('notifications', NotificationController::class);

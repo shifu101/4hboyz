@@ -8,6 +8,7 @@ import { PrimeReactProvider } from "primereact/api";
 import { Button } from "primereact/button";
 import React, { useContext } from "react";
 import Guest from "@/Layouts/GuestLayout";
+import "../../css/index.scss";
 
 const CountUp = ({ start, end, duration }) => {
   const [count, setCount] = useState(start);
@@ -38,11 +39,11 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
         <LayoutProvider>
           <Head title="Welcome" />
           <Guest>
-          <>
+          <div className='home-layout-wrapper'>
             <div
               data-elementor-type="wp-page"
               data-elementor-id={293}
-              className="elementor elementor-293 pt-[100px]"
+              className="elementor elementor-293 pt-[80px]"
             >
               <section
                 className="elementor-section elementor-top-section elementor-element elementor-element-91d4ebb elementor-section-height-min-height elementor-section-boxed elementor-section-height-default elementor-section-items-middle"
@@ -733,47 +734,18 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                             free loans today
                           </p>{" "}
                         </div>
+
+                        <div className="pt-6">
+                          <Link
+                            className="text-2xl text-white mx-auto border-2 px-4 py-2 rounded-md" 
+                            style={{backgroundColor: '#8cc63e !important'}}
+                            href={route('register')}
+                          >
+                            APPLY FOR A LOAN
+                          </Link>
+                        </div>
                         
                       </div>
-                      <section
-                        className="elementor-section elementor-inner-section elementor-element elementor-element-7e85291 elementor-section-boxed elementor-section-height-default elementor-section-height-default mt-14"
-                        data-id="7e85291"
-                        data-element_type="section"
-                        data-settings='{"ekit_has_onepagescroll_dot":"yes"}'
-                      >
-                        <div className="elementor-container elementor-column-gap-default">
-                          <div
-                            className="elementor-column elementor-col-50 elementor-inner-column elementor-element elementor-element-5ffbc82"
-                            data-id="5ffbc82"
-                            data-element_type="column"
-                          >
-                            <div className="elementor-widget-wrap elementor-element-populated">
-                              <div
-                                className="elementor-element elementor-element-2a6d937 elementor-widget__width-auto elementor-mobile-align-center elementor-align-center elementor-widget elementor-widget-button"
-                                data-id="2a6d937"
-                                data-element_type="widget"
-                                data-settings='{"ekit_we_effect_on":"none"}'
-                                data-widget_type="button.default"
-                              >
-                                <div className="elementor-widget-container">
-                                  <div className="elementor-button-wrapper">
-                                    <Link
-                                      className="elementor-button elementor-button-link elementor-size-sm mx-auto"
-                                      href={route('register')}
-                                    >
-                                      <span className="elementor-button-content-wrapper">
-                                        <span className="elementor-button-text">
-                                          APPLY FOR a LOAN
-                                        </span>
-                                      </span>
-                                    </Link>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </section>
                       <div
                         className="elementor-element elementor-element-6417129 elementor-widget elementor-widget-spacer"
                         data-id={6417129}
@@ -891,7 +863,7 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
               type="text/css"
               media="all"
             />
-          </>
+          </div>
           </Guest>
         </LayoutProvider>
       </PrimeReactProvider>

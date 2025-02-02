@@ -39,6 +39,8 @@ class EmployeeController extends Controller
             });
         }
     
+        $query->orderBy('created_at', 'desc');
+
         // Paginate the results
         $employees = $query->paginate(10);
     
@@ -108,6 +110,11 @@ class EmployeeController extends Controller
         return Inertia::render('Employees/Show', [
             'employee' => [
                 'id' => $employee->id,
+                'approved' => $employee->approved,
+                'id_number'=>$employee->id_number,
+                'id_front'=>$employee->id_front,
+                'id_back'=>$employee->id_back,
+                'passport_front'=>$employee->passport_front,
                 'salary' => $employee->salary,
                 'loan_limit' => $employee->loan_limit,
                 'unpaid_loans_count' => $employee->unpaid_loans_count, 

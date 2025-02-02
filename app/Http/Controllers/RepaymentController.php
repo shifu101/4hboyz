@@ -61,6 +61,8 @@ class RepaymentController extends Controller
                   });
             });
         }
+
+        $query->orderBy('created_at', 'desc');
     
         $repayments = $query->paginate(10);
     

@@ -23,6 +23,6 @@
     <p>If you have any questions or need more information regarding this decision, feel free to reach out to us. We are happy to assist you in understanding the reasoning behind our decision.</p>
     <p>We appreciate your understanding and thank you for your time and effort.</p>
     <p>Best regards,</p>
-    <p><strong>The Vermsol Team</strong></p>
+    <p><strong>The Centiflow Team</strong></p>
 </body>
 </html>

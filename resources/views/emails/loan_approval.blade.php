@@ -24,16 +24,16 @@
     <p>Details of your loan:</p>
     <ul>
         <li><strong>Loan Number:</strong> {{ $loan->number }}</li>
-        <li><strong>Loan Amount:</strong> {{ $loan->amount }}</li>
-        <li><strong>Eventual pay:</strong> {{ $loan->eventualPay }}</li>
+        <li><strong>Principle:</strong> {{ $loan->amount }}</li>
+        <li><strong>Amount due:</strong> {{ $loan->eventualPay }}</li>
     </ul>
 
     <p>Your loan is now in process. You will receive further instructions shortly.</p>
     <p>If you have any questions or concerns, please don't hesitate to reach out to us.</p>
     
-    <p>Thank you for choosing Vermsol!</p>
+    <p>Thank you for choosing Centiflow!</p>
 
     <p>Best regards,</p>
-    <p><strong>The Vermsol Team</strong></p>
+    <p><strong>The Centiflow Team</strong></p>
 </body>
 </html>

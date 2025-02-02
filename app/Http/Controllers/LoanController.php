@@ -20,6 +20,7 @@ use App\Mail\LoanDeclinedMail;
 use Illuminate\Support\Facades\Mail;
 
 use App\Mail\LoanRepaymentMail;
+use App\Mail\LoanOtpMail;
 
 class LoanController extends Controller
 {
@@ -74,6 +75,8 @@ class LoanController extends Controller
                 });
             });
         }
+
+        $query->orderBy('created_at', 'desc');
     
         // Paginate results
         $loans = $query->paginate(10);
@@ -188,12 +191,15 @@ class LoanController extends Controller
 
     public function update(UpdateLoanRequest $request, Loan $loan)
     {
+    
         $oldStatus = $loan->status;
     
         $loan->load(['loanProvider', 'employee.user', 'employee.company']);
-
+    
+        // Update the loan with validated request data
         $loan->update($request->validated());
     
+        // Send email notifications if the status has changed
         if ($loan->status !== $oldStatus) {
             if ($loan->status === 'Approved') {
                 Mail::to($loan->employee->user->email)->send(new LoanApprovalMail($loan));
@@ -204,6 +210,61 @@ class LoanController extends Controller
     
         return redirect()->route('loans.index')->with('success', 'Loan updated successfully.');
     }
+
+    public function approveLoan(Request $request)
+    {
+        $input = $request->all();
+    
+        $loan = Loan::find($input['id']);
+    
+        if ($loan->otp == $input['otp']) {
+            $oldStatus = $loan->status;
+    
+            // Update the loan with validated request data
+            $loan->update(
+                ['status' => $input['status']]
+            );
+    
+            // Send email notifications if the status has changed
+            if ($loan->status !== $oldStatus) {
+                if ($loan->status === 'Approved') {
+                    Mail::to($loan->employee->user->email)->send(new LoanApprovalMail($loan));
+                } elseif ($loan->status === 'Declined') {
+                    Mail::to($loan->employee->user->email)->send(new LoanDeclinedMail($loan));
+                }
+            }
+    
+            return redirect()->route('loans.index')->with('success', 'Loan updated successfully.');
+        } else {
+            // Return error message with the loan details
+            return Inertia::render('Loans/Approval', [
+                'loan' => $loan,
+                'error' => 'OTP is incorrect. Please try again.'
+            ]);
+        }
+    }
+    
+    
+
+    public function approve(UpdateLoanRequest $request, Loan $loan)
+    {
+        $user = Auth::user();
+
+        $otp = rand(100000, 999999);
+
+        $loan->load(['loanProvider', 'employee.user', 'employee.company']);
+
+        $loan->update([
+            'otp'=>$otp
+        ]);
+
+        Mail::to($user->email)->send(new LoanOtpMail($otp, $loan->number));
+
+        return Inertia::render('Loans/Approval', [
+            'loan' => $loan
+        ]);
+    }
+
     
 
 
