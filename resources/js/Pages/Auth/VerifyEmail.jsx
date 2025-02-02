@@ -31,7 +31,7 @@ export default function VerifyEmail({ status }) {
 
                 <form onSubmit={submit} className='max-w-4xl mx-auto'>
                     <div className="mt-4 flex gap-4 items-center justify-between">
-                        <button className='bg-black text-white rounded-md hover:bg-green-700 hover:text-white' disabled={processing}>Send Verification Email</button>
+                        <PrimaryButton disabled={processing}>Send Verification Email</PrimaryButton>
 
                         <Link
                             href={route('logout')}
