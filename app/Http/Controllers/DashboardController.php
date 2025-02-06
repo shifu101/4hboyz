@@ -154,16 +154,17 @@ class DashboardController extends Controller
         });
 
         if($user->role_id == "3" && $user->company == null) {
+            $er = '';
             return Inertia::render('Employees/SelectCompany', [
-                'companies' => $companies,
-                'user'=>$user
+                'user'=>$user,
+                'er'=>$er
             ]);
 
         }else {
 
             $employee = Employee::where('user_id', '=', $user->id)->first();
 
-            if ($employee && $employee->approved != 'Approved') {
+            if ($employee && $user->role_id != "1" && $employee->approved != 'Approved') {
                 return Inertia::render('Employees/ProcessedRequest', [
                     'companies' => $companies,
                     'user' => $user,

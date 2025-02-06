@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('email')->unique()->nullable();
             $table->string('phone')->nullable();
             $table->double('percentage')->nullable();
+            $table->string('unique_number')->nullable();
             $table->timestamps();
         });
     }

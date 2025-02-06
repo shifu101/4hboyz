@@ -28,6 +28,7 @@ class StoreCompanyRequest extends FormRequest
             'email' => 'required|email|unique:companies,email',
             'phone' => 'required|string|max:15',
             'percentage' => 'required',
+            'unique_number'=> 'nullable'
         ];
     }
 }

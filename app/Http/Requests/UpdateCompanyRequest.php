@@ -28,6 +28,7 @@ class UpdateCompanyRequest extends FormRequest
             'email' => 'nullable',
             'phone' => 'required|string|max:15',
             'percentage' => 'required',
+            'unique_number'=> 'nullable'
         ];
     }
 }

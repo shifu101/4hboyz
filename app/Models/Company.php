@@ -17,6 +17,24 @@ class Company extends Model
         'email',
         'password',
         'address',
-        'percentage'
+        'percentage',
+        'unique_number'
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($company) {
+            do {
+                $letter = strtoupper(chr(rand(65, 90))); 
+                $randomNumber = rand(10000, 99999);
+                $uniqueNumber = $letter . $randomNumber;
+            } while (self::where('unique_number', $uniqueNumber)->exists()); 
+
+            $company->unique_number = $uniqueNumber;
+        });
+    }
 }
+
+

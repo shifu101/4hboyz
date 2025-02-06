@@ -58,6 +58,48 @@ class EmployeeController extends Controller
         ]);
     }
     
+
+    public function getEmployeesByCompany(Request $request, $companyId)
+    {
+        $user = Auth::user();
+
+        // Ensure the user is authorized to view this data
+        if ($user->role_id == 2 && $user->company_id != $companyId) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        // Query employees belonging to the given company ID
+        $query = Employee::with('user', 'loans', 'company')
+                        ->where('company_id', $companyId);
+
+        // Search functionality
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->whereHas('user', function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%$search%")
+                ->orWhere('email', 'LIKE', "%$search%");
+            });
+        }
+
+        $query->orderBy('created_at', 'desc');
+
+        // Paginate the results
+        $employees = $query->paginate(10);
+
+        // Append computed attributes to each employee
+        $employees->getCollection()->transform(function ($employee) {
+            $employee->append('unpaid_loans_count', 'total_loan_balance');
+            return $employee;
+        });
+
+        // Return to Inertia view
+        return Inertia::render('Companies/Show', [
+            'employees' => $employees->items(),
+            'pagination' => $employees,
+            'flash' => session('flash'),
+        ]);
+    }
+
     
     
 
@@ -75,6 +117,20 @@ class EmployeeController extends Controller
     {
        $user = Auth::user();
        $validatedData = $request->validated();
+
+       $company = Company::
+       where('unique_number','=',$validatedData['unique_number'])
+       ->orWhere('id','=',$validatedData['company_id'])
+       ->first();
+
+        if(!$company) {
+            if ($user->role_id == "3") {
+                return Inertia::render('Employees/SelectCompany', [
+                    'user'=>$user,
+                    'er'=>'No such company exist'
+                ]);
+            }
+        }
     
        $fileFields = ['id_front', 'id_back', 'passport_front', 'passport_back'];
        
@@ -85,6 +141,8 @@ class EmployeeController extends Controller
                $validatedData[$field] = $path;
            }
        }
+
+       $validatedData['company_id'] = $company->id;
     
        $employee = Employee::create($validatedData);
     

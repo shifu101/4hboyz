@@ -18,6 +18,8 @@ class CompanyController extends Controller
             $search = $request->input('search');
             $query->where('name', 'LIKE', "%$search%");
         }
+
+        $query->orderBy('created_at', 'desc');
     
         $companies = $query->paginate(10);
     

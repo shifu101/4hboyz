@@ -23,6 +23,7 @@
     },
     "dependencies": {
         "@inertiajs/inertia": "^0.11.1",
+        "@radix-ui/react-dialog": "^1.1.6",
         "chart.js": "^4.4.0",
         "jspdf": "^2.5.2",
         "jspdf-autotable": "^3.8.4",
@@ -34,6 +35,7 @@
         "react-datepicker": "^7.6.0",
         "react-daterange-picker": "^2.0.1",
         "react-select": "^5.9.0",
+        "react-toastify": "^11.0.3",
         "react-transition-group": "^4.4.5",
         "sweetalert2": "^11.15.10",
         "xlsx": "^0.18.5"

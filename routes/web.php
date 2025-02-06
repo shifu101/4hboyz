@@ -56,6 +56,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/companies/list', [CompanyController::class, 'list'])->name('companies.list');
 
     Route::resource('employees', EmployeeController::class);
+    Route::get('/companies/{company}/employees', [EmployeeController::class, 'getEmployeesByCompany'])
+    ->name('company.employees');
+    
     Route::resource('loans', LoanController::class);
     Route::get('/loans/{loan}/approve', [LoanController::class, 'approve'])->name('loans.approval');
     Route::post('/loans/{loan}/loanApproval', [LoanController::class, 'approveLoan'])->name('loans.approveLoan');
