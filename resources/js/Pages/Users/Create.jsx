@@ -11,6 +11,13 @@ const Create = () => {
         label: company.name
     }));
 
+    const roleOptions = [
+        { value: 1, label: 'Super Admin' },
+        { value: 2, label: 'Admin' },
+        { value: 3, label: 'Employee' },
+        { value: 4, label: 'Office Admin' }
+    ];
+
     const { data, setData, post, errors } = useForm({
         name: '',
         phone: '',
@@ -27,6 +34,10 @@ const Create = () => {
 
     const handleCompanyChange = (selectedOption) => {
         setData('company_id', selectedOption ? selectedOption.value : ''); 
+    };
+
+    const handleRoleChange = (selectedOption) => {
+        setData('role_id', selectedOption ? selectedOption.value : ''); 
     };
 
     return (
@@ -70,12 +81,25 @@ const Create = () => {
                         {errors.email && <div className="text-sm text-red-500 mt-1">{errors.email}</div>}
                     </div>
 
+                    {/* Role Select */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Role</label>
+                        <Select
+                            options={roleOptions}
+                            value={roleOptions.find(option => option.value === data.role_id)}
+                            onChange={handleRoleChange}
+                            className="mt-1 block w-full py-2"
+                            placeholder="Select a role"
+                        />
+                        {errors.role_id && <div className="text-sm text-red-500 mt-1">{errors.role_id}</div>}
+                    </div>
+
                     {/* Company Select (React Select) */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Company</label>
                         <Select
                             options={companyOptions}
-                            value={companyOptions.find(option => option.value === data.company_id)}  // Set selected option
+                            value={companyOptions.find(option => option.value === data.company_id)}
                             onChange={handleCompanyChange}
                             className="mt-1 block w-full py-2"
                             placeholder="Select a company"

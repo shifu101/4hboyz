@@ -3,22 +3,35 @@ import { useForm, usePage, Link } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
 import Select from 'react-select';
 
-const EditUSer = ({ errors }) => {
+const EditUser = ({ errors }) => {
   const { companies, user } = usePage().props; 
+
+  const roleOptions = [
+    { value: 1, label: 'Super Admin' },
+    { value: 2, label: 'Admin' },
+    { value: 3, label: 'Employee' },
+    { value: 4, label: 'Office Admin' }
+  ];
 
   const { data, setData, put, processing } = useForm({
     name: user.name,
     email: user.email,
     phone: user.phone,
     company_id: user.company_id, 
+    role_id: user.role_id,
   });
 
   const [selectedCompany, setSelectedCompany] = useState(null);
+  const [selectedRole, setSelectedRole] = useState(null);
 
   useEffect(() => {
     if (user.company_id) {
       const defaultCompany = companies.find((c) => c.id === user?.company_id);
       setSelectedCompany(defaultCompany);
+    }
+    if (user.role_id) {
+      const defaultRole = roleOptions.find((r) => r.value === user?.role_id);
+      setSelectedRole(defaultRole);
     }
   }, [user, companies]);
 
@@ -30,6 +43,11 @@ const EditUSer = ({ errors }) => {
   const handleCompanyChange = (selectedOption) => {
     setData('company_id', selectedOption ? selectedOption.value : '');
     setSelectedCompany(selectedOption);
+  };
+
+  const handleRoleChange = (selectedOption) => {
+    setData('role_id', selectedOption ? selectedOption.value : '');
+    setSelectedRole(selectedOption);
   };
 
   return (
@@ -73,6 +91,18 @@ const EditUSer = ({ errors }) => {
             {errors.phone && <div className="text-sm text-red-500 mt-1">{errors.phone}</div>}
           </div>
 
+          {/* Role Select */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Role</label>
+            <Select
+              value={selectedRole}
+              onChange={handleRoleChange}
+              options={roleOptions}
+              placeholder="Select a role"
+            />
+            {errors.role_id && <div className="text-sm text-red-500 mt-1">{errors.role_id}</div>}
+          </div>
+
           {/* Company Select */}
           <div>
             <label className="block text-sm font-medium text-gray-700">Company</label>
@@ -103,4 +133,4 @@ const EditUSer = ({ errors }) => {
   );
 };
 
-export default EditUSer;
+export default EditUser;
