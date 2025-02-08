@@ -178,12 +178,13 @@ const Index = () => {
                     Excel
                   </span>
                 </button>
+                {roleId !== 3 &&
                 <button
                   onClick={handleBulkAction}
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   Mark as Paid
-                </button>
+                </button>}
               </div>
           </div>
 
@@ -213,13 +214,14 @@ const Index = () => {
           <table className="min-w-full table-auto">
             <thead className="bg-gray-100">
               <tr>
+              {roleId !== 3 &&
                 <th className="px-4 py-3">
                   <input
                     type="checkbox"
                     checked={selectedLoans.length === loans.length}
                     onChange={handleSelectAll}
                   />
-                </th>
+                </th>}
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Loan number</th>
                 {roleId !== 3 &&
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Employee Name</th>}
@@ -235,13 +237,14 @@ const Index = () => {
               {loans.length > 0 ? (
                 loans.map((loan) => (
                   <tr key={loan.id}>
+                      {roleId !== 3 &&
                     <td className="px-4 py-4">
                       <input
                         type="checkbox"
                         checked={selectedLoans.includes(loan.id)}
                         onChange={() => handleSelectLoan(loan.id)}
                       />
-                    </td>
+                    </td>}
                     <td className="px-6 py-4 whitespace-nowrap">{loan.number}</td>
                     {roleId !== 3 &&
                     <td className="px-6 py-4 whitespace-nowrap">{loan.employee?.user?.name}</td>}

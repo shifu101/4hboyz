@@ -53,8 +53,9 @@
         <ul>
             <li><strong>Repayment Number:</strong> {{ $repayment->number }}</li>
             <li><strong>Employee Company:</strong> {{ $repayment->loan->employee->company->name ?? '' }}</li>
-            <li><strong>Loan Amount:</strong> {{ $repayment->loan->amount ?? '' }}</li>
-            <li><strong>Eventual pay:</strong> {{ $repayment->loan->eventualPay ?? '' }}</li>
+            <li><strong>Principle:</strong> {{ round(($repayment->loan->amount - $repayment->loan->charges),2) }}</li>
+            <li><strong>Charges:</strong> {{ round(($repayment->loan->charges),2) }}</li>
+            <li><strong>Amount due:</strong> {{$repayment->loan->amount }}</li>
             <li><strong>Current balance:</strong> {{ $repayment->loan->currentBalance ?? '' }}</li>
         </ul>
 
