@@ -2,12 +2,12 @@
 
 namespace App\Mail;
 
-use App\Models\Employee;  // Use the correct namespace
+use App\Models\Employee;  
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class EmployeeApprovalMail extends Mailable
+class DeactivatedMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -30,9 +30,10 @@ class EmployeeApprovalMail extends Mailable
      * @return \Illuminate\Mail\Mailable
      */
     public function build()
-    {
-        return $this->subject('Your Centiflow Application Has Been Approved')
-                    ->view('emails.employee_approval')
+    { 
+
+        return $this->subject('Your Account has been deactivated')
+                    ->view('emails.employee_deactivation')
                     ->with([
                         'employee' => $this->employee
                     ]);

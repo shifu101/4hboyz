@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, usePage, router } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
 import Swal from 'sweetalert2';
-import { FileText, FileSpreadsheet, Plus, Filter, X, Check, XCircle } from 'lucide-react';
+import { FileText, FileSpreadsheet, Plus, Filter, X } from 'lucide-react';
 import { jsPDF } from "jspdf";
 import "jspdf-autotable"; 
 import * as XLSX from 'xlsx';
@@ -19,30 +19,6 @@ const Index = () => {
   const [selectedLoans, setSelectedLoans] = useState([]);
   const status = params?.status || 'All';
 
-  // Function to handle delete confirmation
-  const handleDelete = (loanId) => {
-    Swal.fire({
-      title: 'Are you sure?',
-      text: 'This action cannot be undone.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Use Inertia.delete for making the delete request
-        destroy(route('loans.destroy', loanId), {
-          onSuccess: () => {
-            // Optionally you can handle success actions here
-          },
-          onError: (err) => {
-            console.error('Delete error:', err);
-          },
-        });
-      }
-    });
-  };
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
@@ -202,13 +178,12 @@ const Index = () => {
                     Excel
                   </span>
                 </button>
-                {roleId === 1 &&
                 <button
                   onClick={handleBulkAction}
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   Mark as Paid
-                </button>}
+                </button>
               </div>
           </div>
 
@@ -238,22 +213,21 @@ const Index = () => {
           <table className="min-w-full table-auto">
             <thead className="bg-gray-100">
               <tr>
-                {roleId === 1 &&
                 <th className="px-4 py-3">
                   <input
                     type="checkbox"
                     checked={selectedLoans.length === loans.length}
                     onChange={handleSelectAll}
                   />
-                </th>}
+                </th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Loan number</th>
                 {roleId !== 3 &&
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Employee Name</th>}
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Principle</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Charges</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Loan due</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Current balance</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Loan provider</th>
                 <th className="px-6 py-3 text-right text-sm font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
@@ -261,22 +235,21 @@ const Index = () => {
               {loans.length > 0 ? (
                 loans.map((loan) => (
                   <tr key={loan.id}>
-                      {roleId === 1 &&
                     <td className="px-4 py-4">
                       <input
                         type="checkbox"
                         checked={selectedLoans.includes(loan.id)}
                         onChange={() => handleSelectLoan(loan.id)}
                       />
-                    </td>}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap">{loan.number}</td>
                     {roleId !== 3 &&
                     <td className="px-6 py-4 whitespace-nowrap">{loan.employee?.user?.name}</td>}
+                    <td className="px-6 py-4 whitespace-nowrap">{loan.amount - loan.charges}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{loan.charges}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{loan.amount}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{loan.eventualPay}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{loan.currentBalance}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{loan.status}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{loan.loan_provider?.name}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-right">
                       <div className="flex justify-end gap-3">
                         <Link
@@ -286,37 +259,13 @@ const Index = () => {
                           View
                         </Link>
                         {roleId === 1 &&
-                        <>
                           <Link
                             href={route('loans.edit', loan.id)}
                             className="inline-flex items-center px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition duration-200"
                           >
                             Edit
                           </Link>
-                          {roleId === 1 &&
-                          <form
-                              onSubmit={(e) => {
-                                e.preventDefault();
-                                handleDelete(loan.id); 
-                              }}
-                              className="inline"
-                            >
-                              <button type="submit" className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200">
-                                Delete
-                              </button>
-            
-                          </form>}
-                          </>
                         }
-                        <>
-                        {((loan.status === 'Pending' || loan.status === 'Declined') && roleId !== 3) && (
-                          <Link
-                            href={route('loans.approval', loan.id)}
-                            className="inline-flex items-center px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition duration-200"
-                          >
-                            Approve
-                          </Link>)}
-                        </>
                       </div>
                     </td>
                   </tr>

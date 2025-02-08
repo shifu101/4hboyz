@@ -269,7 +269,16 @@ const Index = () => {
                             <Check className="w-4 h-4 mr-2" /> Approve
                           </button>}
 
-                        {(employee.approved !== 'Declined' && roleId !== 3) &&
+                          {(employee?.user?.status !== 'Deactivated' && roleId !== 3) &&
+                          <button
+                            onClick={(e) => handleApprovedUpdate(e, employee.id, 'Deactivated')}
+                            disabled={processing}
+                            className="inline-flex items-center px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-green-600 transition duration-200 disabled:opacity-50"
+                          >
+                            <Check className="w-4 h-4 mr-2" /> Deactivate
+                          </button>}
+
+                        {(employee.approved !== 'Declined' && roleId !== 1) &&
                         <button
                           onClick={(e) => handleApprovedUpdate(e, employee.id, 'Declined')}
                           disabled={processing}

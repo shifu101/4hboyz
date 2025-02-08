@@ -25,6 +25,7 @@ const ProcessedRequest = () => {
                         </Link>
                     </div>
 
+                    {user.status === 'Active' &&
                     <ol className="flex flex-col sm:flex-row justify-between text-sm font-medium text-gray-500 mb-6">
                         {[
                             { step: 1, label: 'Account setup', active: true },
@@ -39,13 +40,24 @@ const ProcessedRequest = () => {
                                 <span>{step}. {label}</span>
                             </li>
                         ))}
-                    </ol>
+                    </ol>}
 
+                    {user.status === 'Active' &&
                     <div>
                         <p>Hi, {user.name}</p>
                         <p>Your approval is being processed!</p>
                         <p>We will send you an email once you are approved. Thank you!</p>
-                    </div>
+                    </div>}
+
+                    {user.status === 'Deactivated' &&
+                    <div>
+                        <p>Hi, {user.name}</p>
+                        <p>We regret to inform you that your account has been deactivated.</p>
+                        <p>If you have any questions or need more information regarding this decision, feel free to reach out to us. We are happy to assist you in understanding the reasoning behind our decision.</p>
+                        <p>We appreciate your understanding and thank you for your time and effort.</p>
+                        <p>Best regards,</p>
+                        <p><strong>The Centiflow Team</strong></p>
+                    </div>}
 
                 </div>
             </div>

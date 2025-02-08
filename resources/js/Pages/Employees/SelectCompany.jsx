@@ -180,9 +180,9 @@ const SelectCompany = () => {
                             />
                             <button 
                                 onClick={() => removePreview(field)}
-                                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1.5 hover:bg-red-600 transition-colors"
+                                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors flex items-center justify-center"
                             >
-                                <X className="h-4 w-4" />
+                                <X className="h-8 w-8" />
                             </button>
                         </div>
                     )}

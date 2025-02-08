@@ -24,8 +24,9 @@
     <p>Details of your loan:</p>
     <ul>
         <li><strong>Loan Number:</strong> {{ $loan->number }}</li>
-        <li><strong>Principle:</strong> {{ $loan->amount }}</li>
-        <li><strong>Amount due:</strong> {{ $loan->eventualPay }}</li>
+        <li><strong>Principle:</strong> {{ round(($loan->amount - $loan->charges),2) }}</li>
+        <li><strong>Charges:</strong> {{ round(($loan->charges),2) }}</li>
+        <li><strong>Amount due:</strong> {{ $loan->amount }}</li>
     </ul>
 
     <p>Your loan is now in process. You will receive further instructions shortly.</p>

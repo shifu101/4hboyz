@@ -23,6 +23,8 @@ class DashboardController extends Controller
 
         $user = Auth::user();
 
+        $motherCompany = Company::where('id','=', $user->company->id)->first();
+
         if ($user->email_verified_at == null) {
             return Inertia::render('Auth/VerifyEmail', [
                 'companies' => $companies,
@@ -51,6 +53,29 @@ class DashboardController extends Controller
         });
         
         $activeLoansCount = $activeLoans->count();
+
+
+        $pendingLoanQuery = Loan::with(['loanProvider', 'employee.user', 'employee.company'])
+        ->where('status', '=', 'Pending');
+    
+        if ($user->role_id == 2) {
+            $pendingLoanQuery->whereHas('employee.user', function ($q) use ($user) {
+                $q->where('company_id', '=', $user->company_id);
+            });
+        } elseif ($user->role_id == 3) {
+            $pendingLoanQuery->whereHas('employee.user', function ($q) use ($user) {
+                $q->where('id', '=', $user->id);
+            });
+        }
+        
+        // Fetch the loans and append the currentBalance
+        $pendingLoans = $pendingLoanQuery->get();
+        $pendingLoansValue = $pendingLoans->sum(function ($loan) {
+            return $loan->currentBalance;
+        });
+        
+        $pendingLoansCount = $pendingLoans->count();
+        
     
         $inactiveLoansQuery = Loan::where('status', '=', 'Declined');
 
@@ -164,7 +189,7 @@ class DashboardController extends Controller
 
             $employee = Employee::where('user_id', '=', $user->id)->first();
 
-            if ($employee && $user->role_id != "1" && $employee->approved != 'Approved') {
+            if (($employee && $user->role_id != "1" && $employee->approved != 'Approved') || $user->status === 'Deactivated') {
                 return Inertia::render('Employees/ProcessedRequest', [
                     'companies' => $companies,
                     'user' => $user,
@@ -185,13 +210,16 @@ class DashboardController extends Controller
                 'companyCount' => $companyCount,
                 'activeLoansCount' => $activeLoansCount,
                 'activeLoansValue'=> $activeLoansValue,
+                'pendingLoansCount' => $pendingLoansCount,
+                'pendingLoansValue'=> $pendingLoansValue,
                 'inactiveLoansCount' => $inactiveLoansCount,
                 'inactiveLoansValue'=> $inactiveLoansValue,
                 'repaidLoansValue' => $repaidLoansValue,
                 'loanTrends' => $loanTrends,
                 'repaymentTrends' => $repaymentTrends,
                 'employeesCount' => $employeesCount,
-                'employee'=>$employee
+                'employee'=>$employee,
+                'motherCompany'=>$motherCompany
             ]);
             
         }

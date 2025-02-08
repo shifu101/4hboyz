@@ -8,6 +8,9 @@ use App\Models\User;
 use App\Models\Company;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
+use App\Mail\ActivatedMail;
+use App\Mail\DeactivateMail;
+use Illuminate\Support\Facades\Mail;
 
 
 class UserController extends Controller
@@ -83,7 +86,20 @@ class UserController extends Controller
 
     public function update(UpdateUserRequest $request, User $user)
     {
+        $oldStatus = $user->status;
+
+        $newStatus = $request->input('status');
+
         $user->update($request->validated());
+
+        if ($oldStatus !== $newStatus) {
+            if ($oldStatus === 'Activated') {
+                // Send approval email
+                Mail::to($user->email)->send(new ActivatedMail($user));
+            } elseif ($oldStatus === 'Deactivated') {
+                Mail::to($user->email)->send(new DeactivateMail($user));
+            } 
+        }
 
         return redirect()->route('users.index')->with('success', 'User updated successfully.');
     }

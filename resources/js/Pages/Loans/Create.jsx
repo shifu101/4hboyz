@@ -122,18 +122,10 @@ const Create = () => {
                     descriptionValue="The amount"
                     descriptionText="you can still borrow"
                 />
-                <DashboardInfoCard
-                    title="Loan percentage rate"
-                    value={`${selectedCompany?.percentage}%`}
-                    icon="map-marker"
-                    iconColor="blue"
-                    descriptionValue="The amount in percentage"
-                    descriptionText="added to the loan"
-                />
             </div>}
-            <div className="max-w-full my-4">
+            <div className="max-w-full my-4 px-2">
                 <h1 className="text-3xl font-semibold">Request for a loan</h1>
-                <div className="grid gap-2">
+                <div className="grid gap-4">
                 <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-md mt-2">
                     {/* Name Input */}
                     <div>
@@ -190,14 +182,25 @@ const Create = () => {
                     )}
                 </form>
 
-                <DashboardInfoCard
-                    title="New loan repayment amount"
-                    value={parseFloat(((parseFloat(data?.amount) || 0) + (parseFloat(data?.amount) || 0) * (parseFloat(selectedCompany?.percentage) || 0) / 100).toFixed(2))}
-                    icon="map-marker"
-                    iconColor="blue"
-                    descriptionValue="The value"
-                    descriptionText="to pay for this new loan"
-                />
+                <div className='flex flex-col rounded-md border p-4 bg-white min-w-[250px]'>
+                    <h2>Loan details</h2>
+                    <div className="space-y-4">
+                        <div className="flex justify-between items-center">
+                            <strong className="text-gray-600">Amount to receive:</strong> 
+                            <span className="text-gray-800 font-bold text-2xl">{parseFloat(((parseFloat(data?.amount) || 0) - (parseFloat(data?.amount) || 0) * (parseFloat(selectedCompany?.percentage) || 0) / 100).toFixed(2))}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                            <strong className="text-gray-600">Charges:</strong> 
+                            <span className="text-gray-800 font-bold text-2xl">
+                            {((parseFloat(data?.amount) || 0) * (parseFloat(selectedCompany?.percentage) || 0) / 100).toFixed(2)}
+                            </span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                            <strong className="text-gray-600">Amount to repay:</strong> 
+                            <span className="text-gray-800 font-bold text-2xl">{data.amount}</span>
+                        </div>
+                    </div>
+                </div>
 
                 </div>
 

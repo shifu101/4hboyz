@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Providers\RouteServiceProvider;
 use App\Mail\EmployeeApprovalMail;
 use App\Mail\EmployeeDeclinedMail;
+use App\Mail\DeactivatedMail;
 use Illuminate\Support\Facades\Mail;
 
 class EmployeeController extends Controller
@@ -151,9 +152,15 @@ class EmployeeController extends Controller
                'company_id' => $employee->company_id
            ]);
     
-           Auth::login($user);
+           $adminUser = Auth::user();
+
+           if ($adminUser->role_id == "1") {
+            return redirect()->route('employees.index')->with('success', 'Employee created successfully.');
+           }else {
+            Auth::login($user);
     
-           return redirect(RouteServiceProvider::HOME);
+            return redirect(RouteServiceProvider::HOME);
+           }
        } else {
            return redirect()->route('employees.index')->with('success', 'Employee created successfully.');
        }
@@ -218,11 +225,23 @@ class EmployeeController extends Controller
     
         if ($oldApprovedStatus !== $newApprovedStatus) {
             if ($newApprovedStatus === 'Approved') {
+                $employee->user->update([
+                    'status'=>$validatedData['approved']
+                ]);
                 // Send approval email
                 Mail::to($employee->user->email)->send(new EmployeeApprovalMail($employee));
             } elseif ($newApprovedStatus === 'Declined') {
+                $employee->user->update([
+                    'status'=>$validatedData['approved']
+                ]);
                 // Send declined email
                 Mail::to($employee->user->email)->send(new EmployeeDeclinedMail($employee));
+            } elseif ($newApprovedStatus === 'Deactivated') {
+                $employee->user->update([
+                    'status'=>$validatedData['approved']
+                ]);
+                // Send declined email
+                Mail::to($employee->user->email)->send(new DeactivatedMail($employee));
             }
         }
     

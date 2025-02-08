@@ -4,7 +4,8 @@ import Layout from "@/Layouts/layout/layout.jsx";
 import Select from 'react-select';
 
 const EditUser = ({ errors }) => {
-  const { companies, user } = usePage().props; 
+  const { companies, user, auth } = usePage().props; 
+  
 
   const roleOptions = [
     { value: 1, label: 'Super Admin' },
@@ -12,6 +13,14 @@ const EditUser = ({ errors }) => {
     { value: 3, label: 'Employee' },
     { value: 4, label: 'Office Admin' }
   ];
+
+  const roleId = auth.user?.role_id;
+
+  const cRoleOptions = [
+    { value: 2, label: 'Admin' },
+    { value: 3, label: 'Employee' }
+  ];
+
 
   const { data, setData, put, processing } = useForm({
     name: user.name,
@@ -22,16 +31,11 @@ const EditUser = ({ errors }) => {
   });
 
   const [selectedCompany, setSelectedCompany] = useState(null);
-  const [selectedRole, setSelectedRole] = useState(null);
 
   useEffect(() => {
     if (user.company_id) {
       const defaultCompany = companies.find((c) => c.id === user?.company_id);
       setSelectedCompany(defaultCompany);
-    }
-    if (user.role_id) {
-      const defaultRole = roleOptions.find((r) => r.value === user?.role_id);
-      setSelectedRole(defaultRole);
     }
   }, [user, companies]);
 
@@ -47,7 +51,6 @@ const EditUser = ({ errors }) => {
 
   const handleRoleChange = (selectedOption) => {
     setData('role_id', selectedOption ? selectedOption.value : '');
-    setSelectedRole(selectedOption);
   };
 
   return (
@@ -93,17 +96,19 @@ const EditUser = ({ errors }) => {
 
           {/* Role Select */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">Role</label>
-            <Select
-              value={selectedRole}
-              onChange={handleRoleChange}
-              options={roleOptions}
-              placeholder="Select a role"
-            />
-            {errors.role_id && <div className="text-sm text-red-500 mt-1">{errors.role_id}</div>}
+              <label className="block text-sm font-medium text-gray-700">Role</label>
+              <Select
+                  options={roleId === 1 ? roleOptions : cRoleOptions}
+                  value={roleId === 1 ? roleOptions.find(option => option.value === data.role_id) : cRoleOptions.find(option => option.value === data.role_id)}
+                  onChange={handleRoleChange}
+                  className="mt-1 block w-full py-2"
+                  placeholder="Select a role"
+              />
+              {errors.role_id && <div className="text-sm text-red-500 mt-1">{errors.role_id}</div>}
           </div>
 
           {/* Company Select */}
+          {roleId === 1 &&
           <div>
             <label className="block text-sm font-medium text-gray-700">Company</label>
             <Select
@@ -116,7 +121,7 @@ const EditUser = ({ errors }) => {
               placeholder="Select a company"
             />
             {errors.company_id && <div className="text-sm text-red-500 mt-1">{errors.company_id}</div>}
-          </div>
+          </div>}
 
           {/* Submit Button */}
           <button

@@ -1,8 +1,37 @@
 import React from 'react';
-import { Link } from '@inertiajs/react';
+import { Link, usePage, router } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
+import Swal from 'sweetalert2';
 
 const Show = ({ loan }) => {
+
+  const { auth } = usePage().props;
+    const roleId = auth.user?.role_id;
+
+    const handleDelete = (loanId) => {
+      Swal.fire({
+        title: 'Are you sure?',
+        text: 'This action cannot be undone.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Use Inertia.delete for making the delete request
+          destroy(route('loans.destroy', loanId), {
+            onSuccess: () => {
+              // Optionally you can handle success actions here
+            },
+            onError: (err) => {
+              console.error('Delete error:', err);
+            },
+          });
+        }
+      });
+    };
+
   return (
     <Layout>
       <div className="max-w-4xl bg-white shadow-md rounded-lg p-6">
@@ -19,7 +48,11 @@ const Show = ({ loan }) => {
           </div>
           <div className="flex justify-between">
             <strong className="text-gray-600">Principle:</strong> 
-            <span className="text-gray-800">{loan.amount}</span>
+            <span className="text-gray-800">{loan.amount - loan.charges}</span>
+          </div>
+          <div className="flex justify-between">
+            <strong className="text-gray-600">Charges:</strong> 
+            <span className="text-gray-800">{loan.charges}</span>
           </div>
           <div className="flex justify-between">
             <strong className="text-gray-600">Loan Provider:</strong> 
@@ -39,7 +72,7 @@ const Show = ({ loan }) => {
           </div>
           <div className="flex justify-between">
             <strong className="text-gray-600">Loan due:</strong> 
-            <span className="text-gray-800">{loan.eventualPay}</span>
+            <span className="text-gray-800">{loan.amount}</span>
           </div>
           <div className="flex justify-between">
             <strong className="text-gray-600">Status:</strong> 
@@ -47,12 +80,44 @@ const Show = ({ loan }) => {
           </div>
         </div>
 
-        <div className="mt-8 text-left">
-          <Link 
+        <div className="flex justify-end space-x-4 mt-4">
+         <Link 
             href={route('loans.index')} 
             className="inline-block px-6 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition">
             Back to Loans
           </Link>
+          {roleId === 1 &&
+          <>
+            <Link
+              href={route('loans.edit', loan.id)}
+              className="inline-flex items-center px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition duration-200"
+            >
+              Edit
+            </Link>
+            {roleId === 1 &&
+            <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleDelete(loan.id); 
+                }}
+                className="inline"
+              >
+                <button type="submit" className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200">
+                  Delete
+                </button>
+
+            </form>}
+            </>
+          }
+          <>
+          {((loan.status === 'Pending' || loan.status === 'Declined') && roleId !== 3) && (
+            <Link
+              href={route('loans.approval', loan.id)}
+              className="inline-flex items-center px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition duration-200"
+            >
+              Approve
+            </Link>)}
+          </>
         </div>
       </div>
     </Layout>

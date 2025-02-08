@@ -114,7 +114,7 @@ const Approval = ({ loan }) => {
                 )}
 
                 {/* Approve/Decline Buttons */}
-                <div className="mt-8 text-left">
+                <div className="mt-8 text-left left space-x-4">
                     <Link
                         href={route("loans.index")}
                         className="inline-block px-6 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition"

@@ -4,18 +4,25 @@ import Layout from "@/Layouts/layout/layout.jsx";
 import Select from 'react-select';  
 
 const Create = () => {
-    const { companies } = usePage().props; 
+    const { companies, auth } = usePage().props; 
 
     const companyOptions = companies.map(company => ({
         value: company.id,
         label: company.name
     }));
+    
+    const roleId = auth.user?.role_id;
 
     const roleOptions = [
         { value: 1, label: 'Super Admin' },
         { value: 2, label: 'Admin' },
         { value: 3, label: 'Employee' },
         { value: 4, label: 'Office Admin' }
+    ];
+
+    const cRoleOptions = [
+        { value: 2, label: 'Admin' },
+        { value: 3, label: 'Employee' }
     ];
 
     const { data, setData, post, errors } = useForm({
@@ -25,6 +32,7 @@ const Create = () => {
         role_id: 2, 
         password: '1234boys',  
         company_id: '', 
+        status: 'Active'
     });
 
     const handleSubmit = (e) => {
@@ -85,8 +93,8 @@ const Create = () => {
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Role</label>
                         <Select
-                            options={roleOptions}
-                            value={roleOptions.find(option => option.value === data.role_id)}
+                            options={roleId === 1 ? roleOptions : cRoleOptions}
+                            value={roleId === 1 ? roleOptions.find(option => option.value === data.role_id) : cRoleOptions.find(option => option.value === data.role_id)}
                             onChange={handleRoleChange}
                             className="mt-1 block w-full py-2"
                             placeholder="Select a role"
@@ -95,6 +103,7 @@ const Create = () => {
                     </div>
 
                     {/* Company Select (React Select) */}
+                    {roleId === 1 &&
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Company</label>
                         <Select
@@ -105,7 +114,7 @@ const Create = () => {
                             placeholder="Select a company"
                         />
                         {errors.company_id && <div className="text-sm text-red-500 mt-1">{errors.company_id}</div>}
-                    </div>
+                    </div>}
 
                     {/* Submit Button */}
                     <button

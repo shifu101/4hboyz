@@ -9,7 +9,7 @@ import { usePage } from '@inertiajs/react';
 
 const Dashboard = ({ auth }) => {
     // Get data from the page props
-    const { companyCount, activeLoansCount, inactiveLoansCount,reloadPage, repaidLoansValue,activeLoansValue, inactiveLoansValue, loanTrends, repaymentTrends, employee } = usePage().props;
+    const { companyCount, activeLoansCount, inactiveLoansCount, pendingLoansCount, pendingLoansValue, repaidLoansValue,activeLoansValue, inactiveLoansValue, loanTrends, repaymentTrends, employee, motherCompany } = usePage().props;
     
     const [lineOptions, setLineOptions] = useState({});
     const { layoutConfig } = useContext(LayoutContext);
@@ -116,6 +116,10 @@ const Dashboard = ({ auth }) => {
 
     return (
         <Layout>
+             {roleId === 2 && 
+            <div>
+                <h4 className='font-bold'>{motherCompany.name} - {motherCompany.unique_number}</h4>
+            </div>}
             <div className="grid">
                 {roleId === 1 && 
                 <DashboardInfoCard
@@ -147,6 +151,14 @@ const Dashboard = ({ auth }) => {
                 <DashboardInfoCard
                     title="Active Loans"
                     value={`${activeLoansCount} (${activeLoansValue})`}
+                    icon="map-marker"
+                    iconColor="orange"
+                    descriptionValue="Active Loans"
+                    descriptionText="currently active"
+                />
+                <DashboardInfoCard
+                    title="Pending Loans"
+                    value={`${pendingLoansCount} (${pendingLoansValue})`}
                     icon="map-marker"
                     iconColor="orange"
                     descriptionValue="Active Loans"

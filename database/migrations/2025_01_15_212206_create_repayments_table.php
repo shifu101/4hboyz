@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('number')->nullable();
             $table->double('amount')->nullable();
             $table->dateTime('payment_date')->nullable();
+            $table->string('remittance_number')->nullable();
             $table->unsignedBigInteger('loan_id');
             $table->foreign('loan_id')->references('id')->on('loans')->onDelete('cascade');
             $table->timestamps();

@@ -53,6 +53,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::resource('companies', CompanyController::class);
+    
     Route::get('/companies/list', [CompanyController::class, 'list'])->name('companies.list');
 
     Route::resource('employees', EmployeeController::class);

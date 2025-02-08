@@ -2,11 +2,12 @@
 
 namespace App\Mail;
 
+use App\Models\User;  
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class WelcomeMail extends Mailable
+class DeactivateMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -15,9 +16,10 @@ class WelcomeMail extends Mailable
     /**
      * Create a new message instance.
      *
-     * @param $user
+     * @param  \App\Models\User  $user
+     * @return void
      */
-    public function __construct($user)
+    public function __construct(User $user)
     {
         $this->user = $user;
     }
@@ -25,16 +27,18 @@ class WelcomeMail extends Mailable
     /**
      * Build the message.
      *
-     * @return $this
+     * @return \Illuminate\Mail\Mailable
      */
     public function build()
-    {
+    { 
 
-        return $this->subject('Welcome to Centiflow!')
-                    ->view('emails.welcome')
+        return $this->subject('Your Account has been deactivated')
+                    ->view('emails.user_deactivation')
                     ->with([
                         'user' => $this->user
                     ]);
     }
 }
+
+
 

@@ -6,6 +6,7 @@ use App\Http\Requests\StoreLoanRequest;
 use App\Http\Requests\UpdateLoanRequest;
 use App\Models\Loan;
 use App\Models\Employee;
+use App\Models\Remittance;
 use App\Models\Company;
 use App\Models\Repayment;
 use App\Models\LoanProvider;
@@ -138,7 +139,7 @@ class LoanController extends Controller
             $loans = Loan::whereIn('id', $loanIds)->get();
     
             foreach ($loans as $loan) {
-                $loan->status = ($loan->currentBalance > 0 && $loan->currentBalance < $loan->eventualPay)
+                $loan->status = ($loan->currentBalance > 0 && $loan->currentBalance < $loan->amount)
                     ? 'Partially Paid'
                     : 'Paid';
                 $loan->save();

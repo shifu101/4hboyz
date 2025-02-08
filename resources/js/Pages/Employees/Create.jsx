@@ -49,30 +49,33 @@ const Create = () => {
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Name Input */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Salary</label>
+                        <label className="block text-sm font-medium text-gray-700">Net Salary</label>
                         <input
                             type="number"
                             step="any"
                             value={data.salary}
-                            onChange={(e) => setData('salary', e.target.value)}
+                            onChange={(e) => {
+                                const salary = parseFloat(e.target.value) || 0;
+                                setData({
+                                    ...data,
+                                    salary: salary,
+                                    loan_limit: (salary * 0.33).toFixed(2) // Setting 33% of salary as loan limit
+                                });
+                            }}
                             className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         />
                         {errors.salary && <div className="text-sm text-red-500 mt-1">{errors.salary}</div>}
                     </div>
 
-                    {/* Phone Input */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Loan limit</label>
+                        <label className="block text-sm font-medium text-gray-700">Loan Limit (33% of Salary)</label>
                         <input
                             type="number"
-                            step="any"
                             value={data.loan_limit}
-                            onChange={(e) => setData('loan_limit', e.target.value)}
-                            className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            readOnly
+                            className="mt-1 block w-full px-4 py-2 border border-gray-300 bg-gray-100 rounded-md focus:outline-none"
                         />
-                        {errors.loan_limit && <div className="text-sm text-red-500 mt-1">{errors.loan_limit}</div>}
                     </div>
-
 
                     {/* Company Select (React Select) */}
                     {roleId === 1 &&

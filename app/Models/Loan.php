@@ -19,7 +19,7 @@ class Loan extends Model
         'otp'
     ];
 
-    protected $appends = ['eventualPay', 'currentBalance'];
+    protected $appends = ['charges', 'currentBalance'];
 
     // Relationship with Employee
     public function employee()
@@ -39,12 +39,12 @@ class Loan extends Model
         return $this->hasMany('App\Models\Repayment', 'loan_id');
     }
 
-    public function getEventualPayAttribute()
+    public function getChargesAttribute()
     {
         $employee = $this->employee;
         if ($employee && $employee->company) {
             $percentage = $employee->company->percentage;
-            return round($this->amount + ($this->amount * $percentage / 100), 2);
+            return round(($this->amount * $percentage / 100), 2);
         }
     
         return round($this->amount, 2);
@@ -54,7 +54,7 @@ class Loan extends Model
     {
         $totalRepayments = $this->repayments()->sum('amount');
     
-        return round($this->eventualPay - $totalRepayments, 2);
+        return round($this->amount - $totalRepayments, 2);
     }
     
 
