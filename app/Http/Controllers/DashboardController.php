@@ -23,7 +23,9 @@ class DashboardController extends Controller
 
         $user = Auth::user();
 
-        $motherCompany = Company::where('id','=', $user->company->id)->first();
+        if($user->company_id != null){
+            $motherCompany = Company::where('id','=', $user->company_id)->first();
+        }
 
         if ($user->email_verified_at == null) {
             return Inertia::render('Auth/VerifyEmail', [
@@ -219,7 +221,7 @@ class DashboardController extends Controller
                 'repaymentTrends' => $repaymentTrends,
                 'employeesCount' => $employeesCount,
                 'employee'=>$employee,
-                'motherCompany'=>$motherCompany
+                'motherCompany'=>$motherCompany ?? null
             ]);
             
         }
