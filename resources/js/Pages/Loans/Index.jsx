@@ -37,15 +37,16 @@ const Index = () => {
       doc.setFontSize(14);
       doc.text(`Loans Report`, 14, 50);
       
-      const columns = ["Loan number", "Employee name", "Principle","Loan due", "Status", "Loan provider"];
+      const columns = ["Loan number", "Employee name", "Principle","Charges","Loan due","Current balance", "Status"];
       
       const rows = loans.map(data => [
         data.number, 
         data.employee?.user?.name, 
-        data.amount, 
-        data.eventualPay,
-        data.status,
-        data.loan_provider?.name
+        new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(data.amount - data.charges), 
+        new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(data.charges),
+        new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(data.amount),
+        new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(data.currentBalance),
+        data.status
       ]);
       
       doc.autoTable({
@@ -61,10 +62,11 @@ const Index = () => {
       const ws = XLSX.utils.json_to_sheet(loans.map((data) => ({
         Loan_Number:data.number, 
         Employee_Name:data.employee?.user?.name, 
-        Principle:data.amount, 
-        Loan_due: eventualPay,
-        Status:data.status,
-        Loan_Provider:data.loan_provider?.name
+        Principle:new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(data.amount - data.charges), 
+        Charges:new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(data.charges), 
+        Loan_due: new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(data.amount),
+        Current_balance:new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(data.currentBalance), 
+        Status:data.status
       })));
     
       const wb = XLSX.utils.book_new();
@@ -248,10 +250,10 @@ const Index = () => {
                     <td className="px-6 py-4 whitespace-nowrap">{loan.number}</td>
                     {roleId !== 3 &&
                     <td className="px-6 py-4 whitespace-nowrap">{loan.employee?.user?.name}</td>}
-                    <td className="px-6 py-4 whitespace-nowrap">{loan.amount - loan.charges}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{loan.charges}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{loan.amount}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{loan.currentBalance}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">  {new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(loan.amount - loan.charges)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">  {new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(loan.charges)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">  {new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(loan.amount)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">  {new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(loan.currentBalance)}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{loan.status}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-right">
                       <div className="flex justify-end gap-3">

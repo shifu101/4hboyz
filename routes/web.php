@@ -12,6 +12,7 @@ use App\Http\Controllers\LoanProviderController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\RepaymentController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\RemittanceController;
 use App\Http\Controllers\DashboardController;
 /*
 |--------------------------------------------------------------------------
@@ -64,9 +65,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/loans/{loan}/approve', [LoanController::class, 'approve'])->name('loans.approval');
     Route::post('/loans/{loan}/loanApproval', [LoanController::class, 'approveLoan'])->name('loans.approveLoan');
     Route::post('/loans/bulk-update', [LoanController::class, 'bulkUpdate'])->name('loans.bulkUpdate');
+    Route::post('/loans/bulk-repayment', [LoanController::class, 'bulkRepayment'])->name('loans.bulkRepayment');
     Route::resource('loanProviders', LoanProviderController::class);
     Route::resource('notifications', NotificationController::class);
     Route::resource('repayments', RepaymentController::class);
+    Route::resource('remittances', RemittanceController::class);
     Route::resource('users', UserController::class);
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

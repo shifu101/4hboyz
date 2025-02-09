@@ -13,7 +13,9 @@ class Repayment extends Model
         'amount',
         'payment_date',
         'loan_id',
-        'number'
+        'number',
+        'remittance_id',
+        'status'
     ];
 
     public function loan(){

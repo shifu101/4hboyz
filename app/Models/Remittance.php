@@ -13,5 +13,14 @@ class Remittance extends Model
         'remittance_number',
         'company_id'
     ];
+
+    public function company(){
+        return $this->hasOne('App\Models\Company', 'id', 'company_id');
+    }
+
+    public function repayments()
+    {
+        return $this->hasMany('App\Models\Repayment', 'remittance_id');
+    }
     
 }

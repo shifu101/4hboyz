@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Mail;
 
 use App\Mail\LoanRepaymentMail;
 use App\Mail\LoanOtpMail;
+use Carbon\Carbon;
 
 class LoanController extends Controller
 {
@@ -29,7 +30,7 @@ class LoanController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
-        $query = Loan::with(['loanProvider', 'employee.user', 'employee.company']);
+        $query = Loan::with(['employee.user', 'employee.company']);
     
         // Filter based on role
         if ($user->role_id == 2) {
@@ -57,11 +58,6 @@ class LoanController extends Controller
                 $q->where('amount', 'LIKE', "%$search%")
                   ->orWhere('number', 'LIKE', "%$search%")
                   ->orWhere('status', 'LIKE', "%$search%");
-    
-                // Search within related loan provider fields
-                $q->orWhereHas('loanProvider', function ($q) use ($search) {
-                    $q->where('name', 'LIKE', "%$search%");
-                });
     
                 // Search within employee and related fields
                 $q->orWhereHas('employee', function ($q) use ($search) {
@@ -136,37 +132,86 @@ class LoanController extends Controller
         $loanIds = $validated['loanIds'];
     
         DB::transaction(function () use ($loanIds) {
-            $loans = Loan::whereIn('id', $loanIds)->get();
+            $loans = Loan::with(['employee.company'])->whereIn('id', $loanIds)->get();
     
             foreach ($loans as $loan) {
+            
                 $loan->status = ($loan->currentBalance > 0 && $loan->currentBalance < $loan->amount)
-                    ? 'Partially Paid'
-                    : 'Paid';
+                ? 'Partially Paid'
+                : 'Paid';
                 $loan->save();
 
                 if ($loan->currentBalance > 0) {
+                    // Generate a unique remittance number
+                    $uniqueNumber = 'REM-' . time() . '-' . uniqid();
+            
+                    // Create the Remittance record
+                    $remittance = Remittance::create([
+                        'remittance_number' => $uniqueNumber,
+                        'company_id' => $loan->employee->company->id ?? null,
+                    ]);
+            
+                    // Create the Repayment record
                     $repayment = Repayment::create([
                         'loan_id' => $loan->id,
                         'amount' => $loan->currentBalance,
-                        'status' => 'Paid',
+                        'remittance_id' => $remittance->id,
+                        'payment_date' => Carbon::now()
                     ]);
-
+            
+                    // Load relationships for email
                     $repayment->load([
                         'loan',
                         'loan.loanProvider',
                         'loan.employee.user',
                         'loan.employee.company',
                     ]);
-
-                    Mail::to($repayment->loan->employee->user->email)
-                    ->send(new LoanRepaymentMail($repayment));
                 }
             }
+            
         });
 
         return redirect()->route('loans.index')->with('success', 'Loan paid successfully.');
     }
+
+    public function bulkRepayment(Request $request)
+    {
+        $validated = $request->validate([
+            'loanIds' => 'required|array',
+            'loanIds.*' => 'exists:loans,id',
+        ]);
+
+        $loanIds = $validated['loanIds'];
+
+        DB::transaction(function () use ($loanIds) {
+            $loans = Loan::with(['employee.company'])->whereIn('id', $loanIds)->get();
     
+            foreach ($loans as $loan) {
+            
+                $repayment = Repayment::where('loan_id', '=', $loan->id)->first();
+
+                $repayment->update([
+                    'status'=>'Paid'
+                ]);
+        
+                // Load relationships for email
+                $repayment->load([
+                    'loan',
+                    'loan.loanProvider',
+                    'loan.employee.user',
+                    'loan.employee.company',
+                ]);
+        
+                // Send email notification
+                Mail::to($repayment->loan->employee->user->email)
+                    ->send(new LoanRepaymentMail($repayment));
+            }
+            
+        });
+
+        return redirect()->route('loans.index')->with('success', 'Loan paid successfully.');
+
+    }     
 
 
     public function show(Loan $loan)

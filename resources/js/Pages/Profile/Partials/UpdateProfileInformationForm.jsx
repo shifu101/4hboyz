@@ -11,6 +11,7 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
     const { data, setData, patch, errors, processing, recentlySuccessful } = useForm({
         name: user.name,
         email: user.email,
+        phone: user.phone
     });
 
     const [previews] = useState({
@@ -70,6 +71,19 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
                         onChange={(e) => setData('email', e.target.value)}
                     />
                     <InputError message={errors.email} className=""/>
+                </div>
+
+                <div className="mb-3">
+                    <label htmlFor="phone" className="block text-900 font-medium mb-2">Phone</label>
+                    <InputText
+                        id="phone"
+                        type="text"
+                        placeholder="Phone"
+                        className="w-full"
+                        value={data.phone}
+                        onChange={(e) => setData('phone', e.target.value)}
+                    />
+                    <InputError message={errors.phone} className=""/>
                 </div>
 
                 {mustVerifyEmail && user.email_verified_at === null && (

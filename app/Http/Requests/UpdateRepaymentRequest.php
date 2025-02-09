@@ -25,7 +25,8 @@ class UpdateRepaymentRequest extends FormRequest
             'amount' => 'nullable',
             'payment_date' => 'nullable',
             'loan_id' => 'nullable',
-            'remittance_number' => 'nullable',
+            'remittance_id' => 'nullable',
+            'status' => 'nullable'
         ];
     }
 }

@@ -3,6 +3,7 @@ import { Link } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
 
 const Show = ({ repayment }) => {
+  
   return (
     <Layout>
       <div className="max-w-4xl bg-white shadow-md rounded-lg p-6">
@@ -23,11 +24,11 @@ const Show = ({ repayment }) => {
           </div>
           <div className="flex justify-between">
             <strong className="text-gray-600">Loan Amount:</strong>
-            <span className="text-gray-800">{repayment?.loan?.amount || 'N/A'}</span>
+            <span className="text-gray-800">{new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(repayment?.loan?.amount)}</span>
           </div>
           <div className="flex justify-between">
             <strong className="text-gray-600">Repayment Amount:</strong>
-            <span className="text-gray-800">{repayment.amount}</span>
+            <span className="text-gray-800">{new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(repayment.amount)}</span>
           </div>
           <div className="flex justify-between">
             <strong className="text-gray-600">Company Phone:</strong>

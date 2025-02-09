@@ -25,7 +25,8 @@ class StoreRepaymentRequest extends FormRequest
             'amount' => 'required',
             'payment_date' => 'required',
             'loan_id' => 'nullable',
-            'remittance_number' => 'nullable',
+            'remittance_id' => 'nullable',
+            'status' => 'nullable'
         ];
     }
 }

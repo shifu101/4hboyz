@@ -24,6 +24,7 @@ const AppMenu = () => {
                 { label: 'Loan Providers', icon: 'pi pi-fw pi-briefcase', to: route('loanProviders.index'), roles: [1] },
                 { label: 'Notifications', icon: 'pi pi-fw pi-bell', to: route('notifications.index'), roles: [1, 2, 3] },
                 { label: 'Repayments', icon: 'pi pi-fw pi-dollar', to: route('repayments.index'), roles: [1, 2] },
+                { label: 'Remittances', icon: 'pi pi-wallet', to: route('remittances.index'), roles: [1, 2] },
                 { label: 'Users', icon: 'pi pi-fw pi-user', to: route('users.index'), roles: [1, 4] },
                 { label: 'Profile', icon: 'pi pi-user', to: route('profile.edit'), roles: [1, 2, 3, 4] },
             ]

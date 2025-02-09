@@ -61,14 +61,13 @@ const Index = () => {
     doc.setFontSize(14);
     doc.text(`Repayments Report`, 14, 50);
     
-    const columns = ["Loan number", "Employee name", "Amount", "Status", "Loan provider"];
+    const columns = ["Loan number", "Employee name", "Amount", "Status"];
     
-    const rows = loans.map(data => [
-      data.number, 
-      data.employee?.user?.name, 
-      data.amount, 
-      data.status,
-      data.loan_provider?.name
+    const rows = repayments?.map(data => [
+      data.loan?.number, 
+      data.loan?.employee?.user?.name, 
+      new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(data.amount), 
+      data.loan?.status
     ]);
     
     doc.autoTable({
@@ -81,12 +80,11 @@ const Index = () => {
   };
 
   const generateExcel = () => {
-    const ws = XLSX.utils.json_to_sheet(loans.map((data) => ({
-      Loan_Number:data.number, 
-      Employee_Name:data.employee?.user?.name, 
-      Amount:data.amount, 
-      Status:data.status,
-      Loan_Provider:data.loan_provider?.name
+    const ws = XLSX.utils.json_to_sheet(repayments?.map((data) => ({
+      Loan_Number:data.loan?.number, 
+      Employee_Name:data.loan?.employee?.user?.name, 
+      Amount:new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(data.amount), 
+      Status:data.loan?.status
     })));
   
     const wb = XLSX.utils.book_new();
@@ -200,8 +198,8 @@ const Index = () => {
                     <td className="px-6 py-4 whitespace-nowrap">{repayment.number}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{repayment?.loan?.employee?.user?.name}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{repayment?.loan?.employee?.company?.name}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{repayment?.loan?.amount}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{repayment.amount}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(repayment?.loan?.amount)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(repayment.amount)}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-right">
                       <div className="flex justify-end gap-3">
                         <Link

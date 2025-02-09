@@ -52,7 +52,7 @@ class Loan extends Model
     
     public function getCurrentBalanceAttribute()
     {
-        $totalRepayments = $this->repayments()->sum('amount');
+        $totalRepayments = $this->repayments()->where('status','!=','Pending Paid')->sum('amount');
     
         return round($this->amount - $totalRepayments, 2);
     }

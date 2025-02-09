@@ -124,11 +124,11 @@ class DashboardController extends Controller
 
         // Get loan trends for all months
         $loanTrends = collect(range(1, 12))->map(function ($month) use ($currentYear, $user) {
-            $loanQuery = Loan::with(['loanProvider', 'employee.user', 'employee.company'])
+            $loanQuery = Loan::with(['employee.user', 'employee.company'])
                 ->whereYear('created_at', $currentYear)
                 ->where('status', '!=', 'Declined')
                 ->whereMonth('created_at', $month);
-        
+
             if ($user->role_id == 2) {
                 $loanQuery->whereHas('employee.user', function ($q) use ($user) {
                     $q->where('company_id', '=', $user->company_id);
@@ -142,7 +142,7 @@ class DashboardController extends Controller
             // Fetch loans and compute the total of eventualPay
             $loans = $loanQuery->get();
             $eventualPaySum = $loans->sum(function ($loan) {
-                return $loan->eventualPay; // Access the computed attribute
+                return $loan->amount; // Access the computed attribute
             });
         
             return [

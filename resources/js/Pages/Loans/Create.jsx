@@ -84,7 +84,7 @@ const Create = () => {
             <div className="grid">
                 <DashboardInfoCard
                     title="Salary"
-                    value={selectedEmployee?.salary}
+                    value={new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(selectedEmployee.salary)}
                     icon="map-marker"
                     iconColor="blue"
                     descriptionValue="Salary"
@@ -92,7 +92,7 @@ const Create = () => {
                 />
                 <DashboardInfoCard
                     title="Loan limit"
-                    value={selectedEmployee?.loan_limit}
+                    value={        new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(selectedEmployee.loan_limit)}
                     icon="map-marker"
                     iconColor="blue"
                     descriptionValue="The maximum amount"
@@ -108,7 +108,7 @@ const Create = () => {
                 />
                 <DashboardInfoCard
                     title="Value of unpaid loans"
-                    value={selectedEmployee?.total_loan_balance}
+                    value={ new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(selectedEmployee.total_loan_balance)}
                     icon="map-marker"
                     iconColor="blue"
                     descriptionValue="The value"
@@ -116,7 +116,7 @@ const Create = () => {
                 />
                 <DashboardInfoCard
                     title="Loan float"
-                    value={selectedEmployee?.loan_limit - selectedEmployee?.total_loan_balance}
+                    value={ new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(selectedEmployee.loan_limit - selectedEmployee.total_loan_balance)}
                     icon="map-marker"
                     iconColor="blue"
                     descriptionValue="The amount"
@@ -185,22 +185,31 @@ const Create = () => {
                 <div className='flex flex-col rounded-md border p-4 bg-white min-w-[250px]'>
                     <h2>Loan details</h2>
                     <div className="space-y-4">
-                        <div className="flex justify-between items-center">
+                        <div className="flex justify-between items-center gap-4">
                             <strong className="text-gray-600">Amount to receive:</strong> 
-                            <span className="text-gray-800 font-bold text-2xl">{parseFloat(((parseFloat(data?.amount) || 0) - (parseFloat(data?.amount) || 0) * (parseFloat(selectedCompany?.percentage) || 0) / 100).toFixed(2))}</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                            <strong className="text-gray-600">Charges:</strong> 
                             <span className="text-gray-800 font-bold text-2xl">
-                            {((parseFloat(data?.amount) || 0) * (parseFloat(selectedCompany?.percentage) || 0) / 100).toFixed(2)}
+                                {new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(
+                                    (parseFloat(data?.amount) || 0) - ((parseFloat(data?.amount) || 0) * (parseFloat(selectedCompany?.percentage) || 0) / 100)
+                                )}
                             </span>
                         </div>
-                        <div className="flex justify-between items-center">
+                        <div className="flex justify-between items-center gap-4">
+                            <strong className="text-gray-600">Charges:</strong> 
+                            <span className="text-gray-800 font-bold text-2xl">
+                                {new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(
+                                    ((parseFloat(data?.amount) || 0) * (parseFloat(selectedCompany?.percentage) || 0) / 100)
+                                )}
+                            </span>
+                        </div>
+                        <div className="flex justify-between items-center gap-4">
                             <strong className="text-gray-600">Amount to repay:</strong> 
-                            <span className="text-gray-800 font-bold text-2xl">{data.amount}</span>
+                            <span className="text-gray-800 font-bold text-2xl">
+                                {new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(parseFloat(data?.amount) || 0)}
+                            </span>
                         </div>
                     </div>
                 </div>
+
 
                 </div>
 

@@ -14,11 +14,13 @@ return new class extends Migration
         Schema::create('repayments', function (Blueprint $table) {
             $table->id();
             $table->string('number')->nullable();
+            $table->string('status')->nullable();
             $table->double('amount')->nullable();
             $table->dateTime('payment_date')->nullable();
-            $table->string('remittance_number')->nullable();
             $table->unsignedBigInteger('loan_id');
             $table->foreign('loan_id')->references('id')->on('loans')->onDelete('cascade');
+            $table->unsignedBigInteger('remittance_id')->nullable();
+            $table->foreign('remittance_id')->references('id')->on('remittances')->onDelete('cascade');
             $table->timestamps();
         });
     }

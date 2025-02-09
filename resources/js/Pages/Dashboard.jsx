@@ -133,7 +133,7 @@ const Dashboard = ({ auth }) => {
                  {roleId === 3 && 
                 <DashboardInfoCard
                     title="Salary"
-                    value={employee?.salary}
+                    value={new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(employee?.salary)}
                     icon="map-marker"
                     iconColor="blue"
                     descriptionValue="The salary"
@@ -142,7 +142,7 @@ const Dashboard = ({ auth }) => {
                 {roleId === 3 && 
                 <DashboardInfoCard
                     title="Loan limit"
-                    value={employee?.loan_limit}
+                    value={new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(employee.loan_limit)}
                     icon="map-marker"
                     iconColor="blue"
                     descriptionValue="The maximum amount"
@@ -158,7 +158,7 @@ const Dashboard = ({ auth }) => {
                 />
                 <DashboardInfoCard
                     title="Pending Loans"
-                    value={`${pendingLoansCount} (${pendingLoansValue})`}
+                    value={`${pendingLoansCount} (${new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(pendingLoansValue)})`}
                     icon="map-marker"
                     iconColor="orange"
                     descriptionValue="Active Loans"
@@ -166,7 +166,7 @@ const Dashboard = ({ auth }) => {
                 />
                 <DashboardInfoCard
                     title="Declined Loans"
-                    value={`${inactiveLoansCount} (${inactiveLoansValue})`}
+                    value={`${inactiveLoansCount} (${new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(inactiveLoansValue)})`}
                     icon="inbox"
                     iconColor="cyan"
                     descriptionValue="Inactive Loans"
@@ -174,7 +174,7 @@ const Dashboard = ({ auth }) => {
                 />
                 <DashboardInfoCard
                     title="Repaid Loans"
-                    value={`${repaidLoansValue.toFixed(2)}`}
+                    value={`${new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(repaidLoansValue)}`}
                     icon="comment"
                     iconColor="purple"
                     descriptionValue="Total Repaid"

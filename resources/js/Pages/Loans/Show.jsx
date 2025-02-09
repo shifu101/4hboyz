@@ -48,11 +48,23 @@ const Show = ({ loan }) => {
           </div>
           <div className="flex justify-between">
             <strong className="text-gray-600">Principle:</strong> 
-            <span className="text-gray-800">{loan.amount - loan.charges}</span>
+            <span className="text-gray-800">  {new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(loan.amount - loan.charges)}</span>
           </div>
           <div className="flex justify-between">
             <strong className="text-gray-600">Charges:</strong> 
-            <span className="text-gray-800">{loan.charges}</span>
+            <span className="text-gray-800">{new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(loan.charges)}</span>
+          </div>
+          <div className="flex justify-between">
+            <strong className="text-gray-600">Current balance:</strong> 
+            <span className="text-gray-800">  {new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(loan.currentBalance)}</span>
+          </div>
+          <div className="flex justify-between">
+            <strong className="text-gray-600">Loan due:</strong> 
+            <span className="text-gray-800">  {new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(loan.amount)}</span>
+          </div>
+          <div className="flex justify-between">
+            <strong className="text-gray-600">Status:</strong> 
+            <span className="text-gray-800">{loan.status}</span>
           </div>
           <div className="flex justify-between">
             <strong className="text-gray-600">Loan Provider:</strong> 
@@ -65,18 +77,6 @@ const Show = ({ loan }) => {
           <div className="flex justify-between">
             <strong className="text-gray-600">Phone:</strong> 
             <span className="text-gray-800">{loan.employee?.user?.phone}</span>
-          </div>
-          <div className="flex justify-between">
-            <strong className="text-gray-600">Current balance:</strong> 
-            <span className="text-gray-800">{loan.currentBalance}</span>
-          </div>
-          <div className="flex justify-between">
-            <strong className="text-gray-600">Loan due:</strong> 
-            <span className="text-gray-800">{loan.amount}</span>
-          </div>
-          <div className="flex justify-between">
-            <strong className="text-gray-600">Status:</strong> 
-            <span className="text-gray-800">{loan.status}</span>
           </div>
         </div>
 
