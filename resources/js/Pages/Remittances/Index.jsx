@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, usePage, router, useForm } from '@inertiajs/react';
+import { Link, usePage, router, useForm, Head } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
 import Swal from 'sweetalert2';
 import { FileText, FileSpreadsheet, Plus, Filter, X } from 'lucide-react';
@@ -75,6 +75,7 @@ const Index = () => {
 
   return (
     <Layout>
+      <Head title="List remittance" />
       <div className="w-full">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-semibold text-gray-900">Remittances Directory</h1>

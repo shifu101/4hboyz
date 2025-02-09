@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, usePage, router } from '@inertiajs/react';
+import { Link, usePage, Head } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
 import Swal from 'sweetalert2';
 
@@ -34,6 +34,7 @@ const Show = ({ loan }) => {
 
   return (
     <Layout>
+      <Head title={loan.number} />
       <div className="max-w-4xl bg-white shadow-md rounded-lg p-6">
         <h1 className="text-2xl font-bold text-gray-800 text-left mb-6">Loan Details</h1>
         

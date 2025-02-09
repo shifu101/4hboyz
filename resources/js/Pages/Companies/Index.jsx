@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, usePage, router } from '@inertiajs/react';
+import { Link, usePage, router, Head } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
 import Swal from 'sweetalert2';
 import { useForm } from '@inertiajs/react';
@@ -98,6 +98,7 @@ const Index = () => {
 
   return (
     <Layout>
+      <Head title="List companies" />
       <div className="w-full">
         {/* Mobile Filters Toggle */}
         <div className="lg:hidden mb-4">

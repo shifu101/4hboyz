@@ -1,7 +1,6 @@
-import { Button } from 'primereact/button';
+
 import { Chart } from 'primereact/chart';
-import { Menu } from 'primereact/menu';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, Head } from 'react';
 import { LayoutContext } from '@/Layouts/layout/context/layoutcontext';
 import Layout from "@/Layouts/layout/layout.jsx";
 import DashboardInfoCard from "@/Components/DashboardInfoCard.jsx";
@@ -190,6 +189,7 @@ const Dashboard = ({ auth }) => {
                     </div>
                 </div>
             </div>
+
         </Layout>
     );
 };

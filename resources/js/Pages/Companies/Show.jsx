@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, router } from "@inertiajs/react";
+import { Link, router, Head } from "@inertiajs/react";
 import Layout from "@/Layouts/layout/layout.jsx";
 import Employees from "./components/Employees";
 import Loans from "./components/Loans";
@@ -22,6 +22,7 @@ const Show = ({ company, employees, loans, remittances, repayments }) => {
 
   return (
     <Layout>
+      <Head title={company.name} />
       <div className="max-w-full bg-white shadow-md rounded-lg p-6">
         <h1 className="text-2xl font-bold text-gray-800 text-left mb-6">{company.name} - {company.unique_number}</h1>
 

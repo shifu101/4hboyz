@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm, Link } from '@inertiajs/react';
+import { useForm, Link, Head } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
 
 const Create = () => {
@@ -17,6 +17,7 @@ const Create = () => {
 
   return (
     <Layout>
+      <Head title="Create provider" />
       <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-md">
         <h1 className="text-3xl font-semibold mb-6">Create Loan Provider</h1>
         <form onSubmit={handleSubmit} className="space-y-6">

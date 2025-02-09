@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, usePage, router } from '@inertiajs/react';
+import { Link, usePage, router, Head } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
 import Swal from 'sweetalert2';
 import { FileText, FileSpreadsheet, Plus, Filter, X } from 'lucide-react';
@@ -98,6 +98,7 @@ const Show = ({ remittance }) => {
 
     return (
         <Layout>
+            <Head title={remittance.remittance_number} />
             <div className="max-w-4xl bg-white shadow-md rounded-lg p-6">
                 <h1 className="text-2xl font-bold text-gray-800 text-left mb-6">Remittance Details</h1>
 

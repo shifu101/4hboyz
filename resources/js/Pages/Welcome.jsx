@@ -5,7 +5,6 @@ import {
   LayoutProvider,
 } from "@/Layouts/layout/context/layoutcontext.jsx";
 import { PrimeReactProvider } from "primereact/api";
-import { Button } from "primereact/button";
 import React, { useContext } from "react";
 import Guest from "@/Layouts/GuestLayout";
 import "../../css/index.scss";

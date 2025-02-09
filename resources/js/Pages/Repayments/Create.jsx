@@ -1,5 +1,5 @@
 import React from 'react';
-import { useForm, Link, usePage } from '@inertiajs/react';
+import { useForm, Link, usePage, Head } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
 import Select from 'react-select';  
 
@@ -29,6 +29,7 @@ const Create = () => {
 
   return (
     <Layout>
+      <Head title="Create repayment" />
       <div className="max-w-2xl bg-white p-6 rounded-lg shadow-md">
         <h1 className="text-3xl font-semibold mb-6">Create Repayment</h1>
         <form onSubmit={handleSubmit} className="space-y-6">

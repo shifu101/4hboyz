@@ -54,7 +54,7 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
                         type="text"
                         placeholder="Name"
                         className="w-full"
-                        value={data.name}
+                        value={data?.name}
                         onChange={(e) => setData('name', e.target.value)}
                     />
                     <InputError message={errors.email} className=""/>
@@ -67,7 +67,7 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
                         type="text"
                         placeholder="Email address"
                         className="w-full"
-                        value={data.email}
+                        value={data?.email}
                         onChange={(e) => setData('email', e.target.value)}
                     />
                     <InputError message={errors.email} className=""/>
@@ -80,7 +80,7 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
                         type="text"
                         placeholder="Phone"
                         className="w-full"
-                        value={data.phone}
+                        value={data?.phone}
                         onChange={(e) => setData('phone', e.target.value)}
                     />
                     <InputError message={errors.phone} className=""/>

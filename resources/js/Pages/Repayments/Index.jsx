@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, usePage, router, useForm } from '@inertiajs/react';
+import { Link, usePage, router, useForm, Head } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
 import Swal from 'sweetalert2';
 import { FileText, FileSpreadsheet, Plus, Filter, X } from 'lucide-react';
@@ -94,6 +94,7 @@ const Index = () => {
 
   return (
     <Layout>
+      <Head title="List repayments" />
       <div className="w-full">
           {/* Mobile Filters Toggle */}
           <div className="lg:hidden mb-4">

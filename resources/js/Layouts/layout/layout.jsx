@@ -22,24 +22,27 @@ const Layout = ({ children }) => {
 
     const pathname = route().current();
 
-    useEffect(() => {
-        const reloadCSS = () => {
-            const cssLinks = document.querySelectorAll('link[rel="stylesheet"]');
-        
-            cssLinks.forEach((link) => {
+    const reloadCSS = () => {
+        if (!document.head) return;
+    
+        const cssLinks = document.querySelectorAll('link[rel="stylesheet"]');
+    
+        cssLinks.forEach((link) => {
+            if (!link.href.includes("primeicons")) { 
                 const newLink = document.createElement("link");
                 newLink.rel = "stylesheet";
                 newLink.href = link.href.split("?")[0] + "?v=" + new Date().getTime();
-                newLink.onload = () => link.remove(); 
-        
-                document.head.appendChild(newLink);
-            });
-        };
-        
-
-        reloadCSS();
+                newLink.onload = () => link.remove();
     
+                document.head.appendChild(newLink);
+            }
+        });
+    };
+    
+    useEffect(() => {
+        reloadCSS();
     }, [pathname]);
+    
 
     useEffect(() => {
         hideMenu();

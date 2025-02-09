@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useForm, usePage, Link } from '@inertiajs/react';
+import { useForm, usePage, Link, Head } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
 import Select from 'react-select';
 
@@ -55,6 +55,7 @@ const EditUser = ({ errors }) => {
 
   return (
     <Layout>
+      <Head title="Edit user" />
       <div className="max-w-4xl bg-white shadow-md rounded-lg p-6">
         <h1 className="text-2xl font-bold text-gray-800 text-left mb-6">Edit User</h1>
         <form onSubmit={handleSubmit} className="space-y-6">

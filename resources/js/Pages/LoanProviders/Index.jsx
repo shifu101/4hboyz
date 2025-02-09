@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, usePage } from '@inertiajs/react';
+import { Link, usePage, Head } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
 
 const Index = () => {
@@ -19,6 +19,7 @@ const Index = () => {
 
   return (
     <Layout>
+      <Head title="Welcome" />
       <div className="w-full">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">

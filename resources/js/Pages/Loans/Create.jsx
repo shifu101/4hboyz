@@ -1,5 +1,5 @@
 import React, {useState,useEffect} from 'react';
-import { useForm, usePage, Link } from '@inertiajs/react';
+import { useForm, usePage, Link, Head } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
 import Select from 'react-select';  
 import DashboardInfoCard from "@/Components/DashboardInfoCard.jsx";
@@ -80,6 +80,7 @@ const Create = () => {
 
     return (
         <Layout>
+           <Head title="Create loan" />
             {selectedEmployee !== null && 
             <div className="grid">
                 <DashboardInfoCard

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, usePage,useForm, router } from '@inertiajs/react';
+import { Link, usePage,useForm, router, Head } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
 import Swal from 'sweetalert2';
 import { FileText, FileSpreadsheet, Plus, Filter, X, Check, XCircle  } from 'lucide-react';
@@ -139,6 +139,7 @@ const Index = () => {
 
   return (
     <Layout>
+      <Head title="List users" />
       <div className="w-full">
         {/* Header Section */}
           <div className="lg:hidden mb-4">

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, usePage,router } from '@inertiajs/react';
+import { Link, usePage,router, Head } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
 import { FileText, FileSpreadsheet, Plus, Filter, X } from 'lucide-react';
 import { jsPDF } from "jspdf";
@@ -87,6 +87,7 @@ const Index = () => {
 
   return (
     <Layout>
+      <Head title="List notification" />
       <div className="w-full">
           {/* Mobile Filters Toggle */}
           <div className="lg:hidden mb-4">

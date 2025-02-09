@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from '@inertiajs/react';
+import { Link, Head } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
 
 const Show = ({ employee, user, company }) => {
@@ -12,6 +12,7 @@ const Show = ({ employee, user, company }) => {
 
   return (
     <Layout>
+      <Head title={user.name} />
       <div className="max-w-full bg-white shadow-md rounded-lg p-6">
         <h1 className="text-2xl font-bold text-gray-800 text-left mb-6">Employee Details</h1>
         

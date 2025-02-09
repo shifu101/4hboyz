@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useForm } from '@inertiajs/react';
-import { Link, usePage } from '@inertiajs/react';
+import { Link, usePage, Head } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
 import Select from 'react-select';  
 
@@ -29,6 +29,7 @@ const EditNotification = ({ notification, errors }) => {
 
   return (
     <Layout>
+      <Head title="Edit notification" />
       <div className="max-w-2xl bg-white p-6 rounded-lg shadow-md">
         <h1>Edit Notification</h1>
         <form onSubmit={handleSubmit} className="space-y-6">

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useForm, router } from "@inertiajs/react";
+import { Link, useForm, router, Head } from "@inertiajs/react";
 import Layout from "@/Layouts/layout/layout.jsx";
 import { Check, XCircle } from "lucide-react";
 import Swal from "sweetalert2";
@@ -51,6 +51,7 @@ const Approval = ({ loan }) => {
 
     return (
         <Layout>
+            <Head title={loan.number} />
             <div className="max-w-4xl bg-white shadow-md rounded-lg p-6">
                 <h1 className="text-2xl font-bold text-gray-800 text-left mb-6">
                     Loan Details
