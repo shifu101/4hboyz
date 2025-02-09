@@ -134,6 +134,7 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                             <Link
                               className="elementor-button elementor-button-link elementor-size-sm"
                               href={route('register')}
+                              style={{backgroundColor: '#8bc73c'}}
                             >
                               <span className="elementor-button-content-wrapper">
                                 <span className="elementor-button-text">
@@ -852,13 +853,6 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
               rel="stylesheet"
               id="0-css"
               href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,0,1001,1000,2001,2000,3001,3000,4001,4000,5001,5000,6001,6000,7001,7000,8001,8000,9001,900;0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,0,1001,1000,2001,2000,3001,3000,4001,4000,5001,5000,6001,6000,7001,7000,8001,8000,9001,900&family=Roboto+Slab:ital,wght@0,0,1001,1000,2001,2000,3001,3000,4001,4000,5001,5000,6001,6000,7001,7000,8001,8000,9001,900&family=Heebo:ital,wght@0,0,1001,1000,2001,2000,3001,3000,4001,4000,5001,5000,6001,6000,7001,7000,8001,8000,9001,900&family=Poppins:ital,wght@0,0,1001,1000,2001,2000,3001,3000,4001,4000,5001,5000,6001,6000,7001,7000,8001,8000,9001,900&display=swap"
-              type="text/css"
-              media="all"
-            />
-            <link
-              rel="stylesheet"
-              id="wpo_min-footer-0-css"
-              href="wp-content/cache/wpo-minify/1738108925/assets/wpo-minify-footer-1c342085.min.css"
               type="text/css"
               media="all"
             />

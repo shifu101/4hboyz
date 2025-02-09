@@ -10009,13 +10009,6 @@ a {
 }
 
 /*! elementor-icons - v5.29.0 - 15-02-2024 */
-@font-face {
-    font-family: eicons;
-    src: url(../../../../plugins/elementor/assets/lib/eicons/fonts/eicons.eot#1738090736);
-    src: url(https://moneycloud.co.ke/wp-content/plugins/elementor/assets/lib/eicons/css/../fonts/eicons.eot#1738090736) format("embedded-opentype"),url(https://moneycloud.co.ke/wp-content/plugins/elementor/assets/lib/eicons/css/../fonts/eicons.woff2#1738090736) format("woff2"),url(https://moneycloud.co.ke/wp-content/plugins/elementor/assets/lib/eicons/css/../fonts/eicons.woff#1738090736) format("woff"),url(https://moneycloud.co.ke/wp-content/plugins/elementor/assets/lib/eicons/css/../fonts/eicons.ttf#1738090736) format("truetype"),url(https://moneycloud.co.ke/wp-content/plugins/elementor/assets/lib/eicons/css/../fonts/eicons.svg?5.29.0#eicon) format("svg");
-    font-weight: 400;
-    font-style: normal
-}
 
 [class*=" eicon-"],[class^=eicon] {
     display: inline-block;
@@ -30626,13 +30619,7 @@ button:hover,input[type="button"]:hover,input[type="submit"]:hover,.woocommerce 
     border-left: 0 solid #6a9d43
 }
 
-@font-face {
-    font-family: elementskit;
-    src: url(https://moneycloud.co.ke/wp-content/plugins/elementskit-lite/modules/elementskit-icon-pack/assets/css/../fonts/elementskit.woff#1738090736) format("woff");
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap
-}
+
 
 .ekit-wid-con .fasicon,.ekit-wid-con .icon,.ekit-wid-con .icon::before,.fasicon,.icon,.icon::before {
     font-family: elementskit!important;
@@ -38098,21 +38085,6 @@ table.dataTable thead .sorting,table.dataTable thead .sorting_asc,table.dataTabl
     background-position: center right
 }
 
-table.dataTable thead .sorting {
-    background-image: url(https://moneycloud.co.ke/wp-content/plugins/elementskit-lite/widgets/init/assets/css/../img/arrow.png)
-}
-
-table.dataTable thead .sorting_asc {
-    background-image: url(https://moneycloud.co.ke/wp-content/plugins/elementskit-lite/widgets/init/assets/css/../img/sort_asc.png)
-}
-
-table.dataTable thead .sorting_desc {
-    background-image: url(https://moneycloud.co.ke/wp-content/plugins/elementskit-lite/widgets/init/assets/css/../img/sort_desc.png)
-}
-
-table.dataTable thead .sorting_asc_disabled {
-    background-image: url(https://moneycloud.co.ke/wp-content/plugins/elementskit-lite/widgets/init/assets/css/../img/sort_asc_disabled.png)
-}
 
 table.dataTable tbody tr {
     background-color: #fff
@@ -55197,7 +55169,6 @@ body.admin-bar .ekit-promo-popup.mfp-ready .mfp-close {
     visibility: hidden;
     -webkit-transition: all .4s ease-in var(--transition-duration);
     transition: all .4s ease-in var(--transition-duration);
-    cursor: url(https://moneycloud.co.ke/wp-content/plugins/elementskit-lite/widgets/init/assets/css/../img/cross-out.svg),pointer;
     background-color: rgba(0,0,0,.9)
 }
 
@@ -75391,14 +75362,7 @@ body.admin-bar .ekit-wid-con .ekit-mini-cart-visibility-off_canvas>.ekit-mini-ca
  * Font Awesome Free 5.15.3 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  */
-@font-face {
-    font-family: "Font Awesome 5 Brands";
-    font-style: normal;
-    font-weight: 400;
-    font-display: block;
-    src: url(../../../../plugins/elementor/assets/lib/font-awesome/webfonts/fa-brands-400.eot);
-    src: url(https://moneycloud.co.ke/wp-content/plugins/elementor/assets/lib/font-awesome/css/../webfonts/fa-brands-400.eot#1738090736) format("embedded-opentype"),url(https://moneycloud.co.ke/wp-content/plugins/elementor/assets/lib/font-awesome/css/../webfonts/fa-brands-400.woff2) format("woff2"),url(https://moneycloud.co.ke/wp-content/plugins/elementor/assets/lib/font-awesome/css/../webfonts/fa-brands-400.woff) format("woff"),url(https://moneycloud.co.ke/wp-content/plugins/elementor/assets/lib/font-awesome/css/../webfonts/fa-brands-400.ttf) format("truetype"),url(https://moneycloud.co.ke/wp-content/plugins/elementor/assets/lib/font-awesome/css/../webfonts/fa-brands-400.svg#fontawesome) format("svg")
-}
+
 
 .fab {
     font-family: "Font Awesome 5 Brands";
@@ -75409,14 +75373,7 @@ body.admin-bar .ekit-wid-con .ekit-mini-cart-visibility-off_canvas>.ekit-mini-ca
  * Font Awesome Free 5.15.3 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  */
-@font-face {
-    font-family: "Font Awesome 5 Free";
-    font-style: normal;
-    font-weight: 900;
-    font-display: block;
-    src: url(../../../../plugins/elementor/assets/lib/font-awesome/webfonts/fa-solid-900.eot);
-    src: url(https://moneycloud.co.ke/wp-content/plugins/elementor/assets/lib/font-awesome/css/../webfonts/fa-solid-900.eot#1738090736) format("embedded-opentype"),url(https://moneycloud.co.ke/wp-content/plugins/elementor/assets/lib/font-awesome/css/../webfonts/fa-solid-900.woff2) format("woff2"),url(https://moneycloud.co.ke/wp-content/plugins/elementor/assets/lib/font-awesome/css/../webfonts/fa-solid-900.woff) format("woff"),url(https://moneycloud.co.ke/wp-content/plugins/elementor/assets/lib/font-awesome/css/../webfonts/fa-solid-900.ttf) format("truetype"),url(https://moneycloud.co.ke/wp-content/plugins/elementor/assets/lib/font-awesome/css/../webfonts/fa-solid-900.svg#fontawesome) format("svg")
-}
+
 
 .fa,.fas {
     font-family: "Font Awesome 5 Free";
