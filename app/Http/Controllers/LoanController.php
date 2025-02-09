@@ -137,8 +137,8 @@ class LoanController extends Controller
             foreach ($loans as $loan) {
             
                 $loan->status = ($loan->currentBalance > 0 && $loan->currentBalance < $loan->amount)
-                ? 'Partially Paid'
-                : 'Paid';
+                ? 'Pending Partially Paid'
+                : 'Pending Paid';
                 $loan->save();
 
                 if ($loan->currentBalance > 0) {
@@ -187,6 +187,11 @@ class LoanController extends Controller
             $loans = Loan::with(['employee.company'])->whereIn('id', $loanIds)->get();
     
             foreach ($loans as $loan) {
+
+                $loan->status = ($loan->currentBalance > 0 && $loan->currentBalance < $loan->amount)
+                ? 'Partially Paid'
+                : 'Paid';
+                $loan->save();
             
                 $repayment = Repayment::where('loan_id', '=', $loan->id)->first();
 

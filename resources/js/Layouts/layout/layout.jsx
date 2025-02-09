@@ -28,7 +28,7 @@ const Layout = ({ children }) => {
         const cssLinks = document.querySelectorAll('link[rel="stylesheet"]');
     
         cssLinks.forEach((link) => {
-            if (!link.href.includes("primeicons")) { 
+            if (!link.href.includes("primeicons") && !link.href.includes("fonts.googleapis")) { 
                 const newLink = document.createElement("link");
                 newLink.rel = "stylesheet";
                 newLink.href = link.href.split("?")[0] + "?v=" + new Date().getTime();
@@ -38,6 +38,7 @@ const Layout = ({ children }) => {
             }
         });
     };
+    
     
     useEffect(() => {
         reloadCSS();
