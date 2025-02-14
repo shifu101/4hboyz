@@ -45,7 +45,7 @@ const Index = () => {
 
   const generatePDF = () => {
     const doc = new jsPDF();
-    const logoUrl = '/images/logo/logo.png';
+    const logoUrl = '/images/logo-dark.png';
     doc.addImage(logoUrl, 'PNG', 10, 10, 80, 30);
     doc.setFontSize(14);
     doc.text(`Employees Report`, 14, 50);
@@ -234,10 +234,10 @@ const Index = () => {
                     <td className="px-4 py-4">{employee.user.name}</td>
                     <td className="px-4 py-4">{employee.user.email}</td>
                     <td className="px-4 py-4">{employee.user.phone || 'N/A'}</td>
-                    <td className="px-4 py-4">{employee.salary}</td>
-                    <td className="px-4 py-4">{employee.loan_limit}</td>
+                    <td className="px-4 py-4">{new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(employee.salary)}</td>
+                    <td className="px-4 py-4">{new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(employee.loan_limit)}</td>
                     <td className="px-4 py-4">{employee.unpaid_loans_count}</td>
-                    <td className="px-4 py-4">{employee.total_loan_balance}</td>
+                    <td className="px-4 py-4">{new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(employee.total_loan_balance)}</td>
                     <td className="px-4 py-4 text-right">
                       <div className="flex justify-end gap-2">
                         <Link 

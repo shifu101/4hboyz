@@ -84,36 +84,12 @@ const Create = () => {
             {selectedEmployee !== null && 
             <div className="grid">
                 <DashboardInfoCard
-                    title="Salary"
-                    value={new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(selectedEmployee.salary)}
-                    icon="map-marker"
-                    iconColor="blue"
-                    descriptionValue="Salary"
-                    descriptionText="per month"
-                />
-                <DashboardInfoCard
                     title="Loan limit"
                     value={        new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(selectedEmployee.loan_limit)}
                     icon="map-marker"
                     iconColor="blue"
                     descriptionValue="The maximum amount"
                     descriptionText="you can borrow"
-                />
-                <DashboardInfoCard
-                    title="Number of unpaid loans"
-                    value={selectedEmployee?.unpaid_loans_count}
-                    icon="map-marker"
-                    iconColor="blue"
-                    descriptionValue="The number"
-                    descriptionText="of loans not fully paid"
-                />
-                <DashboardInfoCard
-                    title="Value of unpaid loans"
-                    value={ new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(selectedEmployee.total_loan_balance)}
-                    icon="map-marker"
-                    iconColor="blue"
-                    descriptionValue="The value"
-                    descriptionText="of loans not fully paid"
                 />
                 <DashboardInfoCard
                     title="Loan float"
@@ -215,7 +191,7 @@ const Create = () => {
                 </div>
 
                 {/* Link to Go Back */}
-                <div className="mt-6 text-center">
+                <div className="mt-6 text-left">
                     <Link href={route('loans.index')} className="text-indigo-600 hover:text-indigo-800">
                         Back to Loans
                     </Link>

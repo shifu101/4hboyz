@@ -277,17 +277,6 @@ const SelectCompany = () => {
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Enter company unique number</label>
-                            <input
-                                type="text"
-                                value={data.unique_number}
-                                onChange={(e) => setData('unique_number', e.target.value)}
-                                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                            />
-                            {errors.unique_number && <div className="text-sm text-red-500 mt-1">{errors.unique_number}</div>}
-                        </div>
-
-                        <div>
                             <label className="block text-sm font-medium text-gray-700">ID number</label>
                             <input
                                 type="text"
