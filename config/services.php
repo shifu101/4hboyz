@@ -31,4 +31,10 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'bulk_sms' => [
+        'api_key' => env('BULK_SMS_API_KEY'),
+        'sender_id' => env('BULK_SMS_SENDER_ID'),
+        'api_url' => 'https://sms.bulk.ke/api/v1/sms/send',
+    ],
+
 ];

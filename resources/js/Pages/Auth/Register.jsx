@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useForm, Link, Head, router, usePage } from '@inertiajs/react';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, Eye, EyeOff } from 'lucide-react';
+import PhoneInput from 'react-phone-number-input';
+import 'react-phone-number-input/style.css';
 import Guest from '@/Layouts/GuestLayout';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -8,19 +10,22 @@ import 'react-toastify/dist/ReactToastify.css';
 export default function Register() {
     const [showForm, setShowForm] = useState(false);
     const [isSearching, setIsSearching] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+    const { company, er } = usePage().props; 
+    
     const { data, setData, post, processing, errors, reset } = useForm({
         name: '',
         email: '',
         password: '',
         unique_number: '',
+        staff_number: '',
         role_id: 3,
         phone: '',
         password_confirmation: '',
-        company_id: null
+        company_id: company ? company.id : null,
     });
-
-      const { company, er } = usePage().props; 
 
     useEffect(() => {
         return () => {
@@ -61,6 +66,35 @@ export default function Register() {
             setShowForm(true)
         }
     }, [company]);
+
+    const renderPasswordInput = (name, label, placeholder, showPass, setShowPass) => (
+        <div key={name}>
+            <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-2">
+                {label} <span className='text-red-400'>*</span>
+            </label>
+            <div className="relative">
+                <input
+                    id={name}
+                    name={name}
+                    type={showPass ? 'text' : 'password'}
+                    placeholder={placeholder}
+                    value={data[name]}
+                    onChange={(e) => setData(name, e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+                />
+                <button
+                    type="button"
+                    onClick={() => setShowPass(!showPass)}
+                    className="absolute inset-y-0 right-0 px-3 flex items-center"
+                >
+                    {showPass ? <EyeOff className="h-8 w-8 text-gray-400" /> : <Eye className="h-8 w-8 text-gray-400" />}
+                </button>
+            </div>
+            {errors[name] && (
+                <p className="text-red-500 text-xs mt-1">{errors[name]}</p>
+            )}
+        </div>
+    );
 
     return (
         <Guest>
@@ -130,56 +164,83 @@ export default function Register() {
 
                         {showForm && (
                             <form onSubmit={submit} className="space-y-4">
-                                {[
-                                    { 
-                                        name: 'name', 
-                                        label: 'Name', 
-                                        type: 'text', 
-                                        placeholder: 'Enter your name'
-                                    },
-                                    { 
-                                        name: 'email', 
-                                        label: 'Email', 
-                                        type: 'email', 
-                                        placeholder: 'Enter your email'
-                                    },
-                                    { 
-                                        name: 'phone', 
-                                        label: 'Phone', 
-                                        type: 'tel', 
-                                        placeholder: 'Enter your phone number'
-                                    },
-                                    { 
-                                        name: 'password', 
-                                        label: 'Password', 
-                                        type: 'password', 
-                                        placeholder: 'Enter your password'
-                                    },
-                                    { 
-                                        name: 'password_confirmation', 
-                                        label: 'Confirm Password', 
-                                        type: 'password', 
-                                        placeholder: 'Confirm your password'
-                                    }
-                                ].map(({ name, label, type, placeholder }) => (
-                                    <div key={name}>
-                                        <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-2">
-                                            {label}
-                                        </label>
-                                        <input
-                                            id={name}
-                                            name={name}
-                                            type={type}
-                                            placeholder={placeholder}
-                                            value={data[name]}
-                                            onChange={(e) => setData(name, e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        />
-                                        {errors[name] && (
-                                            <p className="text-red-500 text-xs mt-1">{errors[name]}</p>
-                                        )}
-                                    </div>
-                                ))}
+                                {company &&
+                                <div>
+                                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                                        Company Name
+                                    </label>
+                                    <p className="text-red-500 text-xs mt-1">{company.name}</p>
+                                </div>}
+
+                                <div>
+                                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                                        Your name <span className='text-red-400'>*</span>
+                                    </label>
+                                    <input
+                                        id="name"
+                                        type="text"
+                                        placeholder="Enter your name"
+                                        value={data.name}
+                                        onChange={(e) => setData('name', e.target.value)}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                    {errors.name && (
+                                        <p className="text-red-500 text-xs mt-1">{errors.name}</p>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                                        Your email <span className='text-red-400'>*</span>
+                                    </label>
+                                    <input
+                                        id="email"
+                                        type="email"
+                                        placeholder="Enter your email"
+                                        value={data.email}
+                                        onChange={(e) => setData('email', e.target.value)}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                    {errors.email && (
+                                        <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+                                        Your phone number <span className='text-red-400'>*</span>
+                                    </label>
+                                    <PhoneInput
+                                        international
+                                        defaultCountry="US"
+                                        value={data.phone}
+                                        onChange={(value) => setData('phone', value)}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                    {errors.phone && (
+                                        <p className="text-red-500 text-xs mt-1">{errors.phone}</p>
+                                    )}
+                                </div>
+
+                                {renderPasswordInput('password', 'Password', 'Enter your password', showPassword, setShowPassword)}
+                                {renderPasswordInput('password_confirmation', 'Confirm Password', 'Confirm your password', showConfirmPassword, setShowConfirmPassword)}
+
+                                <div>
+                                    <label htmlFor="staff_number" className="block text-sm font-medium text-gray-700 mb-2">
+                                        Your staff number (not required)
+                                    </label>
+                                    <input
+                                        id="staff_number"
+                                        type="text"
+                                        placeholder="Enter your staff number"
+                                        value={data.staff_number}
+                                        onChange={(e) => setData('staff_number', e.target.value)}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                    {errors.name && (
+                                        <p className="text-red-500 text-xs mt-1">{errors.name}</p>
+                                    )}
+                                </div>
 
                                 <div className="flex justify-end mb-4">
                                     <Link 

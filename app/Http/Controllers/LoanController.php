@@ -24,8 +24,17 @@ use App\Mail\LoanRepaymentMail;
 use App\Mail\LoanOtpMail;
 use Carbon\Carbon;
 
+use App\Services\MpesaService;
+
 class LoanController extends Controller
 {
+
+    protected $mpesaService;
+
+    public function __construct(MpesaService $mpesaService)
+    {
+        $this->mpesaService = $mpesaService;
+    }
 
     public function index(Request $request)
     {
@@ -254,6 +263,12 @@ class LoanController extends Controller
         if ($loan->status !== $oldStatus) {
             if ($loan->status === 'Approved') {
                 Mail::to($loan->employee->user->email)->send(new LoanApprovalMail($loan));
+
+                $phone = '254708374149';
+                $amountToSend  = '1';
+
+                $response = $this->mpesaService->sendB2CPayment($phone, $amountToSend);
+
             } elseif ($loan->status === 'Declined') {
                 Mail::to($loan->employee->user->email)->send(new LoanDeclinedMail($loan));
             }

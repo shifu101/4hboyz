@@ -141,7 +141,7 @@ const Dashboard = ({ auth }) => {
                 {roleId === 3 && 
                 <DashboardInfoCard
                     title="Loan limit"
-                    value={new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(employee.loan_limit)}
+                    value={new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(employee?.loan_limit)}
                     icon="map-marker"
                     iconColor="blue"
                     descriptionValue="The maximum amount"

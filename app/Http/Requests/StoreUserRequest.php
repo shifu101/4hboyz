@@ -28,7 +28,8 @@ class StoreUserRequest extends FormRequest
             'email' => 'required',
             'password' => 'required',
             'company_id' => 'nullable',
-            'status' => 'nullable'
+            'status' => 'nullable',
+            'staff_number' => 'nullable'
         ];
     }
 }
