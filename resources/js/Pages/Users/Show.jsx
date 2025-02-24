@@ -1,8 +1,9 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Link, Head, usePage, useForm } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
 import Swal from 'sweetalert2';
 import { Check  } from 'lucide-react';
+import PermissionManager from '@/Components/PermissionManager';
 
 const Show = ({ user }) => {
 
@@ -18,6 +19,13 @@ const Show = ({ user }) => {
     const {
       delete: destroy,
     } = useForm();
+
+    const [userPermissions, setUserPermissions] = useState([]);
+
+    const handlePermissionsUpdate = (updatedPermissions) => {
+      setUserPermissions(updatedPermissions);
+      console.log("Updated Permissions:", updatedPermissions);
+    };
 
     const handleDelete = (userId) => {
       Swal.fire({
@@ -150,6 +158,7 @@ const Show = ({ user }) => {
             </form>
         </div>
       </div>
+      <PermissionManager selectedPermissions={userPermissions} onUpdate={handlePermissionsUpdate} />
     </Layout>
   );
 };
