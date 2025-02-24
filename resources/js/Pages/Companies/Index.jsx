@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { Link, usePage, router, Head } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
-import Swal from 'sweetalert2';
-import { useForm } from '@inertiajs/react';
 import "react-daterange-picker/dist/css/react-calendar.css";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable"; 
@@ -13,31 +11,8 @@ const Index = () => {
   const { companies, flash, pagination } = usePage().props;
   const [searchTerm, setSearchTerm] = useState('');
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  const { delete: destroy } = useForm();
   const [loading, setLoading] = useState(false);
 
-  const handleDelete = (companyId) => {
-    Swal.fire({
-      title: 'Are you sure?',
-      text: 'This action cannot be undone.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        destroy(route('companies.destroy', companyId), {
-          onSuccess: () => {
-            console.log('Deleted successfully');
-          },
-          onError: (err) => {
-            console.error('Delete error:', err);
-          },
-        });
-      }
-    });
-  };
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
@@ -52,7 +27,7 @@ const Index = () => {
 
   const generatePDF = () => {
     const doc = new jsPDF();
-    const logoUrl = '/images/logo/logo.png';
+    const logoUrl = '/images/logo-dark.png';
     doc.addImage(logoUrl, 'PNG', 10, 10, 80, 30);
     doc.setFontSize(14);
     doc.text(`All Companies Report`, 14, 50);
@@ -212,18 +187,6 @@ const Index = () => {
                         >
                           <span className="my-auto px-4 py-2">View</span>
                         </Link>
-                        <Link 
-                          href={route('companies.edit', company.id)} 
-                          className="flex items-center bg-yellow-500 text-white rounded-lg text-xs hover:bg-yellow-600"
-                        >
-                          <span className="my-auto px-4 py-2">Edit</span>
-                        </Link>
-                        <button
-                          onClick={() => handleDelete(company.id)}
-                          className="flex items-center cursor-pointer bg-red-600 text-white rounded-lg text-xs hover:bg-red-700"
-                        >
-                         <span className="my-auto px-4 py-2">Delete</span> 
-                        </button>
                       </div>
                     </td>
                   </tr>

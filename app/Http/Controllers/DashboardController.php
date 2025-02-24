@@ -180,7 +180,7 @@ class DashboardController extends Controller
             ];
         });
 
-        if($user->role_id == "3" && $user->company == null) {
+        if($user->role_id == "3" && $user->kyc == null) {
             $er = '';
             return Inertia::render('Employees/SelectCompany', [
                 'user'=>$user,

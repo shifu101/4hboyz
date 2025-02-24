@@ -38,7 +38,7 @@ const EditLoan = ({ errors }) => {
     <Layout>
       <Head title="Edit loan" />
       <div className="max-w-4xl bg-white shadow-md rounded-lg p-6">
-        <h1 className="text-2xl font-bold text-gray-800 text-left mb-6">Edit Loan</h1>
+        <h1 className="text-2xl font-bold text-gray-800 text-left mb-6">Edit salary advance</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
               <label className="block text-sm font-medium text-gray-700">Amount</label>
@@ -74,7 +74,7 @@ const EditLoan = ({ errors }) => {
             {processing ? 'Saving...' : 'Save'}
           </button>
         </form>
-        <Link href={route('loans.index')} className="mt-4 inline-block text-sm text-blue-600">Back to Loans</Link>
+        <Link href={route('loans.index')} className="mt-4 inline-block text-sm text-blue-600">Back to salary advances</Link>
       </div>
     </Layout>
   );

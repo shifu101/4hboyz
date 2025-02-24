@@ -33,6 +33,23 @@ class CompanyController extends Controller
             'flash' => session('flash'),
         ]);
     }
+
+    public function search($uniqueNumber)
+    {
+        $company = Company::where('unique_number', $uniqueNumber)->first();
+        
+        if(!$company) {
+            return Inertia::render('Auth/Register', [
+                'company'=>$company,
+                'er'=>'Sorry no company with such unique number exist!'
+            ]);
+        } else {
+            return Inertia::render('Auth/Register', [
+                'company'=>$company
+            ]);
+        }
+    
+    }
     
 
     public function create()

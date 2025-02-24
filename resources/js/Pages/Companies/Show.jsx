@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, router, Head } from "@inertiajs/react";
+import { Link, router, Head, useForm } from "@inertiajs/react";
 import Layout from "@/Layouts/layout/layout.jsx";
 import Employees from "./components/Employees";
 import Loans from "./components/Loans";
@@ -7,16 +7,41 @@ import Remittances from "./components/Remittances";
 import Repayments from "./components/Repayments";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import Swal from 'sweetalert2';
 
 const Show = ({ company, employees, loans, remittances, repayments }) => {
   const [activeTab, setActiveTab] = useState("Employees");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
+    const { delete: destroy } = useForm();
 
   const handleFilter = () => {
     router.get(route("companies.show", company.id), {
       start_date: startDate ? startDate.toISOString().split("T")[0] : "",
       end_date: endDate ? endDate.toISOString().split("T")[0] : "",
+    });
+  };
+
+  const handleDelete = (companyId) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'This action cannot be undone.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        destroy(route('companies.destroy', companyId), {
+          onSuccess: () => {
+            console.log('Deleted successfully');
+          },
+          onError: (err) => {
+            console.error('Delete error:', err);
+          },
+        });
+      }
     });
   };
 
@@ -94,12 +119,25 @@ const Show = ({ company, employees, loans, remittances, repayments }) => {
         </div>
 
         {/* Back Button */}
-        <div className="mt-8 text-left">
+        <div className="mt-8 text-left flex gap-4">
           <Link 
             href={route("companies.index")} 
             className="inline-block px-6 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition">
             Back to Companies
           </Link>
+
+          <Link 
+            href={route('companies.edit', company.id)} 
+            className="flex items-center bg-yellow-500 text-white rounded-lg text-xs hover:bg-yellow-600"
+          >
+            <span className="my-auto px-4 py-2">Edit</span>
+          </Link>
+          <button
+            onClick={() => handleDelete(company.id)}
+            className="flex items-center cursor-pointer bg-red-600 text-white rounded-lg text-xs hover:bg-red-700"
+          >
+            <span className="my-auto px-4 py-2">Delete</span> 
+          </button>
         </div>
       </div>
     </Layout>

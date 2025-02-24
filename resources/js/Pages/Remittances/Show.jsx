@@ -62,7 +62,7 @@ const Show = ({ remittance }) => {
     
         const generatePDF = () => {
           const doc = new jsPDF();
-          const logoUrl = '/images/logo/logo.png';
+          const logoUrl = '/images/logo-dark.png';
           doc.addImage(logoUrl, 'PNG', 10, 10, 80, 30);
           doc.setFontSize(14);
           doc.text(`Repayment Remittance Report`, 14, 50);

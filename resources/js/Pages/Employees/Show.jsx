@@ -1,14 +1,75 @@
 import React, { useState } from 'react';
-import { Link, Head } from '@inertiajs/react';
+import { Link, Head, useForm, usePage } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
+import Swal from 'sweetalert2';
+import { Check, XCircle } from 'lucide-react';
 
 const Show = ({ employee, user, company }) => {
+
+    const { auth } = usePage().props;
+
+  const roleId = auth.user?.role_id;
+  const { processing } = useForm({
+    approved: ''
+  });
 
   const [previews] = useState({
       id_front: employee?.id_front ? `/storage/${employee?.id_front}` : null,
       id_back: employee?.id_back ? `/storage/${employee?.id_back}` : null,
       passport_front: employee?.passport_front ? `/storage/${employee?.passport_front}` : null
   });
+
+  const handleDelete = (employeeId) => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'This action cannot be undone.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        router.delete(route('employees.destroy', employeeId));
+      }
+    });
+  };
+
+  const handleApprovedUpdate = (e, id, approved) => {
+    e.preventDefault();
+    
+    const formData = {
+      _method: 'PUT', 
+      approved: approved,
+      id: id
+    };
+  
+    Swal.fire({
+      title: `Are you sure you want to ${approved.toLowerCase()} this employee?`,
+      text: 'This action will update the employee approved.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: approved === 'Approved' ? '#3085d6' : '#d33',
+      cancelButtonColor: '#gray',
+      confirmButtonText: `Yes, ${approved.toLowerCase()} it!`,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        router.post(route('employees.update', id), formData, {
+          onSuccess: () => {
+            Swal.fire(
+              `${approved}!`, 
+              `The Employee has been ${approved.toLowerCase()}.`, 
+              'success'
+            );
+          },
+          onError: (err) => {
+            console.error(`${approved} error:`, err);
+            Swal.fire('Error', 'There was a problem updating the employee approval.', 'error');
+          }
+        });
+      }
+    });
+  };
 
   return (
     <Layout>
@@ -96,12 +157,55 @@ const Show = ({ employee, user, company }) => {
           </div>
         </div>
 
-        <div className="mt-8 text-left">
+        <div className="mt-8 text-left flex gap-4">
           <Link 
             href={route('employees.index')} 
             className="inline-block px-6 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition">
             Back to Employees
           </Link>
+
+          <Link 
+            href={route('employees.edit', employee.id)} 
+            className="flex items-center bg-yellow-500 text-white rounded-lg text-xs hover:bg-yellow-600"
+          >
+            <span className="my-auto px-4 py-2">Edit</span>
+          </Link>
+          {roleId === 1 &&
+          <button
+            onClick={() => handleDelete(employee.id)}
+            className="flex items-center cursor-pointer bg-red-600 text-white rounded-lg text-xs hover:bg-red-700"
+          >
+            <span className="my-auto px-4 py-2">Delete</span> 
+          </button>}
+          {employee.salary &&
+          <>
+          {(employee.approved !== 'Approved' && roleId !== 3) &&
+            <button
+              onClick={(e) => handleApprovedUpdate(e, employee.id, 'Approved')}
+              disabled={processing}
+              className="inline-flex items-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-200 disabled:opacity-50"
+            >
+              <Check className="w-4 h-4 mr-2" /> Approve
+            </button>}
+
+            {(employee?.user?.status !== 'Deactivated' && roleId !== 3) &&
+            <button
+              onClick={(e) => handleApprovedUpdate(e, employee.id, 'Deactivated')}
+              disabled={processing}
+              className="inline-flex items-center px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-green-600 transition duration-200 disabled:opacity-50"
+            >
+              <Check className="w-4 h-4 mr-2" /> Deactivate
+            </button>}
+
+          {(employee.approved !== 'Declined' && roleId !== 1) &&
+          <button
+            onClick={(e) => handleApprovedUpdate(e, employee.id, 'Declined')}
+            disabled={processing}
+            className="inline-flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-200 disabled:opacity-50"
+          >
+            <XCircle className="w-4 h-4 mr-2" /> Decline
+          </button>}
+          </>}
         </div>
       </div>
     </Layout>

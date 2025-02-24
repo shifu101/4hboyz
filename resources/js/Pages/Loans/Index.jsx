@@ -32,7 +32,7 @@ const Index = () => {
 
     const generatePDF = () => {
       const doc = new jsPDF();
-      const logoUrl = '/images/logo/logo.png';
+      const logoUrl = '/images/logo-dark.png';
       doc.addImage(logoUrl, 'PNG', 10, 10, 80, 30);
       doc.setFontSize(14);
       doc.text(`Loans Report`, 14, 50);
@@ -148,7 +148,7 @@ const Index = () => {
           `}>
             <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
               <h1 className="text-2xl font-semibold text-gray-900 w-full sm:w-auto my-auto">
-              {status} Loans Directory
+              {status} Salary Advances Directory
               </h1>
               
               <div className="flex flex-wrap justify-center gap-2 w-full sm:w-auto">
@@ -225,12 +225,12 @@ const Index = () => {
                     onChange={handleSelectAll}
                   />
                 </th>}
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Loan number</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Salary advance number</th>
                 {roleId !== 3 &&
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Employee Name</th>}
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Principle</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Charges</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Loan due</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Salary advance due</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Current balance</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Status</th>
                 <th className="px-6 py-3 text-right text-sm font-semibold text-gray-600 uppercase tracking-wider">Actions</th>
@@ -264,14 +264,6 @@ const Index = () => {
                         >
                           View
                         </Link>
-                        {roleId === 1 &&
-                          <Link
-                            href={route('loans.edit', loan.id)}
-                            className="inline-flex items-center px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition duration-200"
-                          >
-                            Edit
-                          </Link>
-                        }
                       </div>
                     </td>
                   </tr>

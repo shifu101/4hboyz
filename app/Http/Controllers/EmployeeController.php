@@ -118,20 +118,6 @@ class EmployeeController extends Controller
     {
        $user = Auth::user();
        $validatedData = $request->validated();
-
-       $company = Company::
-       where('unique_number','=',$validatedData['unique_number'])
-       ->orWhere('id','=',$validatedData['company_id'])
-       ->first();
-
-        if(!$company) {
-            if ($user->role_id == "3") {
-                return Inertia::render('Employees/SelectCompany', [
-                    'user'=>$user,
-                    'er'=>'No such company exist'
-                ]);
-            }
-        }
     
        $fileFields = ['id_front', 'id_back', 'passport_front', 'passport_back'];
        
@@ -142,14 +128,13 @@ class EmployeeController extends Controller
                $validatedData[$field] = $path;
            }
        }
-
-       $validatedData['company_id'] = $company->id;
     
        $employee = Employee::create($validatedData);
     
        if ($user->role_id == "3") {
            $user->update([
-               'company_id' => $employee->company_id
+               'company_id' => $employee->company_id,
+               'kyc'=> 'Added'
            ]);
     
            $adminUser = Auth::user();
