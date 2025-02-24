@@ -36,11 +36,11 @@ const Show = ({ loan }) => {
     <Layout>
       <Head title={loan.number} />
       <div className="max-w-4xl bg-white shadow-md rounded-lg p-6">
-        <h1 className="text-2xl font-bold text-gray-800 text-left mb-6">Loan Details</h1>
+        <h1 className="text-2xl font-bold text-gray-800 text-left mb-6">Salary Advance Details</h1>
         
         <div className="space-y-4">
           <div className="flex justify-between">
-            <strong className="text-gray-600">Loan Number:</strong> 
+            <strong className="text-gray-600">Salary advance Number:</strong> 
             <span className="text-gray-800">{loan.number}</span>
           </div>
           <div className="flex justify-between">

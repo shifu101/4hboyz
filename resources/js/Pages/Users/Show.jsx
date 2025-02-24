@@ -1,8 +1,84 @@
 import React from 'react';
-import { Link, Head } from '@inertiajs/react';
+import { Link, Head, usePage, useForm } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
+import Swal from 'sweetalert2';
+import { Check  } from 'lucide-react';
 
 const Show = ({ user }) => {
+
+
+    const { auth } = usePage().props; 
+
+    const roleId = auth.user?.role_id;
+     const { processing } = useForm({
+        status: ''
+      });
+    
+  
+    const {
+      delete: destroy,
+    } = useForm();
+
+    const handleDelete = (userId) => {
+      Swal.fire({
+        title: 'Are you sure?',
+        text: 'This action cannot be undone.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Use Inertia.delete for making the delete request
+          destroy(route('users.destroy', userId), {
+            onSuccess: () => {
+            },
+            onError: (err) => {
+              console.error('Delete error:', err);
+            },
+          });
+        }
+      });
+    };
+
+
+  const handleActivatedUpdate = (e, id, activated) => {
+    e.preventDefault();
+    
+    const formData = {
+      _method: 'PUT', 
+      status: activated,
+      id: id
+    };
+  
+    Swal.fire({
+      title: `Are you sure you want to ${activated.toLowerCase()} this user?`,
+      text: 'This action will update the user activated.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: activated === 'Activated' ? '#3085d6' : '#d33',
+      cancelButtonColor: '#gray',
+      confirmButtonText: `Yes, ${activated.toLowerCase()} it!`,
+    }).then((result) => {
+      if (result.isConfirmed) {
+        router.post(route('users.update', id), formData, {
+          onSuccess: () => {
+            Swal.fire(
+              `${activated}!`, 
+              `The user has been ${activated.toLowerCase()}.`, 
+              'success'
+            );
+          },
+          onError: (err) => {
+            console.error(`${activated} error:`, err);
+            Swal.fire('Error', 'There was a problem updating the user approval.', 'error');
+          }
+        });
+      }
+    });
+  };
+
   return (
     <Layout>
       <Head title={user.name} />
@@ -32,12 +108,46 @@ const Show = ({ user }) => {
           </div>
         </div>
 
-        <div className="mt-8 text-left">
+        <div className="mt-8 text-left flex gap-4">
           <Link 
             href={route('users.index')} 
             className="inline-block px-6 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition">
             Back to Users
           </Link>
+
+           <Link
+              href={route('users.edit', user.id)}
+              className="inline-flex items-center px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition duration-200"
+            >
+              Edit
+            </Link>
+            {(user.status !== 'Activated' && roleId === 1 && user.status !== 'Approved') &&
+              <button
+                onClick={(e) => handleActivatedUpdate(e, user.id, 'Activated')}
+                disabled={processing}
+                className="inline-flex items-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-200 disabled:opacity-50"
+              >
+                <Check className="w-4 h-4 mr-2" /> Activate
+              </button>}
+            {(user?.status !== 'Deactivated' && roleId === 1) &&
+              <button
+                onClick={(e) => handleActivatedUpdate(e, user.id, 'Deactivated')}
+                disabled={processing}
+                className="inline-flex items-center px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-green-600 transition duration-200 disabled:opacity-50"
+              >
+                <Check className="w-4 h-4 mr-2" /> Deactivate
+              </button>}
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleDelete(user.id); // Call SweetAlert2 on delete
+              }}
+              className="inline"
+            >
+              <button type="submit" className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200">
+                Delete
+              </button>
+            </form>
         </div>
       </div>
     </Layout>

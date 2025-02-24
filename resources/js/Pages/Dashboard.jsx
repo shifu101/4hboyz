@@ -94,7 +94,7 @@ const Dashboard = ({ auth }) => {
         labels: loanTrends.map(trend => trend.month),
         datasets: [
             {
-                label: 'Loans',
+                label: 'Salary advances',
                 data: loanTrends.map(trend => trend.loan_count),
                 fill: false,
                 backgroundColor: '#2f4860',
@@ -140,7 +140,7 @@ const Dashboard = ({ auth }) => {
                 />}
                 {roleId === 3 && 
                 <DashboardInfoCard
-                    title="Loan limit"
+                    title="Salary advance limit"
                     value={new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(employee?.loan_limit)}
                     icon="map-marker"
                     iconColor="blue"
@@ -148,31 +148,31 @@ const Dashboard = ({ auth }) => {
                     descriptionText="you can borrow"
                 />}
                 <DashboardInfoCard
-                    title="Active Loans"
+                    title="Active salary advances"
                     value={`${activeLoansCount} (${activeLoansValue})`}
                     icon="map-marker"
                     iconColor="orange"
-                    descriptionValue="Active Loans"
+                    descriptionValue="Active salary advances"
                     descriptionText="currently active"
                 />
                 <DashboardInfoCard
-                    title="Pending Loans"
+                    title="Pending salary advances"
                     value={`${pendingLoansCount} (${new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(pendingLoansValue)})`}
                     icon="map-marker"
                     iconColor="orange"
-                    descriptionValue="Active Loans"
+                    descriptionValue="Active salary advances"
                     descriptionText="currently active"
                 />
                 <DashboardInfoCard
-                    title="Declined Loans"
+                    title="Declined salary advances"
                     value={`${inactiveLoansCount} (${new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(inactiveLoansValue)})`}
                     icon="inbox"
                     iconColor="cyan"
-                    descriptionValue="Inactive Loans"
+                    descriptionValue="Inactive salary advances"
                     descriptionText="currently inactive"
                 />
                 <DashboardInfoCard
-                    title="Repaid Loans"
+                    title="Repaid salary advances"
                     value={`${new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(repaidLoansValue)}`}
                     icon="comment"
                     iconColor="purple"
@@ -184,7 +184,7 @@ const Dashboard = ({ auth }) => {
             <div className="grid">
                 <div className="col-12 xl:col-6">
                     <div className="card">
-                        <h5>Loan and Repayment Trends</h5>
+                        <h5>Salary advances and Repayment Trends</h5>
                         <Chart type="line" data={lineData} options={lineOptions} />
                     </div>
                 </div>

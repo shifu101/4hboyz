@@ -1,26 +1,17 @@
 import React, { useState } from 'react';
 import { Link, usePage,useForm, router, Head } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
-import Swal from 'sweetalert2';
-import { FileText, FileSpreadsheet, Plus, Filter, X, Check, XCircle  } from 'lucide-react';
+import { FileText, FileSpreadsheet, Plus, Filter, X  } from 'lucide-react';
 import { jsPDF } from "jspdf";
 import "jspdf-autotable"; 
 import * as XLSX from 'xlsx';
 
 const Index = () => {
-  const { users, flash, pagination, auth } = usePage().props; 
+  const { users, flash, pagination } = usePage().props; 
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-  const roleId = auth.user?.role_id;
-   const { processing } = useForm({
-      status: ''
-    });
-  
 
-  const {
-    delete: destroy,
-  } = useForm();
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
@@ -31,33 +22,6 @@ const Index = () => {
       onFinish: () => setLoading(false),
     });
   };
-
-  // Function to handle delete confirmation
-  const handleDelete = (userId) => {
-    Swal.fire({
-      title: 'Are you sure?',
-      text: 'This action cannot be undone.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, delete it!',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Use Inertia.delete for making the delete request
-        destroy(route('users.destroy', userId), {
-          onSuccess: () => {
-            // Optionally you can handle success actions here
-          },
-          onError: (err) => {
-            // Optionally handle errors
-            console.error('Delete error:', err);
-          },
-        });
-      }
-    });
-  };
-
 
   const generatePDF = () => {
     const doc = new jsPDF();
@@ -98,43 +62,6 @@ const Index = () => {
     XLSX.utils.book_append_sheet(wb, ws, 'Users');
     XLSX.writeFile(wb, 'users_report.xlsx');
   };
-
-
-  const handleActivatedUpdate = (e, id, activated) => {
-      e.preventDefault();
-      
-      const formData = {
-        _method: 'PUT', 
-        status: activated,
-        id: id
-      };
-    
-      Swal.fire({
-        title: `Are you sure you want to ${activated.toLowerCase()} this user?`,
-        text: 'This action will update the user activated.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: activated === 'Activated' ? '#3085d6' : '#d33',
-        cancelButtonColor: '#gray',
-        confirmButtonText: `Yes, ${activated.toLowerCase()} it!`,
-      }).then((result) => {
-        if (result.isConfirmed) {
-          router.post(route('users.update', id), formData, {
-            onSuccess: () => {
-              Swal.fire(
-                `${activated}!`, 
-                `The user has been ${activated.toLowerCase()}.`, 
-                'success'
-              );
-            },
-            onError: (err) => {
-              console.error(`${activated} error:`, err);
-              Swal.fire('Error', 'There was a problem updating the user approval.', 'error');
-            }
-          });
-        }
-      });
-    };
 
 
   return (
@@ -253,39 +180,6 @@ const Index = () => {
                         >
                           View
                         </Link>
-                        <Link
-                          href={route('users.edit', user.id)}
-                          className="inline-flex items-center px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition duration-200"
-                        >
-                          Edit
-                        </Link>
-                        {(user.status !== 'Activated' && roleId === 1 && user.status !== 'Approved') &&
-                          <button
-                            onClick={(e) => handleActivatedUpdate(e, user.id, 'Activated')}
-                            disabled={processing}
-                            className="inline-flex items-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-200 disabled:opacity-50"
-                          >
-                            <Check className="w-4 h-4 mr-2" /> Activate
-                          </button>}
-                        {(user?.status !== 'Deactivated' && roleId === 1) &&
-                          <button
-                            onClick={(e) => handleActivatedUpdate(e, user.id, 'Deactivated')}
-                            disabled={processing}
-                            className="inline-flex items-center px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-green-600 transition duration-200 disabled:opacity-50"
-                          >
-                            <Check className="w-4 h-4 mr-2" /> Deactivate
-                          </button>}
-                        <form
-                          onSubmit={(e) => {
-                            e.preventDefault();
-                            handleDelete(user.id); // Call SweetAlert2 on delete
-                          }}
-                          className="inline"
-                        >
-                          <button type="submit" className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200">
-                            Delete
-                          </button>
-                        </form>
                       </div>
                     </td>
                   </tr>
