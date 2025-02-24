@@ -133,7 +133,8 @@ class EmployeeController extends Controller
     
        if ($user->role_id == "3") {
            $user->update([
-               'company_id' => $employee->company_id
+               'company_id' => $employee->company_id,
+               'kyc'=> 'Added'
            ]);
     
            $adminUser = Auth::user();

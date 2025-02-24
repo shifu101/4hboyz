@@ -29,7 +29,8 @@ class UpdateUserRequest extends FormRequest
             'password' => 'nullable',
             'company_id' => 'nullable',
             'status' => 'nullable',
-            'staff_number' => 'nullable'
+            'staff_number' => 'nullable',
+            'kyc'=> 'nullable'
         ];
     }
 }

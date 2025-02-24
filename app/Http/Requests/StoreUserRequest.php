@@ -29,7 +29,8 @@ class StoreUserRequest extends FormRequest
             'password' => 'required',
             'company_id' => 'nullable',
             'status' => 'nullable',
-            'staff_number' => 'nullable'
+            'staff_number' => 'nullable',
+            'kyc'=> 'nullable'
         ];
     }
 }

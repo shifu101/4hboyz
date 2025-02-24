@@ -25,6 +25,7 @@ class User extends Authenticatable
         'password',
         'staff_number',
         'status',
+        'kyc',
         'company_id'
     ];
 
