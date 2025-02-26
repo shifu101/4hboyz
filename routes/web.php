@@ -80,6 +80,12 @@ Route::middleware('auth')->group(function () {
 });
 
 
+Route::post('/mpesa/result', [LoanController::class, 'handleMpesaCallback']);
+
+
+Route::post('/mpesa/timeout', [LoanController::class, 'handleTimeout'])->name('mpesa.timeout');
+
+
 Route::get('/uikit/button', function () {
     return Inertia::render('main/uikit/button/page');
 })->name('button');

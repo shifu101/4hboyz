@@ -9,7 +9,7 @@ const EditEmployee = ({ errors }) => {
 
   const { data, setData, put, processing } = useForm({
     salary: employee.salary,
-    loan_limit: (employee.salary * 0.33).toFixed(2), // Set loan limit initially
+    loan_limit: (employee.salary * 0.67).toFixed(2), 
     user_id: employee.user_id,
     company_id: roleId === 2 ? auth.user?.company_id : '',
     approved: employee.approved || '', 
@@ -66,7 +66,7 @@ const EditEmployee = ({ errors }) => {
                       setData({
                           ...data,
                           salary: salary,
-                          loan_limit: (salary * 0.33).toFixed(2) // Auto-update loan limit
+                          loan_limit: (salary * 0.67).toFixed(2) // Auto-update loan limit
                       });
                   }}
                   className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -75,7 +75,7 @@ const EditEmployee = ({ errors }) => {
           </div>
 
           <div>
-              <label className="block text-sm font-medium text-gray-700">Loan Limit (33% of Salary)</label>
+              <label className="block text-sm font-medium text-gray-700">Loan Limit (67% of Salary)</label>
               <input
                   type="number"
                   value={data.loan_limit}
