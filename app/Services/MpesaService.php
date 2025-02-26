@@ -23,9 +23,10 @@ class MpesaService
             ->get("{$this->baseUrl}/oauth/v1/generate?grant_type=client_credentials");
 
         if ($response->failed()) {
-            Log::error('M-Pesa Access Token Error:', $response->json());
+            Log::error('M-Pesa Access Token Error:', ['response' => $response->body()]);
             return null;
         }
+            
 
         return $response->json()['access_token'] ?? null;
     }
@@ -58,9 +59,10 @@ class MpesaService
             ->post("{$this->baseUrl}/mpesa/b2c/v1/paymentrequest", $payload);
 
         if ($response->failed()) {
-            Log::error('M-Pesa B2C Payment Error:', $response->json());
+            Log::error('M-Pesa B2C Payment Error:', ['response' => $response->body()]);
             return ['error' => 'M-Pesa B2C request failed'];
         }
+            
 
         return $response->json();
     }
