@@ -11,7 +11,7 @@ class MpesaService
 
     public function __construct()
     {
-        $this->baseUrl = env('MPESA_BASE_URL', 'https://sandbox.safaricom.co.ke');
+        $this->baseUrl = env('MPESA_BASE_URL', 'https://api.safaricom.co.ke');
     }
 
     public function generateAccessToken()
