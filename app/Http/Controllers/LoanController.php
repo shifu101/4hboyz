@@ -275,45 +275,67 @@ class LoanController extends Controller
 
     public function approveLoan(Request $request)
     {
-        $input = $request->all();
+        // Validate incoming request data
+        $validated = $request->validate([
+            'id' => 'required|exists:loans,id',
+            'otp' => 'required|string',
+            'status' => 'required|in:Approved,Declined'
+        ]);
     
-        $loan = Loan::find($input['id']);
+        // Retrieve loan details
+        $loan = Loan::find($validated['id']);
     
-        if ($loan->otp == $input['otp']) {
-            $oldStatus = $loan->status;
+        if (!$loan) {
+            return redirect()->route('loans.index')->with('error', 'Loan not found.');
+        }
     
-            // Update the loan with validated request data
-            $loan->update(
-                ['status' => $input['status']]
-            );
-    
-            // Send email notifications if the status has changed
-            if ($loan->status !== $oldStatus) {
-                if ($loan->status === 'Approved') {
-                    $phone = $loan->employee->user->phone;
-                    $amountToSend  = '1';
-            
-                    $response = $this->mpesaService->sendB2CPayment($phone, $amountToSend);
-
-                    Log::info('M-Pesa Response:', ['response' => $response]);
-
-                    if($response) {
-                        Mail::to($loan->employee->user->email)->send(new LoanApprovalMail($loan));
-                    }
-                } elseif ($loan->status === 'Declined') {
-                    Mail::to($loan->employee->user->email)->send(new LoanDeclinedMail($loan));
-                }
-            }
-    
-            return redirect()->route('loans.index')->with('success', 'Loan updated successfully.');
-        } else {
-            // Return error message with the loan details
+        // Validate OTP
+        if ($loan->otp !== $validated['otp']) {
             return Inertia::render('Loans/Approval', [
                 'loan' => $loan,
                 'error' => 'OTP is incorrect. Please try again.'
             ]);
         }
+    
+        $oldStatus = $loan->status;
+    
+        // Begin transaction to ensure data integrity
+        DB::beginTransaction();
+        try {
+            // Update loan status
+            $loan->update(['status' => $validated['status']]);
+    
+            // Handle status change events
+            if ($loan->status !== $oldStatus) {
+                if ($loan->status === 'Approved') {
+                    $phone = $loan->employee->user->phone;
+                    $amountToSend = '1';
+    
+                    // Initiate M-Pesa Payment
+                    $response = $this->mpesaService->sendB2CPayment($phone, $amountToSend);
+                    Log::info('M-Pesa Response:', ['response' => $response]);
+    
+                    // Verify successful transaction before proceeding
+                    if (!isset($response['ResponseCode']) || $response['ResponseCode'] !== "0") {
+                        throw new \Exception('M-Pesa payment failed.');
+                    }
+    
+                    // Send approval email
+                    Mail::to($loan->employee->user->email)->send(new LoanApprovalMail($loan));
+                } elseif ($loan->status === 'Declined') {
+                    Mail::to($loan->employee->user->email)->send(new LoanDeclinedMail($loan));
+                }
+            }
+    
+            DB::commit();
+            return redirect()->route('loans.index')->with('success', 'Loan updated successfully.');
+        } catch (\Exception $e) {
+            DB::rollback();
+            Log::error('Loan approval failed:', ['error' => $e->getMessage()]);
+            return redirect()->route('loans.index')->with('error', 'Loan approval process failed.');
+        }
     }
+    
 
     public function handleTimeout(Request $request)
     {

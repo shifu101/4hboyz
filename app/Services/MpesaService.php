@@ -12,7 +12,7 @@ class MpesaService
 
     public function __construct()
     {
-        $this->baseUrl = env('MPESA_BASE_URL', 'https://api.safaricom.co.ke');
+        $this->baseUrl = env('MPESA_BASE_URL');
     }
 
     public function generateAccessToken()
@@ -34,6 +34,8 @@ class MpesaService
             return ['error' => 'Failed to generate access token'];
         }
 
+        $formattedPhone = $this->formatPhoneNumber($phone);
+
         $response = Http::withToken($accessToken)
             ->post("{$this->baseUrl}/mpesa/b2c/v1/paymentrequest", [
                 'InitiatorName' => env('MPESA_INITIATOR_NAME'),
@@ -41,7 +43,7 @@ class MpesaService
                 'CommandID' => 'SalaryPayment',
                 'Amount' => $amount,
                 'PartyA' => env('MPESA_BUSINESS_SHORTCODE'),
-                'PartyB' => $phone,
+                'PartyB' => $formattedPhone,
                 'Remarks' => 'Umeskia Withdrawal',
                 'QueueTimeOutURL' => env('MPESA_QUEUE_TIMEOUT_URL'),
                 'ResultURL' => env('MPESA_RESULT_URL'),
@@ -49,6 +51,14 @@ class MpesaService
             ]);
 
         return $response->json();
+    }
+
+    private function formatPhoneNumber($phone)
+    {
+        $phone = preg_replace('/\D/', '', $phone);
+        $phone = substr($phone, -12);
+
+        return $phone;
     }
 
 }
