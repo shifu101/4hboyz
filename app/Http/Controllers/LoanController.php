@@ -295,6 +295,8 @@ class LoanController extends Controller
             
                     $response = $this->mpesaService->sendB2CPayment($phone, $amountToSend);
 
+                    Log::info('M-Pesa Response:', ['response' => $response]);
+
                     if($response) {
                         Mail::to($loan->employee->user->email)->send(new LoanApprovalMail($loan));
                     }
