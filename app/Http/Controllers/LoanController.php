@@ -25,6 +25,7 @@ use App\Mail\LoanOtpMail;
 use Carbon\Carbon;
 
 use App\Services\MpesaService;
+use Illuminate\Support\Facades\Log;
 
 class LoanController extends Controller
 {
@@ -264,11 +265,6 @@ class LoanController extends Controller
             if ($loan->status === 'Approved') {
                 Mail::to($loan->employee->user->email)->send(new LoanApprovalMail($loan));
 
-                $phone = '254708374149';
-                $amountToSend  = '1';
-
-                $response = $this->mpesaService->sendB2CPayment($phone, $amountToSend);
-
             } elseif ($loan->status === 'Declined') {
                 Mail::to($loan->employee->user->email)->send(new LoanDeclinedMail($loan));
             }
@@ -294,7 +290,14 @@ class LoanController extends Controller
             // Send email notifications if the status has changed
             if ($loan->status !== $oldStatus) {
                 if ($loan->status === 'Approved') {
-                    Mail::to($loan->employee->user->email)->send(new LoanApprovalMail($loan));
+                    $phone = $loan->employee->user->phone;
+                    $amountToSend  = '1';
+            
+                    $response = $this->mpesaService->sendB2CPayment($phone, $amountToSend);
+
+                    if($response) {
+                        Mail::to($loan->employee->user->email)->send(new LoanApprovalMail($loan));
+                    }
                 } elseif ($loan->status === 'Declined') {
                     Mail::to($loan->employee->user->email)->send(new LoanDeclinedMail($loan));
                 }
@@ -308,6 +311,27 @@ class LoanController extends Controller
                 'error' => 'OTP is incorrect. Please try again.'
             ]);
         }
+    }
+
+    public function handleTimeout(Request $request)
+    {
+        Log::warning('M-Pesa Timeout Callback:', $request->all());
+
+        return response()->json(['message' => 'Timeout callback received'], 200);
+    }
+
+    public function handleB2CCallback($request)
+    {
+        Log::info('B2C Callback Received: ', $request->all());
+
+        $content = $request->json('Result.ResultParameters.ResultParameter', []);
+        $data = [];
+
+        foreach ($content as $row) {
+            $data[$row['Key']] = $row['Value'];
+        }
+
+        return redirect()->route('loans.index')->with('success', 'Loan updated successfully.');
     }
     
     

@@ -21,7 +21,7 @@ const SelectCompany = () => {
       passport_front: null,
       passport_back: null,
       user_id: user.id,
-      company_id: '',
+      company_id: user?.company_id,
       unique_number: ''
     });
 

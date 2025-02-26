@@ -158,7 +158,7 @@ const Index = () => {
                 >
                   <Plus className="w-4 h-4 mr-2 my-auto" />
                   <span className='my-auto flex items-center'>
-                  Request for a loan
+                  Request for an advance
                   </span>
                 </Link>
                 <button
