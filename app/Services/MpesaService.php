@@ -19,12 +19,14 @@ class MpesaService
     {
         $consumerKey = env('MPESA_CONSUMER_KEY');
         $consumerSecret = env('MPESA_CONSUMER_SECRET');
-
+    
         $response = Http::withBasicAuth($consumerKey, $consumerSecret)
             ->get("{$this->baseUrl}/oauth/v1/generate?grant_type=client_credentials");
-
+    
+        Log::info('M-Pesa Token Response:', ['response' => $response->body()]);
+    
         return $response->json()['access_token'] ?? null;
-    }
+    }    
 
     public function sendB2CPayment($phone, $amount)
     {
@@ -55,10 +57,9 @@ class MpesaService
 
     private function formatPhoneNumber($phone)
     {
-        $phone = preg_replace('/\D/', '', $phone);
-        $phone = substr($phone, -12);
-
-        return $phone;
+        $phone = preg_replace('/\D/', '', $phone); 
+        return '254' . substr($phone, -9); 
     }
+    
 
 }
