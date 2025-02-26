@@ -184,6 +184,31 @@ class LoanController extends Controller
         return redirect()->route('loans.index')->with('success', 'Loan paid successfully.');
     }
 
+    public function handleMpesaCallback(Request $request)
+    {
+        // Log the callback received
+        activity()->log('B2C Payment Callback Received');
+        Log::info('M-Pesa B2C Callback:', ['response' => $request->all()]);
+
+        // Decode JSON payload
+        $content = json_decode($request->getContent(), true);
+
+        // Extract and log transaction details
+        if (isset($content['Result']['ResultParameters']['ResultParameter'])) {
+            $transactionDetails = [];
+            foreach ($content['Result']['ResultParameters']['ResultParameter'] as $row) {
+                $transactionDetails[$row['Key']] = $row['Value'];
+            }
+
+            Log::info('Transaction Details:', $transactionDetails);
+        } else {
+            Log::error("Invalid M-Pesa Response Structure:", ['response' => $content]);
+        }
+
+        // Respond to M-Pesa to acknowledge the callback
+        return response()->json(["B2CPaymentConfirmationResult" => "Success"]);
+    }
+
     public function bulkRepayment(Request $request)
     {
         $validated = $request->validate([
