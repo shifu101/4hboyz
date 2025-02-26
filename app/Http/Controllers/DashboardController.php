@@ -191,7 +191,7 @@ class DashboardController extends Controller
 
             $employee = Employee::where('user_id', '=', $user->id)->first();
 
-            if (($employee && $user->role_id != "1" && $employee->approved != 'Approved') || $user->status === 'Deactivated') {
+            if (($employee && $user->role_id != "1" && $user->role_id != "2" && $employee->approved != 'Approved') || $user->status === 'Deactivated') {
                 return Inertia::render('Employees/ProcessedRequest', [
                     'companies' => $companies,
                     'user' => $user,
