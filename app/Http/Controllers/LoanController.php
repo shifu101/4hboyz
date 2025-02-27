@@ -187,7 +187,7 @@ class LoanController extends Controller
     public function handleMpesaCallback(Request $request)
     {
         // Log the callback received
-        activity()->log('B2C Payment Callback Received');
+
         Log::info('M-Pesa B2C Callback:', ['response' => $request->all()]);
 
         // Decode JSON payload
