@@ -103,9 +103,6 @@ class RepaymentController extends Controller
     
         return redirect()->route('repayments.index')->with('success', 'Repayment created successfully.');
     }
-    
-    
-
 
     public function show(Repayment $repayment)
     {
