@@ -334,7 +334,7 @@ class LoanController extends Controller
             if ($loan->status !== $oldStatus) {
                 if ($loan->status === 'Approved') {
                     $phone = $loan->employee->user->phone;
-                    $amountToSend = '1';
+                    $amountToSend = '100';
     
                     // Initiate M-Pesa Payment
                     $response = $this->mpesaService->sendB2CPayment($phone, $amountToSend);

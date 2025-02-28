@@ -49,7 +49,7 @@ const PermissionManager = ({ selectedPermissions, onUpdate }) => {
           <h5 className="text-md font-medium capitalize text-gray-700 mb-2">{group}</h5>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {permissions.map((permission) => (
-              <label key={permission} className="flex flex-wrap items-center gap-2 cursor-pointer">
+              <label key={permission} className="flex items-center justify-between gap-2 cursor-pointer">
                 <input
                   type="checkbox"
                   id={permission}
@@ -58,7 +58,7 @@ const PermissionManager = ({ selectedPermissions, onUpdate }) => {
                   onChange={() => handlePermissionChange(permission)}
                   className="w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500 rounded"
                 />
-                <span className="text-gray-800">{permission}</span>
+                <span className="text-gray-800 min-w-[140px]">{permission}</span>
               </label>
             ))}
           </div>

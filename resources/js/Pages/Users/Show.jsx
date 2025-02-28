@@ -148,7 +148,7 @@ const Show = ({ user }) => {
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                handleDelete(user.id); // Call SweetAlert2 on delete
+                handleDelete(user.id); 
               }}
               className="inline"
             >
