@@ -31,7 +31,7 @@ class CompanyController extends Controller
     {
         $this->smsService = $smsService;
     }
-    
+
     public function index(Request $request)
     {
         $query = Company::query();
@@ -86,17 +86,21 @@ class CompanyController extends Controller
     
         foreach ($fileFields as $field) {
             if ($request->hasFile("company.$field")) {
-                $filePaths[$field] = $request->file("company.$field")->store("company_documents", "public");
+                $file = $request->file("company.$field");
+                $fileName = $file->getClientOriginalName(); 
+                $filePaths[$field] = $file->storeAs("company_documents", $fileName, "public");
             }
         }
-    
+
         // Handle multiple additional documents
         $additionalDocs = [];
         if ($request->hasFile('company.additional_documents')) {
             foreach ($request->file('company.additional_documents') as $doc) {
-                $additionalDocs[] = $doc->store("company_documents", "public");
+                $fileName = $doc->getClientOriginalName(); 
+                $additionalDocs[] = $doc->storeAs("company_documents", $fileName, "public");
             }
         }
+
     
         // Create the company record
         $company = Company::create([
@@ -117,17 +121,17 @@ class CompanyController extends Controller
             'signed_agreement' => $filePaths['signed_agreement'] ?? null,
             'additional_documents' => json_encode($additionalDocs), 
         ]);
+
+        $pass = Str::random(6);
     
         // Create the associated user
         $user = User::create([
             'name' => $validatedData['user']['name'],
             'phone' => $validatedData['user']['phone'],
             'email' => $validatedData['user']['email'],
-            'password' => Hash::make('1234boys'),
+            'password' => Hash::make($pass),
             'company_id' => $company->id,
         ]);
-
-        $pass = Str::random(6);
 
         Mail::to($user->email)->send(new WelcomeMail($user, $pass));
 

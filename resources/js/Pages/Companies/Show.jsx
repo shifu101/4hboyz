@@ -8,9 +8,10 @@ import Repayments from "./components/Repayments";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Swal from 'sweetalert2';
+import Details from "./components/Details";
 
 const Show = ({ company, employees, loans, remittances, repayments }) => {
-  const [activeTab, setActiveTab] = useState("Employees");
+  const [activeTab, setActiveTab] = useState("Details");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
     const { delete: destroy } = useForm();
@@ -89,7 +90,7 @@ const Show = ({ company, employees, loans, remittances, repayments }) => {
           <div className="card flex-1 justify-start items-start">
             <div className="flex justify-start">
               <nav className="flex overflow-x-auto items-start p-1 space-x-1 text-sm text-gray-600 bg-gray-500/5 rounded-xl">
-              {["Employees", "Loans", "Approved Loans", "Pending Loans", "Declined Loans", "Paid Loans","Repayments", "Remittances"].map((tab) => (
+              {["Details", "Employees", "Advances", "Approved Advances", "Pending Advances", "Declined Advances", "Paid Advances","Repayments", "Remittances"].map((tab) => (
                   <button
                     key={tab}
                     type="button"
@@ -106,6 +107,7 @@ const Show = ({ company, employees, loans, remittances, repayments }) => {
 
             {/* Tabs Content */}
             <div className="mt-4 p-4 bg-gray-100 rounded-lg">
+              {activeTab === "Details" && <Details company={company} />}
               {activeTab === "Employees" && <Employees companyId={company.id} employees={employees} />}
               {activeTab === "Loans" && <Loans companyId={company.id} loans={loans} status='All' />}
               {activeTab === "Approved Loans" && <Loans companyId={company.id} loans={loans} status='Approved' />}
