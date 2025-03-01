@@ -1,19 +1,15 @@
 import React, { useState } from "react";
-import { Link, usePage, router, useForm } from '@inertiajs/react';
-import Layout from "@/Layouts/layout/layout.jsx";
-import Swal from 'sweetalert2';
-import { FileText, FileSpreadsheet, Plus, Filter, X, Check, XCircle } from 'lucide-react';
+import { Link, router, } from '@inertiajs/react';
+import { FileText, FileSpreadsheet, Plus, Filter, X } from 'lucide-react';
 import { jsPDF } from "jspdf";
 import "jspdf-autotable"; 
 import * as XLSX from 'xlsx';
 
-const Employees = ({ companyId, employees, roleId }) => {
+const Employees = ({ companyId, employees }) => {
   const [search, setSearch] = useState("");
 
    const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-   const { processing } = useForm({
-        approved: ''
-    });
+
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -25,23 +21,6 @@ const Employees = ({ companyId, employees, roleId }) => {
       router.get(url, {}, { preserveState: true });
     }
   };
-
-    const handleDelete = (employeeId) => {
-      Swal.fire({
-        title: 'Are you sure?',
-        text: 'This action cannot be undone.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, delete it!',
-      }).then((result) => {
-        if (result.isConfirmed) {
-          router.delete(route('employees.destroy', employeeId));
-        }
-      });
-    };
-
 
     const generatePDF = () => {
     const doc = new jsPDF();
@@ -86,43 +65,6 @@ const Employees = ({ companyId, employees, roleId }) => {
     XLSX.utils.book_append_sheet(wb, ws, 'Employees');
     XLSX.writeFile(wb, 'employees_report.xlsx');
     };
-
-
-    const handleApprovedUpdate = (e, id, approved) => {
-        e.preventDefault();
-        
-        const formData = {
-            _method: 'PUT', 
-            approved: approved,
-            id: id
-        };
-        
-        Swal.fire({
-            title: `Are you sure you want to ${approved.toLowerCase()} this employee?`,
-            text: 'This action will update the employee approved.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: approved === 'Approved' ? '#3085d6' : '#d33',
-            cancelButtonColor: '#gray',
-            confirmButtonText: `Yes, ${approved.toLowerCase()} it!`,
-        }).then((result) => {
-            if (result.isConfirmed) {
-            router.post(route('employees.update', id), formData, {
-                onSuccess: () => {
-                Swal.fire(
-                    `${approved}!`, 
-                    `The Employee has been ${approved.toLowerCase()}.`, 
-                    'success'
-                );
-                },
-                onError: (err) => {
-                console.error(`${approved} error:`, err);
-                Swal.fire('Error', 'There was a problem updating the employee approval.', 'error');
-                }
-            });
-            }
-        });
-        };
     
 
   return (
@@ -238,59 +180,6 @@ const Employees = ({ companyId, employees, roleId }) => {
                       >
                         <span className="my-auto px-4 py-2">View</span>
                       </Link>
-
-                      {/* Edit Employee */}
-                      <Link 
-                        href={route('employees.edit', employee.id)} 
-                        className="flex items-center bg-yellow-500 text-white rounded-lg text-xs hover:bg-yellow-600"
-                      >
-                        <span className="my-auto px-4 py-2">Edit</span>
-                      </Link>
-
-                      {/* Delete Employee (Only for roleId === 1) */}
-                      {roleId === 1 && (
-                        <button
-                          onClick={() => handleDelete(employee.id)}
-                          className="flex items-center cursor-pointer bg-red-600 text-white rounded-lg text-xs hover:bg-red-700"
-                        >
-                          <span className="my-auto px-4 py-2">Delete</span> 
-                        </button>
-                      )}
-
-                      {/* Approval / Deactivation Buttons */}
-                      {employee.salary && (
-                        <>
-                          {(employee.approved !== 'Approved' && roleId !== 3) && (
-                            <button
-                              onClick={(e) => handleApprovedUpdate(e, employee.id, 'Approved')}
-                              disabled={processing}
-                              className="inline-flex items-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-200 disabled:opacity-50"
-                            >
-                              <Check className="w-4 h-4 mr-2" /> Approve
-                            </button>
-                          )}
-
-                          {(employee?.user?.status !== 'Deactivated' && roleId !== 3) && (
-                            <button
-                              onClick={(e) => handleApprovedUpdate(e, employee.id, 'Deactivated')}
-                              disabled={processing}
-                              className="inline-flex items-center px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-green-600 transition duration-200 disabled:opacity-50"
-                            >
-                              <Check className="w-4 h-4 mr-2" /> Deactivate
-                            </button>
-                          )}
-
-                          {(employee.approved !== 'Declined' && roleId !== 1) && (
-                            <button
-                              onClick={(e) => handleApprovedUpdate(e, employee.id, 'Declined')}
-                              disabled={processing}
-                              className="inline-flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-200 disabled:opacity-50"
-                            >
-                              <XCircle className="w-4 h-4 mr-2" /> Decline
-                            </button>
-                          )}
-                        </>
-                      )}
                     </div>
                   </td>
                 </tr>

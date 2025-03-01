@@ -11,15 +11,17 @@ class WelcomeMail extends Mailable
     use Queueable, SerializesModels;
 
     public $user;
+    public $pass;
 
     /**
      * Create a new message instance.
      *
      * @param $user
      */
-    public function __construct($user)
+    public function __construct($user, $pass)
     {
         $this->user = $user;
+        $this->pass = $pass;
     }
 
     /**
@@ -33,7 +35,8 @@ class WelcomeMail extends Mailable
         return $this->subject('Welcome to Centiflow!')
                     ->view('emails.welcome')
                     ->with([
-                        'user' => $this->user
+                        'user' => $this->user,
+                        'password'=> $this->pass
                     ]);
     }
 }
