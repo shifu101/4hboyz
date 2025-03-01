@@ -5,15 +5,33 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCompanyRequest;
 use App\Http\Requests\UpdateCompanyRequest;
 use App\Models\Company;
+use App\Models\User;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use App\Models\Loan;
 use App\Models\Employee;
 use App\Models\Repayment;
 use App\Models\Remittance;
+use Illuminate\Support\Facades\Hash;
+
+use App\Mail\WelcomeMail;
+use Illuminate\Support\Facades\Mail;
+
+use Illuminate\Support\Facades\Http;
+
+use App\Services\SmsService;
+use Illuminate\Support\Str;
 
 class CompanyController extends Controller
 {
+
+    protected $smsService;
+
+    public function __construct(SmsService $smsService)
+    {
+        $this->smsService = $smsService;
+    }
+    
     public function index(Request $request)
     {
         $query = Company::query();
@@ -58,10 +76,66 @@ class CompanyController extends Controller
     }
     
 
-    public function store(StoreCompanyRequest $request)
+    public function store(Request $request)
     {
-        Company::create($request->validated());
+        $validatedData = $request->all();
+    
+        // Handle file uploads
+        $fileFields = ['certificate_of_incorporation', 'kra_pin', 'cr12_cr13', 'signed_agreement'];
+        $filePaths = [];
+    
+        foreach ($fileFields as $field) {
+            if ($request->hasFile("company.$field")) {
+                $filePaths[$field] = $request->file("company.$field")->store("company_documents", "public");
+            }
+        }
+    
+        // Handle multiple additional documents
+        $additionalDocs = [];
+        if ($request->hasFile('company.additional_documents')) {
+            foreach ($request->file('company.additional_documents') as $doc) {
+                $additionalDocs[] = $doc->store("company_documents", "public");
+            }
+        }
+    
+        // Create the company record
+        $company = Company::create([
+            'name' => $validatedData['company']['name'],
+            'industry' => $validatedData['company']['industry'],
+            'address' => $validatedData['company']['address'],
+            'email' => $validatedData['company']['email'],
+            'phone' => $validatedData['company']['phone'],
+            'percentage' => $validatedData['company']['percentage'],
+            'registration_number' => $validatedData['company']['registration_number'],
+            'sectors' => $validatedData['company']['sectors'],
+            'county' => $validatedData['company']['county'],
+            'sub_county' => $validatedData['company']['sub_county'],
+            'location' => $validatedData['company']['location'],
+            'certificate_of_incorporation' => $filePaths['certificate_of_incorporation'] ?? null,
+            'kra_pin' => $filePaths['kra_pin'] ?? null,
+            'cr12_cr13' => $filePaths['cr12_cr13'] ?? null,
+            'signed_agreement' => $filePaths['signed_agreement'] ?? null,
+            'additional_documents' => json_encode($additionalDocs), 
+        ]);
+    
+        // Create the associated user
+        $user = User::create([
+            'name' => $validatedData['user']['name'],
+            'phone' => $validatedData['user']['phone'],
+            'email' => $validatedData['user']['email'],
+            'password' => Hash::make('1234boys'),
+            'company_id' => $company->id,
+        ]);
 
+        $pass = Str::random(6);
+
+        Mail::to($user->email)->send(new WelcomeMail($user, $pass));
+
+         $this->smsService->sendSms(
+            $user->phone, 
+            "Hello {$user->name}, welcome to Centiflow Limited!, this is your login password {$pass}"
+        );
+    
         return redirect()->route('companies.index')->with('success', 'Company created successfully.');
     }
 

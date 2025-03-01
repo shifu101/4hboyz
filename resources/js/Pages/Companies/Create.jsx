@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useForm, Head } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
 import Counties from '@/Components/Counties';
@@ -41,34 +41,78 @@ const Create = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    post(route('register.company?.with.user'));
+
+    console.log(data);
+    
+
+      const formData = new FormData();
+      Object.entries(data.company).forEach(([key, value]) => {
+          if (value) {
+              if (Array.isArray(value)) {
+                  value.forEach((file, index) => formData.append(`${key}[${index}]`, file));
+              } else {
+                  formData.append(key, value);
+              }
+          }
+      });
+
+      Object.entries(data.user).forEach(([key, value]) => {
+          formData.append(key, value);
+      });
+
+      post(route("companies.store"), formData);
   };
 
-  const handleCompanyChange = (e) => {
-    const { name, value, type, files } = e.target;
   
-    setData(prevData => {
-      let updatedCompany = { ...prevData.company };
-    
-      if (type === 'file') {
-        if (name === 'additional_documents') {
-          updatedCompany[name] = files;
-        } else {
-          updatedCompany[name] = files[0];
-        }
-      } else {
-        updatedCompany[name] = value;
-      }
-    
-      return {
+
+  // Handle File Selection
+  const handleCompanyChange = useCallback((e) => {
+    const { name, files, value, type } = e.target;
+
+
+    if (name === "additional_documents") {
+      setData(prevData => ({
         ...prevData,
-        company: updatedCompany
-      };
-    });
-  };
-  
+        company: {
+          ...prevData.company,
+          additional_documents: [...prevData.company.additional_documents, ...Array.from(files)]
+        }
+      }));
+    } else {
+      setData(prevData => ({
+        ...prevData,
+        company: {
+          ...prevData.company,
+          [name]: type === "file" ? files[0] : value, 
+        }
+      }));
+    }
+  }, [setData]);
 
-  const handleUserChange = (e) => {
+  // Remove a specific file
+  const removeFile = (fileKey) => {
+    setData(prevData => ({
+      ...prevData,
+      company: {
+        ...prevData.company,
+        [fileKey]: null
+      }
+    }));
+  };
+
+  // Remove a file from additional_documents
+  const removeAdditionalFile = (index) => {
+    setData(prevData => ({
+      ...prevData,
+      company: {
+        ...prevData.company,
+        additional_documents: prevData.company.additional_documents.filter((_, i) => i !== index)
+      }
+    }));
+  };
+
+  // Handle text input change
+  const handleUserChange = useCallback((e) => {
     const { name, value } = e.target;
     setData(prevData => ({
       ...prevData,
@@ -77,9 +121,10 @@ const Create = () => {
         [name]: value
       }
     }));
-  };
+  }, []);
 
-  const handleSelectChange = (name, selectedOption) => {
+  // Handle select changes
+  const handleSelectChange = useCallback((name, selectedOption) => {
     setData(prevData => ({
       ...prevData,
       company: {
@@ -87,7 +132,7 @@ const Create = () => {
         [name]: selectedOption ? selectedOption.value : ""
       }
     }));
-  };
+  }, []);
 
   const countyOptions = Object.keys(Counties)?.map((county) => ({
     value: county,
@@ -128,72 +173,6 @@ const Create = () => {
     );
   };
 
-
-  const InputField = ({ 
-    label, 
-    name, 
-    type = "text", 
-    value, 
-    onChange, 
-    required = false, 
-    error, 
-    parentObject = "company", 
-    multiple = false,
-    options = [] 
-  }) => {
-    const fieldName = `${parentObject}.${name}`;
-    
-    return (
-      <div className="mb-4 flex-1 flex-col">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
-          {label} {required && <span className="text-red-500">*</span>}
-        </label>
-        
-        {type === "select" && 
-          <Select
-            name={name}
-            value={options.find(option => option.value === value) || null}
-            onChange={(selectedOption) => {
-              if (parentObject === "company") {
-                handleSelectChange(name, selectedOption);
-              }
-            }}
-            options={options}
-            className={`w-full min-w-[250px] lg:min-w-[300px] ${errors[fieldName] ? 'border-red-500' : 'border-gray-300'} focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
-            placeholder={`Select ${label}`}
-            isClearable
-          />
-        }
-
-        {(type !== "select" && type !== "textarea") && 
-          <input
-            type={type}
-            name={name}
-            value={value}
-            onChange={onChange}
-            className={`min-w-full px-4 py-2 rounded-md border ${errors[fieldName] ? 'border-red-500' : 'border-gray-300'} 
-              focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
-            required={required}
-            multiple={multiple}
-          />
-        }
-
-        {type === "textarea" && 
-          <textarea
-            name={name}
-            value={value}
-            onChange={onChange}
-            className={`w-full px-4 py-2 rounded-md border ${errors[fieldName] ? 'border-red-500' : 'border-gray-300'} 
-              focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
-            required={required}
-          ></textarea>
-        }
-        
-        {errors[fieldName] && <div className="text-sm text-red-500 mt-1">{errors[fieldName]}</div>}
-      </div>
-    );
-  };
-
   return (
     <Layout>
       <Head title="Register Company with Admin" />
@@ -217,111 +196,186 @@ const Create = () => {
                   </div>
                   
                   <div className="flex flex-wrap gap-x-6">
-                    <InputField 
-                      label="Company Name" 
-                      name="name" 
-                      type="text" 
-                      value={data.company?.name} 
-                      onChange={handleCompanyChange} 
-                      required={true} 
-                      error={errors['company?.name']} 
-                    />
-                    
-                    <InputField 
-                      label="Industry" 
-                      name="industry" 
-                      value={data.company?.industry} 
-                      onChange={handleCompanyChange} 
-                      required={true} 
-                      error={errors['company?.industry']} 
-                    />
-                    
-                    <InputField 
-                      label="Email" 
-                      name="email" 
-                      type="email" 
-                      value={data.company?.email} 
-                      onChange={handleCompanyChange} 
-                      required={true} 
-                      error={errors['company?.email']} 
-                    />
-                    
-                    <InputField 
-                      label="Phone" 
-                      name="phone" 
-                      type="tel" 
-                      value={data.company?.phone} 
-                      onChange={handleCompanyChange} 
-                      required={true} 
-                      error={errors['company?.phone']} 
-                    />
-                    
-                    <InputField 
-                      label="Address" 
-                      name="address" 
-                      type="text" 
-                      value={data.company?.address} 
-                      onChange={handleCompanyChange} 
-                      required={true} 
-                      error={errors['company?.address']} 
-                    />
-                    
-                    <InputField 
-                      label="Loan Percentage" 
-                      name="percentage" 
-                      type="number" 
-                      value={data.company?.percentage} 
-                      onChange={handleCompanyChange} 
-                      required={true} 
-                      error={errors['company?.percentage']} 
-                    />
-                    
-                    <InputField 
-                      label="Registration Number" 
-                      name="registration_number" 
-                      type="text" 
-                      value={data.company?.registration_number} 
-                      onChange={handleCompanyChange} 
-                      error={errors['company?.registration_number']} 
-                    />
-                    
-                    <InputField 
-                      label="Sectors" 
-                      name="sectors" 
-                      type="text" 
-                      value={data.company?.sectors} 
-                      onChange={handleCompanyChange} 
-                      error={errors['company?.sectors']} 
-                    />
-                    
-                    <InputField 
-                      label="County" 
-                      name="county" 
-                      type="select"
-                      value={data.company?.county} 
-                      onChange={handleCompanyChange} 
-                      error={errors['company?.county']}
-                      options={countyOptions}
-                    />
+                    <div className="mb-4 flex-1 flex-col">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Company name <span className="text-red-500">*</span>
+                      </label>
 
-                    <InputField 
-                      label="SubCounty" 
-                      name="sub_county" 
-                      type="select"
-                      value={data.company?.sub_county} 
-                      onChange={handleCompanyChange} 
-                      error={errors['company?.sub_county']}
-                      options={subCountyOptions}
-                    />
+                      <input
+                        type='text'
+                        name='name'
+                        value={data.company?.name} 
+                        onChange={handleCompanyChange}
+                        className={`min-w-full px-4 py-2 rounded-md border ${errors['company?.name'] ? 'border-red-500' : 'border-gray-300'} 
+                          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
+                        required
+                      />
+                    </div>
 
-                    <InputField 
-                      label="Location address" 
-                      name="location" 
-                      type="textarea"
-                      value={data.company?.location} 
-                      onChange={handleCompanyChange} 
-                      error={errors['company?.location']} 
-                    />
+                    <div className="mb-4 flex-1 flex-col">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Industry <span className="text-red-500">*</span>
+                      </label>
+
+                      <input
+                        type='text'
+                        name='industry'
+                        value={data.company?.industry} 
+                        onChange={handleCompanyChange}
+                        className={`min-w-full px-4 py-2 rounded-md border ${errors['company?.industry'] ? 'border-red-500' : 'border-gray-300'} 
+                          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
+                        required
+                      />
+                    </div>
+
+                    <div className="mb-4 flex-1 flex-col">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Email <span className="text-red-500">*</span>
+                      </label>
+
+                      <input
+                        type='email'
+                        name='email'
+                        value={data.company?.email} 
+                        onChange={handleCompanyChange}
+                        className={`min-w-full px-4 py-2 rounded-md border ${errors['company?.email'] ? 'border-red-500' : 'border-gray-300'} 
+                          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
+                        required
+                      />
+                    </div>
+
+                    <div className="mb-4 flex-1 flex-col">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Phone <span className="text-red-500">*</span>
+                      </label>
+
+                      <input
+                        type='tel'
+                        name='phone'
+                        value={data.company?.phone} 
+                        onChange={handleCompanyChange}
+                        className={`min-w-full px-4 py-2 rounded-md border ${errors['company?.phone'] ? 'border-red-500' : 'border-gray-300'} 
+                          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
+                        required
+                      />
+                    </div>
+
+                    <div className="mb-4 flex-1 flex-col">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Address <span className="text-red-500">*</span>
+                      </label>
+
+                      <input
+                        type='text'
+                        name='address'
+                        value={data.company?.address} 
+                        onChange={handleCompanyChange}
+                        className={`min-w-full px-4 py-2 rounded-md border ${errors['company?.address'] ? 'border-red-500' : 'border-gray-300'} 
+                          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
+                        required
+                      />
+                    </div>
+
+                    <div className="mb-4 flex-1 flex-col">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Loan Percentage <span className="text-red-500">*</span>
+                      </label>
+
+                      <input
+                        type='number'
+                        step="any"
+                        min='0'
+                        name='percentage'
+                        value={data.company?.percentage} 
+                        onChange={handleCompanyChange}
+                        className={`min-w-full px-4 py-2 rounded-md border ${errors['company?.percentage'] ? 'border-red-500' : 'border-gray-300'} 
+                          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
+                        required
+                      />
+                    </div>
+
+                    <div className="mb-4 flex-1 flex-col">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Registration Number <span className="text-red-500">*</span>
+                      </label>
+
+                      <input
+                        type='text'
+                        name='registration_number'
+                        value={data.company?.registration_number} 
+                        onChange={handleCompanyChange}
+                        className={`min-w-full px-4 py-2 rounded-md border ${errors['company?.registration_number'] ? 'border-red-500' : 'border-gray-300'} 
+                          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
+                        required
+                      />
+                    </div>
+
+                    <div className="mb-4 flex-1 flex-col">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Sectors <span className="text-red-500">*</span>
+                      </label>
+
+                      <input
+                        type='text'
+                        name='sectors'
+                        value={data.company?.sectors} 
+                        onChange={handleCompanyChange}
+                        className={`min-w-full px-4 py-2 rounded-md border ${errors['company?.sectors'] ? 'border-red-500' : 'border-gray-300'} 
+                          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
+                        required
+                      />
+                    </div>
+
+                    <div className="mb-4 flex-1 flex-col">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      County <span className="text-red-500">*</span>
+                      </label>
+
+                      <Select
+                        name="county"
+                        value={countyOptions.find(option => option.value === data.company.county) || null}
+                        onChange={(selectedOption) => handleSelectChange('county', selectedOption)}
+                        options={countyOptions}
+                        className={`w-full min-w-[250px] lg:min-w-[300px] ${
+                          errors['company?.county'] ? 'border-red-500' : 'border-gray-300'
+                        } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
+                        placeholder="Select county"
+                        isClearable
+                      />
+                    </div>
+
+                    <div className="mb-4 flex-1 flex-col">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Sub county <span className="text-red-500">*</span>
+                      </label>
+
+                      <Select
+                        name="sub_county"
+                        value={subCountyOptions.find(option => option.value === data.company.sub_county) || null}
+                        onChange={(selectedOption) => handleSelectChange('sub_county', selectedOption)}
+                        options={subCountyOptions}
+                        className={`w-full min-w-[250px] lg:min-w-[300px] ${
+                          errors['company?.sub_county'] ? 'border-red-500' : 'border-gray-300'
+                        } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
+                        placeholder="Select sub county"
+                        isClearable
+                      />
+                    </div>
+
+                    <div className="mb-4 flex-1 flex-col">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Location <span className="text-red-500">*</span>
+                      </label>
+
+                      <textarea
+                        name="location"
+                        value={data.company?.location}
+                        onChange={handleCompanyChange}
+                        className={`w-full px-4 py-2 rounded-md border ${errors['company?.location'] ? 'border-red-500' : 'border-gray-300'} 
+                          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
+                        required
+                      ></textarea>
+                    </div>
                     
                   </div>
                 </div>
@@ -330,135 +384,63 @@ const Create = () => {
               {/* Step 2: Documents */}
               {step === 2 && (
                 <div className="space-y-6">
-                  <div className="flex items-center space-x-2 text-3xl font-medium text-gray-800 pb-2 border-b border-gray-200">
-                    <span>Company Documents</span>
-                  </div>
-                  
-                  <div className="space-y-5">
-                    <div className="bg-blue-50 rounded-lg p-4 text-blue-800 text-sm">
-                      <div className="flex">
-                        <div>
-                          <p className="font-medium">Document Guidelines</p>
-                          <ul className="list-disc list-inside mt-1 text-blue-700 text-xs">
-                            <li>All documents should be in PDF format</li>
-                            <li>Maximum file size: 5MB per document</li>
-                            <li>Ensure all documents are clear and legible</li>
-                          </ul>
+                  <h2 className="text-3xl font-medium text-gray-800 pb-2 border-b border-gray-200">Company Documents</h2>
+
+                  {/* File Inputs */}
+                  {["certificate_of_incorporation", "kra_pin", "cr12_cr13", "signed_agreement"].map((fileKey) => (
+                    <div key={fileKey} className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700 capitalize">{fileKey.replace(/_/g, " ")}</label>
+                      <input
+                        type="file"
+                        name={fileKey}
+                        onChange={handleCompanyChange}
+                        className="mt-1 block w-full text-sm border border-gray-300 rounded-lg p-2"
+                      />
+                      {data.company[fileKey] && (
+                        <div className="mt-2 flex items-center">
+                          <span className="text-sm text-gray-600">{data.company[fileKey].name}</span>
+                          <button 
+                            type="button" 
+                            onClick={() => removeFile(fileKey)}
+                            className="ml-2 text-red-600 hover:text-red-800 text-sm"
+                          >
+                            Remove
+                          </button>
                         </div>
-                      </div>
+                      )}
                     </div>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                      <div className="p-4 border border-gray-200 rounded-lg">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Certificate of Incorporation</label>
-                        <div className="flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-50">
-                          <div className="text-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                            </svg>
-                            <p className="mt-1 text-sm text-gray-500">Click to upload or drag and drop</p>
-                            <input
-                              type="file"
-                              name="certificate_of_incorporation"
-                              onChange={handleCompanyChange}
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                            />
-                          </div>
-                        </div>
-                        {errors['company?.certificate_of_incorporation'] && 
-                          <div className="text-sm text-red-500 mt-1">{errors['company?.certificate_of_incorporation']}</div>
-                        }
-                      </div>
-                      
-                      <div className="p-4 border border-gray-200 rounded-lg">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">KRA PIN</label>
-                        <div className="flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-50">
-                          <div className="text-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                            </svg>
-                            <p className="mt-1 text-sm text-gray-500">Click to upload or drag and drop</p>
-                            <input
-                              type="file"
-                              name="kra_pin"
-                              onChange={handleCompanyChange}
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                            />
-                          </div>
-                        </div>
-                        {errors['company?.kra_pin'] && 
-                          <div className="text-sm text-red-500 mt-1">{errors['company?.kra_pin']}</div>
-                        }
-                      </div>
-                      
-                      <div className="p-4 border border-gray-200 rounded-lg">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">CR12/CR13</label>
-                        <div className="flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-50">
-                          <div className="text-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                            </svg>
-                            <p className="mt-1 text-sm text-gray-500">Click to upload or drag and drop</p>
-                            <input
-                              type="file"
-                              name="cr12_cr13"
-                              onChange={handleCompanyChange}
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                            />
-                          </div>
-                        </div>
-                        {errors['company?.cr12_cr13'] && 
-                          <div className="text-sm text-red-500 mt-1">{errors['company?.cr12_cr13']}</div>
-                        }
-                      </div>
-                      
-                      <div className="p-4 border border-gray-200 rounded-lg">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Signed Agreement</label>
-                        <div className="flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-50">
-                          <div className="text-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                            </svg>
-                            <p className="mt-1 text-sm text-gray-500">Click to upload or drag and drop</p>
-                            <input
-                              type="file"
-                              name="signed_agreement"
-                              onChange={handleCompanyChange}
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                            />
-                          </div>
-                        </div>
-                        {errors['company?.signed_agreement'] && 
-                          <div className="text-sm text-red-500 mt-1">{errors['company?.signed_agreement']}</div>
-                        }
-                      </div>
-                      
-                      <div className="p-4 border border-gray-200 rounded-lg md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Additional Documents</label>
-                        <div className="flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg p-6 bg-gray-50">
-                          <div className="text-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                            </svg>
-                            <p className="mt-1 text-sm text-gray-500">Click to upload or drag and drop</p>
-                            <p className="text-xs text-gray-500">You can select multiple files</p>
-                            <input
-                              type="file"
-                              name="additional_documents"
-                              onChange={handleCompanyChange}
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                              multiple
-                            />
-                          </div>
-                        </div>
-                        {errors['company?.additional_documents'] && 
-                          <div className="text-sm text-red-500 mt-1">{errors['company?.additional_documents']}</div>
-                        }
-                      </div>
-                    </div>
+                  ))}
+
+                  {/* Additional Documents */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700">Additional Documents</label>
+                    <input
+                      type="file"
+                      name="additional_documents"
+                      multiple
+                      onChange={handleCompanyChange}
+                      className="mt-1 block w-full text-sm border border-gray-300 rounded-lg p-2"
+                    />
+                    {data.company.additional_documents.length > 0 && (
+                      <ul className="mt-2 text-sm text-gray-600">
+                        {data.company.additional_documents.map((file, index) => (
+                          <li key={index} className="flex justify-between items-center">
+                            {file.name}
+                            <button 
+                              type="button" 
+                              onClick={() => removeAdditionalFile(index)}
+                              className="text-red-600 hover:text-red-800 text-sm"
+                            >
+                              Remove
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
                 </div>
               )}
+
               
               {/* Step 3: Admin User */}
               {step === 3 && (
@@ -477,61 +459,55 @@ const Create = () => {
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6">
-                    <InputField 
-                      label="Full Name" 
-                      name="name" 
-                      type="text" 
-                      value={data.user.name} 
-                      onChange={handleUserChange} 
-                      required={true} 
-                      error={errors['user.name']} 
-                      parentObject="user"
-                    />
-                    
-                    <InputField 
-                      label="Phone" 
-                      name="phone" 
-                      type="tel" 
-                      value={data.user.phone} 
-                      onChange={handleUserChange} 
-                      required={true} 
-                      error={errors['user.phone']} 
-                      parentObject="user"
-                    />
-                    
-                    <InputField 
-                      label="Email" 
-                      name="email" 
-                      type="email" 
-                      value={data.user.email} 
-                      onChange={handleUserChange} 
-                      required={true} 
-                      error={errors['user.email']} 
-                      parentObject="user"
-                    />
-                    
-                    <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-x-6">
-                      <InputField 
-                        label="Password" 
-                        name="password" 
-                        type="password" 
-                        value={data.user.password} 
-                        onChange={handleUserChange} 
-                        required={true} 
-                        error={errors['user.password']} 
-                        parentObject="user"
-                      />
-                      
-                      <InputField 
-                        label="Confirm Password" 
-                        name="password_confirmation" 
-                        type="password" 
-                        value={data.user.password_confirmation} 
-                        onChange={handleUserChange} 
-                        required={true} 
-                        parentObject="user"
+
+                  <div className="mb-4 flex-1 flex-col">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Admin name <span className="text-red-500">*</span>
+                      </label>
+
+                      <input
+                        type='text'
+                        name='name'
+                        value={data.user?.name} 
+                        onChange={handleUserChange}
+                        className={`min-w-full px-4 py-2 rounded-md border ${errors['user?.name'] ? 'border-red-500' : 'border-gray-300'} 
+                          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
+                        required
                       />
                     </div>
+
+                    <div className="mb-4 flex-1 flex-col">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Admin Email <span className="text-red-500">*</span>
+                      </label>
+
+                      <input
+                        type='email'
+                        name='email'
+                        value={data.user?.email} 
+                        onChange={handleUserChange}
+                        className={`min-w-full px-4 py-2 rounded-md border ${errors['user?.email'] ? 'border-red-500' : 'border-gray-300'} 
+                          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
+                        required
+                      />
+                    </div>
+
+                    <div className="mb-4 flex-1 flex-col">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Admin Phone <span className="text-red-500">*</span>
+                      </label>
+
+                      <input
+                        type='tel'
+                        name='phone'
+                        value={data.user?.phone} 
+                        onChange={handleUserChange}
+                        className={`min-w-full px-4 py-2 rounded-md border ${errors['user?.phone'] ? 'border-red-500' : 'border-gray-300'} 
+                          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
+                        required
+                      />
+                    </div>
+
                   </div>
                   
                   <button

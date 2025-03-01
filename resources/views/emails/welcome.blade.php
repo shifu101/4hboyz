@@ -16,6 +16,7 @@
 <body>
     <h2>Welcome to Centiflow, {{ $user->name }}!</h2>
     <p>Thank you for registering with us. We're excited to have you on board.</p>
+    <p>This is your login password {{$password}}</p>
     <p>If you have any questions or need assistance, feel free to contact us at any time.</p>
     <p>Best regards,</p>
     <p><strong>The Centiflow Team</strong></p>

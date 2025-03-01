@@ -18,11 +18,21 @@ use Illuminate\Support\Facades\Mail;
 
 use Illuminate\Support\Facades\Http;
 
+use App\Services\SmsService;
+
 class RegisteredUserController extends Controller
 {
     /**
      * Display the registration view.
      */
+
+     protected $smsService;
+
+     public function __construct(SmsService $smsService)
+     {
+         $this->smsService = $smsService;
+     }
+
     public function create(): Response
     {
         return Inertia::render('Auth/Register');
@@ -62,9 +72,14 @@ class RegisteredUserController extends Controller
      
          Auth::login($user);
 
-         Mail::to($user->email)->send(new WelcomeMail($user));
+         $pass = $request->password;
 
-         $this->sendSms($user->phone, "Hello {$user->name}, welcome to Centiflow Limited!");
+         Mail::to($user->email)->send(new WelcomeMail($user, $pass));
+
+         $this->smsService->sendSms(
+            $user->phone, 
+            "Hello {$user->name}, welcome to Centiflow Limited!, this is your login password {$pass}"
+        );
      
          return redirect(RouteServiceProvider::HOME);
      }

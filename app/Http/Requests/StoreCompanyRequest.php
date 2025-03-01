@@ -20,26 +20,31 @@ class StoreCompanyRequest extends FormRequest
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     
-    public function rules(): array
-    {
-        return [
-            'name' => 'required|string|max:255',
-            'registration_number' => 'nullable|string|max:255',
-            'industry' => 'nullable|string|max:255',
-            'sectors' => 'nullable|string|max:255',
-            'county' => 'nullable|string|max:255',
-            'sub_county' => 'nullable|string|max:255',
-            'location' => 'nullable|string|max:255',
-            'address' => 'nullable|string|max:255',
-            'email' => 'required|email|unique:companies,email',
-            'phone' => 'required|string|max:15',
-            'percentage' => 'required|numeric',
-            'unique_number'=> 'nullable|string|max:255',
-            'certificate_of_incorporation' => 'nullable|string|max:255',
-            'kra_pin' => 'nullable|string|max:255',
-            'cr12_cr13' => 'nullable|string|max:255',
-            'signed_agreement' => 'nullable|string|max:255',
-            'additional_documents' => 'nullable|json',
-        ];
-    }
+     public function rules(): array
+     {
+         return [
+             'name' => 'required|string|max:255',
+             'registration_number' => 'nullable|string|max:255',
+             'industry' => 'nullable|string|max:255',
+             'sectors' => 'nullable|string|max:255',
+             'county' => 'nullable|string|max:255',
+             'sub_county' => 'nullable|string|max:255',
+             'location' => 'nullable|string|max:255',
+             'address' => 'nullable|string|max:255',
+             'email' => 'required|email|unique:companies,email',
+             'phone' => 'required|string|max:15',
+             'percentage' => 'required|numeric',
+             'unique_number' => 'nullable|string|max:255',
+     
+             // Fix: Allow file uploads instead of string
+             'certificate_of_incorporation' => 'nullable|file|mimes:pdf,jpg,png|max:2048',
+             'kra_pin' => 'nullable|file|mimes:pdf,jpg,png|max:2048',
+             'cr12_cr13' => 'nullable|file|mimes:pdf,jpg,png|max:2048',
+             'signed_agreement' => 'nullable|file|mimes:pdf,jpg,png|max:2048',
+     
+             // Fix: Allow multiple file uploads for additional documents
+             'additional_documents.*' => 'nullable|file|mimes:pdf,jpg,png|max:2048',
+         ];
+     }
+     
 }
