@@ -9,6 +9,10 @@ const Show = ({ user }) => {
 
 
     const { auth } = usePage().props; 
+    
+  const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
+
+
 
     const roleId = auth.user?.role_id;
      const { processing } = useForm({
@@ -24,7 +28,6 @@ const Show = ({ user }) => {
 
     const handlePermissionsUpdate = (updatedPermissions) => {
       setUserPermissions(updatedPermissions);
-      console.log("Updated Permissions:", updatedPermissions);
     };
 
     const handleDelete = (userId) => {
@@ -117,19 +120,21 @@ const Show = ({ user }) => {
         </div>
 
         <div className="mt-8 text-left flex gap-4">
+          {userPermission.includes('Index user') &&
           <Link 
             href={route('users.index')} 
             className="inline-block px-6 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition">
             Back to Users
-          </Link>
+          </Link>}
 
+           {userPermission.includes('Edit user') &&
            <Link
               href={route('users.edit', user.id)}
               className="inline-flex items-center px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition duration-200"
             >
               Edit
-            </Link>
-            {(user.status !== 'Activated' && roleId === 1 && user.status !== 'Approved') &&
+            </Link>}
+            {(user.status !== 'Activated' && userPermission.includes('Delete user') && user.status !== 'Approved') &&
               <button
                 onClick={(e) => handleActivatedUpdate(e, user.id, 'Activated')}
                 disabled={processing}
@@ -137,7 +142,7 @@ const Show = ({ user }) => {
               >
                 <Check className="w-4 h-4 mr-2" /> Activate
               </button>}
-            {(user?.status !== 'Deactivated' && roleId === 1) &&
+            {(user?.status !== 'Deactivated' && userPermission.includes('Delete user')) &&
               <button
                 onClick={(e) => handleActivatedUpdate(e, user.id, 'Deactivated')}
                 disabled={processing}
@@ -145,6 +150,7 @@ const Show = ({ user }) => {
               >
                 <Check className="w-4 h-4 mr-2" /> Deactivate
               </button>}
+            {userPermission.includes('Delete user') &&
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -155,10 +161,12 @@ const Show = ({ user }) => {
               <button type="submit" className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200">
                 Delete
               </button>
-            </form>
+            </form>}
         </div>
       </div>
-      <PermissionManager selectedPermissions={userPermissions} onUpdate={handlePermissionsUpdate} />
+
+      {roleId === 1 &&
+      <PermissionManager selectedPermissions={userPermissions} onUpdate={handlePermissionsUpdate} />}
     </Layout>
   );
 };

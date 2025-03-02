@@ -1,33 +1,40 @@
 import { useState, useEffect } from "react";
+import { usePage, router } from '@inertiajs/react';
+import { CheckCircle, Circle, ChevronDown, ChevronUp, Shield } from "lucide-react";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-const permissionsList = [
-  "View user", "Create user", "Edit user", "Delete user", "Export user",
-  "View company", "Create company", "Edit company", "Delete company", "Export company",
-  "View employee", "Create employee", "Edit employee", "Delete employee", "Export employee",
-  "View loan", "Create loan", "Edit loan", "Delete loan", "Export loan",
-  "View loan provider", "Create loan provider", "Edit loan provider", "Delete loan provider", "Export loan provider",
-  "View notification", "Create notification", "Edit notification", "Delete notification", "Export notification",
-  "View remittance", "Create remittance", "Edit remittance", "Delete remittance", "Export remittance",
-  "View repayments", "Create repayments", "Edit repayments", "Delete repayments", "Export repayments",
-];
+const PermissionManager = ({ onUpdate }) => {
+  const { permissions, user } = usePage().props; 
+  const permissionsList = permissions.map((data) => data.name);
 
-// Function to group permissions dynamically
-const groupPermissions = () => {
-  const groups = {};
-  permissionsList.forEach((perm) => {
-    const parts = perm.split(" ");
-    const entity = parts.slice(1).join(" "); // Extract entity name (e.g., "user", "company")
-    if (!groups[entity]) {
-      groups[entity] = [];
-    }
-    groups[entity].push(perm);
-  });
-  return groups;
-};
+  // Function to group permissions dynamically
+  const groupPermissions = () => {
+    const groups = {};
+    permissionsList.forEach((perm) => {
+      const parts = perm.split(" ");
+      const action = parts[0]; // Extract action (e.g., "View", "Create")
+      const entity = parts.slice(1).join(" "); // Extract entity name (e.g., "user", "company")
+      if (!groups[entity]) {
+        groups[entity] = [];
+      }
+      groups[entity].push({ permission: perm, action });
+    });
+    return groups;
+  };
 
-const PermissionManager = ({ selectedPermissions, onUpdate }) => {
-  const [formData, setFormData] = useState(selectedPermissions);
   const permissionGroups = groupPermissions();
+  const [formData, setFormData] = useState(user?.simple_permissions);
+  const [expandedGroups, setExpandedGroups] = useState({});
+
+  // Initialize all groups as expanded
+  useEffect(() => {
+    const initialExpandState = Object.keys(permissionGroups).reduce((acc, group) => {
+      acc[group] = true;
+      return acc;
+    }, {});
+    setExpandedGroups(initialExpandState);
+  }, [permissionsList]);
 
   const handlePermissionChange = (permission) => {
     setFormData((prev) =>
@@ -36,34 +43,145 @@ const PermissionManager = ({ selectedPermissions, onUpdate }) => {
         : [...prev, permission] // Add if not selected
     );
   };
+  
+  const handleGroupToggle = (group) => {
+    setExpandedGroups(prev => ({
+      ...prev,
+      [group]: !prev[group]
+    }));
+  };
+  
+  // Toggle all permissions in a group
+  const handleGroupSelectAll = (permissions, isAllSelected) => {
+    if (isAllSelected) {
+      // Remove all permissions in this group
+      setFormData(prev => prev.filter(p => !permissions.includes(p)));
+    } else {
+      // Add all permissions in this group
+      const permissionsToAdd = permissions.filter(p => !formData.includes(p));
+      setFormData(prev => [...prev, ...permissionsToAdd]);
+    }
+  };
 
   useEffect(() => {
     onUpdate(formData);
   }, [formData, onUpdate]);
 
+  // Get action color based on type
+  const getActionColor = (action) => {
+    switch(action) {
+      case 'View': return 'text-blue-600';
+      case 'Create': return 'text-green-600';
+      case 'Edit': return 'text-amber-600';
+      case 'Delete': return 'text-red-600';
+      case 'Export': return 'text-purple-600';
+      default: return 'text-gray-600';
+    }
+  };
+
+  const handleSubmit = () => {
+    router.post(`/update-permissions/${user.id}`, { permissions: formData }, {
+      onSuccess: () => toast.success("Permissions updated successfully."),
+    });
+  };
+
   return (
-    <div className="max-w-4xl mt-10 p-4 shadow-md rounded-md mb-6 bg-white">
-      <h5 className="text-lg font-semibold mb-4">Customize User Permissions</h5>
-      {Object.entries(permissionGroups).map(([group, permissions]) => (
-        <div key={group} className="mb-6 flex flex-col">
-          <h5 className="text-md font-medium capitalize text-gray-700 mb-2">{group}</h5>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {permissions.map((permission) => (
-              <label key={permission} className="flex items-center justify-between gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  id={permission}
-                  value={permission}
-                  checked={formData.includes(permission)}
-                  onChange={() => handlePermissionChange(permission)}
-                  className="w-5 h-5 text-blue-600 border-gray-300 focus:ring-blue-500 rounded"
-                />
-                <span className="text-gray-800 min-w-[140px]">{permission}</span>
-              </label>
-            ))}
-          </div>
+    <div className="max-w-4xl bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden my-4">
+      <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+      />
+      
+      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-4">
+        <div className="flex items-center space-x-2">
+          <Shield className="text-white" size={24} />
+          <h3 className="text-xl font-bold text-white">Permission Management</h3>
         </div>
-      ))}
+        <p className="text-blue-100 text-sm mt-1">Configure access rights and capabilities for this user</p>
+        <button onClick={handleSubmit} className="bg-black text-white px-4 py-2 mt-4 rounded">
+          Update Permissions
+        </button>
+      </div>
+      
+      <div className="p-6">
+        {Object.entries(permissionGroups).map(([group, perms]) => {
+          const permissions = perms.map(p => p.permission);
+          const isExpanded = expandedGroups[group];
+          const selectedCount = permissions.filter(p => formData.includes(p)).length;
+          const isAllSelected = selectedCount === permissions.length;
+          
+          return (
+            <div key={group} className="mb-4 border border-gray-200 rounded-lg overflow-hidden">
+              <div 
+                className="flex items-center justify-between bg-gray-50 px-4 py-3 cursor-pointer" 
+                onClick={() => handleGroupToggle(group)}
+              >
+                <div className="flex items-center space-x-3">
+                  <div 
+                    className={`w-6 h-6 rounded-md flex items-center justify-center cursor-pointer ${isAllSelected ? '' : ''}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleGroupSelectAll(permissions, isAllSelected);
+                    }}
+                  >
+                    {isAllSelected ? 
+                      <CheckCircle size={18} className="text-blue-600" /> : 
+                      <Circle size={18} className="text-gray-400" />
+                    }
+                  </div>
+                  <h4 className="font-medium text-gray-800 capitalize lg:min-w-[200px]">{group}</h4>
+                </div>
+                
+                <div className="flex items-center space-x-3">
+                  <span className="text-sm text-gray-500">{selectedCount} of {permissions.length} selected</span>
+                  {isExpanded ? 
+                    <ChevronUp size={18} className="text-gray-500" /> : 
+                    <ChevronDown size={18} className="text-gray-500" />
+                  }
+                </div>
+              </div>
+              
+              {isExpanded && (
+                <div className="p-4 bg-white">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {perms.map(({ permission, action }) => (
+                      <div 
+                        key={permission} 
+                        className={`relative flex items-center p-3 rounded-md transition-colors min-w-[45%] ${
+                          formData.includes(permission) ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50 border border-gray-200 hover:bg-gray-100'
+                        }`}
+                      >
+                        <div 
+                          className={`w-6 h-6 rounded-md flex items-center justify-center cursor-pointer`}
+                          onClick={() => handlePermissionChange(permission)}
+                        >
+                          {formData.includes(permission) ? 
+                            <CheckCircle size={18} className="text-blue-600" /> : 
+                            <Circle size={18} className="text-gray-400" />
+                          }
+                        </div>
+
+                        <label htmlFor={permission} className="flex-1 cursor-pointer">
+                          <span className={`font-medium ${getActionColor(action)}`}>{action}</span>
+                          <span className="text-gray-700 ml-1">{group}</span>
+                        </label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };

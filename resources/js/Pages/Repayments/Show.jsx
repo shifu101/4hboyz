@@ -11,6 +11,9 @@ const Show = ({ repayment }) => {
 
     const roleId = auth.user?.role_id;
 
+  const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
+
+
     const handleDelete = (repaymentId) => {
       Swal.fire({
         title: 'Are you sure?',
@@ -74,20 +77,21 @@ const Show = ({ repayment }) => {
         </div>
 
         <div className="mt-8 text-left flex gap-4">
+          {userPermission.includes('Index repayment') && 
           <Link 
             href={route('repayments.index')} 
             className="inline-block px-6 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition">
             Back to Repayments
-          </Link>
+          </Link>}
 
-          {roleId === 1 &&
+          {userPermission.includes('Edit repayment') &&
             <Link
               href={route('repayments.edit', repayment.id)}
               className="inline-flex items-center px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition duration-200"
             >
               Edit
             </Link>}
-            {roleId === 1 &&
+            {userPermission.includes('Delete repayment') &&
             <form
               onSubmit={(e) => {
                 e.preventDefault();

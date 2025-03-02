@@ -22,37 +22,38 @@ class RoleSeeder extends Seeder
 
         // Company Admin
         $companyAdminRole = Role::create(['name' => 'Company Admin', 'guard_name' => 'web']);
+
         $companyAdminPermissions = [
-            'View user', 'Create user', 'Edit user', 'Delete user', 'Export user',
-            'View employee', 'Create employee', 'Edit employee', 'Delete employee', 'Export employee',
-            'View loan', 'Create loan', 'Edit loan', 'Delete loan', 'Export loan',
-            'View notification', 'Create notification', 'Edit notification', 'Delete notification', 'Export notification',
-            'View remittance', 'Create remittance', 'Edit remittance', 'Delete remittance', 'Export remittance',
-            'View repayments', 'Create repayments', 'Edit repayments', 'Delete repayments', 'Export repayments'
+            'Index user', 'View user', 'Create user', 'Edit user', 'Export user',
+            'Index employee', 'View employee', 'Create employee', 'Edit employee', 'Export employee',
+            'Index loan', 'View loan', 'Edit loan', 'Export loan',
+            'Index notification', 'View notification', 'Create notification', 'Edit notification', 'Export notification',
+            'Index remittance', 'View remittance', 'Create remittance', 'Edit remittance', 'Export remittance',
+            'Index repayments', 'View repayments', 'Create repayments', 'Edit repayments', 'Export repayments'
         ];
         $companyAdminRole->syncPermissions($companyAdminPermissions);
 
         // HR Role
         $hrRole = Role::create(['name' => 'HR', 'guard_name' => 'web']);
         $hrPermissions = [
-            'View user',
-            'View employee', 'Create employee', 'Edit employee', 'Export employee',
-            'View loan', 'Create loan', 'Edit loan', 'Export loan',
-            'View notification', 'Create notification',
-            'View remittance', 'Export remittance',
-            'View repayments', 'Export repayments'
+            'Index user', 'View user',
+            'Index employee', 'View employee', 'Create employee', 'Edit employee', 'Export employee',
+            'Index loan', 'View loan', 'Edit loan', 'Export loan',
+            'Index notification', 'View notification', 'Create notification',
+            'Index remittance', 'View remittance', 'Export remittance',
+            'Index repayments', 'View repayments', 'Export repayments'
         ];
         $hrRole->syncPermissions($hrPermissions);
 
         // Finance Role
         $financeRole = Role::create(['name' => 'Finance', 'guard_name' => 'web']);
         $financePermissions = [
-            'View user',
-            'View loan', 'Create loan', 'Edit loan', 'Export loan',
-            'View loan provider', 'Create loan provider', 'Edit loan provider', 'Export loan provider',
-            'View remittance', 'Create remittance', 'Edit remittance', 'Export remittance',
-            'View repayments', 'Create repayments', 'Edit repayments', 'Export repayments',
-            'View notification', 'Create notification'
+            'Index user', 'View user',
+            'Index loan', 'View loan', 'Edit loan', 'Export loan',
+            'Index loan provider', 'View loan provider', 'Create loan provider', 'Edit loan provider', 'Export loan provider',
+            'Index remittance', 'View remittance', 'Create remittance', 'Edit remittance', 'Export remittance',
+            'Index repayments', 'View repayments', 'Create repayments', 'Edit repayments', 'Export repayments',
+            'Index notification', 'View notification', 'Create notification'
         ];
         $financeRole->syncPermissions($financePermissions);
 
@@ -60,10 +61,10 @@ class RoleSeeder extends Seeder
         $employeeRole = Role::create(['name' => 'Employee', 'guard_name' => 'web']);
         $employeePermissions = [
             'View user',
-            'View loan',
-            'View notification',
-            'View remittance',
-            'View repayments'
+            'Create loan', 'Index loan', 'View loan',
+            'Index notification', 'View notification',
+            'Index remittance', 'View remittance',
+            'Index repayments', 'View repayments'
         ];
         $employeeRole->syncPermissions($employeePermissions);
     }

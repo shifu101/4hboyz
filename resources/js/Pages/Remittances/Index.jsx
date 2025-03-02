@@ -14,6 +14,10 @@ const Index = () => {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const roleId = auth.user?.role_id;
 
+const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
+
+
+
   const { delete: destroy } = useForm();
 
   const handleDelete = (remittanceId) => {
@@ -79,7 +83,7 @@ const Index = () => {
       <div className="w-full">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-semibold text-gray-900">Remittances Directory</h1>
-          {roleId === 1 && (
+          {userPermission.includes('Create remittance') && (
             <Link href={route('remittances.create')} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
               <Plus className="w-4 h-4 mr-2 inline" /> Create
             </Link>
@@ -117,13 +121,12 @@ const Index = () => {
                     <td className="px-6 py-4">{remittance.remittance_number}</td>
                     <td className="px-6 py-4">{remittance.company?.name}</td>
                     <td className="px-6 py-4 text-right">
-                      <Link href={route('remittances.show', remittance.id)} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">View</Link>
-                      {roleId === 1 && (
-                        <>
-                          <Link href={route('remittances.edit', remittance.id)} className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 ml-2">Edit</Link>
-                          <button onClick={() => handleDelete(remittance.id)} className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 ml-2">Delete</button>
-                        </>
-                      )}
+                      {userPermission.includes('View remittance') &&
+                      <Link href={route('remittances.show', remittance.id)} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">View</Link>}
+                      {userPermission.includes('Edit remittance') &&
+                      <Link href={route('remittances.edit', remittance.id)} className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 ml-2">Edit</Link>}
+                      {userPermission.includes('Delete remittance') &&
+                      <button onClick={() => handleDelete(remittance.id)} className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 ml-2">Delete</button>}
                     </td>
                   </tr>
                 ))

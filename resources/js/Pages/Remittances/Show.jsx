@@ -14,6 +14,9 @@ const Show = ({ remittance }) => {
 
     const roleId = auth.user?.role_id;
 
+  const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
+
+
     const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
     const handleSelectAll = () => {
@@ -141,6 +144,7 @@ const Show = ({ remittance }) => {
                     </h1>
                     
                     <div className="flex flex-wrap justify-center gap-2 w-full sm:w-auto">
+                      {userPermission.includes('Export remittance') && 
                       <button
                         onClick={generatePDF}
                         disabled={remittance?.repayments.length === 0}
@@ -150,7 +154,8 @@ const Show = ({ remittance }) => {
                         <span className='my-auto'>
                           PDF
                         </span>
-                      </button>
+                      </button>}
+                      {userPermission.includes('Export remittance') &&
                       <button
                         onClick={generateExcel}
                         disabled={remittance?.repayments.length === 0}
@@ -160,8 +165,8 @@ const Show = ({ remittance }) => {
                         <span className='my-auto'>
                           Excel
                         </span>
-                      </button>
-                      {roleId !== 3 &&
+                      </button>}
+                      {userPermission.includes('Edit remittance') &&
                       <button
                         onClick={handleBulkAction}
                         className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -227,11 +232,12 @@ const Show = ({ remittance }) => {
 
                 {/* Back Button */}
                 <div className="mt-8 text-left">
+                    {userPermission.includes('Index remittance') &&
                     <Link 
                         href={route('remittances.index')} 
                         className="inline-block px-6 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition">
                         Back to Remittances
-                    </Link>
+                    </Link>}
                 </div>
             </div>
         </Layout>

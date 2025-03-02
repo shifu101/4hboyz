@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, router, Head, useForm } from "@inertiajs/react";
+import { Link, router, Head, useForm, usePage } from "@inertiajs/react";
 import Layout from "@/Layouts/layout/layout.jsx";
 import Employees from "./components/Employees";
 import Loans from "./components/Loans";
@@ -14,7 +14,13 @@ const Show = ({ company, employees, loans, remittances, repayments }) => {
   const [activeTab, setActiveTab] = useState("Details");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-    const { delete: destroy } = useForm();
+  const { delete: destroy } = useForm();
+
+  const { auth } = usePage().props; 
+  
+const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
+
+    
 
   const handleFilter = () => {
     router.get(route("companies.show", company.id), {
@@ -122,24 +128,28 @@ const Show = ({ company, employees, loans, remittances, repayments }) => {
 
         {/* Back Button */}
         <div className="mt-8 text-left flex gap-4">
+          {userPermission.includes('Index company') &&
           <Link 
             href={route("companies.index")} 
             className="inline-block px-6 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition">
             Back to Companies
-          </Link>
+          </Link>}
 
+          {userPermission.includes('Edit company') &&
           <Link 
             href={route('companies.edit', company.id)} 
             className="flex items-center bg-yellow-500 text-white rounded-lg text-xs hover:bg-yellow-600"
           >
             <span className="my-auto px-4 py-2">Edit</span>
-          </Link>
+          </Link>}
+
+          {userPermission.includes('Delete company') &&
           <button
             onClick={() => handleDelete(company.id)}
             className="flex items-center cursor-pointer bg-red-600 text-white rounded-lg text-xs hover:bg-red-700"
           >
             <span className="my-auto px-4 py-2">Delete</span> 
-          </button>
+          </button>}
         </div>
       </div>
     </Layout>

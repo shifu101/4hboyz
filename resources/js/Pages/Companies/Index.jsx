@@ -8,10 +8,11 @@ import * as XLSX from 'xlsx';
 import { FileText, FileSpreadsheet, Plus, Filter, X } from 'lucide-react';
 
 const Index = () => {
-  const { companies, flash, pagination } = usePage().props;
+  const { companies, flash, pagination, auth } = usePage().props;
   const [searchTerm, setSearchTerm] = useState('');
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
 
 
   const handleSearchChange = (e) => {
@@ -104,6 +105,7 @@ const Index = () => {
             </h1>
             
             <div className="flex flex-wrap justify-center gap-2 w-full sm:w-auto">
+              {userPermission.includes('Create company') &&
               <Link
                 href={route('companies.create')}
                 className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
@@ -112,7 +114,8 @@ const Index = () => {
                 <span className='my-auto'>
                 Create
                 </span>
-              </Link>
+              </Link>}
+              {userPermission.includes('Export company') &&
               <button
                 onClick={generatePDF}
                 disabled={companies.length === 0}
@@ -122,7 +125,8 @@ const Index = () => {
                 <span className='my-auto'>
                   PDF
                 </span>
-              </button>
+              </button>}
+              {userPermission.includes('Export notification') &&
               <button
                 onClick={generateExcel}
                 disabled={companies.length === 0}
@@ -132,7 +136,7 @@ const Index = () => {
                 <span className='my-auto'>
                   Excel
                 </span>
-              </button>
+              </button>}
             </div>
           </div>
 
@@ -181,12 +185,13 @@ const Index = () => {
                     <td className="px-6 py-4">{company.percentage}</td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-2">
+                        {userPermission.includes('View company') &&
                         <Link 
                           href={route('companies.show', company.id)} 
                           className="bg-blue-600 text-white rounded-lg text-xs hover:bg-blue-700 flex items-center"
                         >
                           <span className="my-auto px-4 py-2">View</span>
-                        </Link>
+                        </Link>}
                       </div>
                     </td>
                   </tr>

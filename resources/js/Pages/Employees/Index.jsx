@@ -7,10 +7,11 @@ import "jspdf-autotable";
 import * as XLSX from 'xlsx';
 
 const Index = () => {
-  const { employees, flash, pagination } = usePage().props;
+  const { employees, flash, pagination, auth } = usePage().props;
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
 
 
   const handleSearchChange = (e) => {
@@ -101,6 +102,7 @@ const Index = () => {
             </h1>
             
             <div className="flex flex-wrap justify-center gap-2 w-full sm:w-auto">
+              {userPermission.includes('Create employee') &&
               <Link
                 href={route('employees.create')}
                 className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
@@ -109,7 +111,8 @@ const Index = () => {
                 <span className='my-auto'>
                 Create
                 </span>
-              </Link>
+              </Link>}
+              {userPermission.includes('Export employee') &&
               <button
                 onClick={generatePDF}
                 disabled={employees.length === 0}
@@ -119,7 +122,8 @@ const Index = () => {
                 <span className='my-auto'>
                   PDF
                 </span>
-              </button>
+              </button>}
+              {userPermission.includes('Export employee') &&
               <button
                 onClick={generateExcel}
                 disabled={employees.length === 0}
@@ -129,7 +133,7 @@ const Index = () => {
                 <span className='my-auto'>
                   Excel
                 </span>
-              </button>
+              </button>}
             </div>
           </div>
 
@@ -184,12 +188,13 @@ const Index = () => {
                     <td className="px-4 py-4">{new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(employee.total_loan_balance)}</td>
                     <td className="px-4 py-4 text-right">
                       <div className="flex justify-end gap-2">
+                        {userPermission.includes('View employee') &&
                         <Link 
                           href={route('employees.show', employee.id)} 
                           className="bg-blue-600 text-white rounded-lg text-xs hover:bg-blue-700 flex items-center"
                         >
                           <span className="my-auto px-4 py-2">View</span>
-                        </Link>
+                        </Link>}
                       </div>
                     </td>
                   </tr>

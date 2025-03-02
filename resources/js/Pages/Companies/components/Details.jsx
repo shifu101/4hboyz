@@ -84,7 +84,7 @@ function Details({ company }) {
               </a>
             )}
             {company.signed_agreement && (
-              <a href={company.signed_agreement} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+              <a href={`/storage/${company.signed_agreement}`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
                 Signed Agreement
               </a>
             )}

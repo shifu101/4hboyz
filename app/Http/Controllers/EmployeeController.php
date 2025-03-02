@@ -22,6 +22,10 @@ class EmployeeController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
+
+        if (!$user->hasPermissionTo('Index employee')) {
+            return Inertia::render('Auth/Forbidden');
+        }
     
         // Base query with eager loading
         $query = Employee::with('user', 'loans', 'company');
@@ -106,6 +110,12 @@ class EmployeeController extends Controller
 
     public function create()
     {
+        $user = Auth::user();
+
+        if (!$user->hasPermissionTo('Create employee')) {
+            return Inertia::render('Auth/Forbidden');
+        }
+
         $companies = Company::all();
         $users = User::all();
         return Inertia::render('Employees/Create', [
@@ -116,7 +126,12 @@ class EmployeeController extends Controller
 
     public function store(StoreEmployeeRequest $request)
     {
-       $user = Auth::user();
+        $user = Auth::user();
+
+        if (!$user->hasPermissionTo('Create employee')) {
+            return Inertia::render('Auth/Forbidden');
+        }
+
        $validatedData = $request->validated();
     
        $fileFields = ['id_front', 'id_back', 'passport_front', 'passport_back'];
@@ -153,6 +168,13 @@ class EmployeeController extends Controller
 
     public function show(Employee $employee)
     {
+
+        $user = Auth::user();
+
+        if (!$user->hasPermissionTo('View employee')) {
+            return Inertia::render('Auth/Forbidden');
+        }
+
         // Load related data
         $employee->load('user', 'company', 'loans');
     
@@ -178,6 +200,12 @@ class EmployeeController extends Controller
 
     public function edit(Employee $employee)
     {
+        $user = Auth::user();
+
+        if (!$user->hasPermissionTo('Edit employee')) {
+            return Inertia::render('Auth/Forbidden');
+        }
+
         $companies = Company::all();
         $users = User::all();
         return Inertia::render('Employees/Edit', [
@@ -189,6 +217,12 @@ class EmployeeController extends Controller
 
     public function update(UpdateEmployeeRequest $request, Employee $employee)
     {
+        $user = Auth::user();
+
+        if (!$user->hasPermissionTo('Edit employee')) {
+            return Inertia::render('Auth/Forbidden');
+        }
+
         $validatedData = $request->validated();
         $fileFields = ['id_front', 'id_back', 'passport_front', 'passport_back'];
     
@@ -237,6 +271,12 @@ class EmployeeController extends Controller
 
     public function destroy(Employee $employee)
     {
+        $user = Auth::user();
+
+        if (!$user->hasPermissionTo('Delete employee')) {
+            return Inertia::render('Auth/Forbidden');
+        }
+
         $fileFields = ['id_front', 'id_back', 'passport_front', 'passport_back'];
     
         // Delete associated files

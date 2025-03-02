@@ -7,10 +7,11 @@ import "jspdf-autotable";
 import * as XLSX from 'xlsx';
 
 const Index = () => {
-  const { users, flash, pagination } = usePage().props; 
+  const { users, flash, pagination, auth } = usePage().props; 
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
 
 
   const handleSearchChange = (e) => {
@@ -97,6 +98,7 @@ const Index = () => {
               </h1>
               
               <div className="flex flex-wrap justify-center gap-2 w-full sm:w-auto">
+                {userPermission.includes('Create user') &&
                 <Link
                   href={route('users.create')}
                   className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
@@ -105,7 +107,8 @@ const Index = () => {
                   <span className='my-auto'>
                   Create
                   </span>
-                </Link>
+                </Link>}
+                {userPermission.includes('Export user') &&
                 <button
                   onClick={generatePDF}
                   disabled={users.length === 0}
@@ -115,7 +118,8 @@ const Index = () => {
                   <span className='my-auto'>
                     PDF
                   </span>
-                </button>
+                </button>}
+                {userPermission.includes('Export user') &&
                 <button
                   onClick={generateExcel}
                   disabled={users.length === 0}
@@ -125,7 +129,7 @@ const Index = () => {
                   <span className='my-auto'>
                     Excel
                   </span>
-                </button>
+                </button>}
               </div>
           </div>
 
@@ -174,12 +178,13 @@ const Index = () => {
                     <td className="px-6 py-4 whitespace-nowrap">{user.company?.phone}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-right">
                       <div className="flex justify-end gap-3">
+                        {userPermission.includes('View user') &&
                         <Link
                           href={route('users.show', user.id)}
                           className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-200"
                         >
                           View
-                        </Link>
+                        </Link>}
                       </div>
                     </td>
                   </tr>

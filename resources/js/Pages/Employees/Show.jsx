@@ -9,6 +9,8 @@ const Show = ({ employee, user, company }) => {
     const { auth } = usePage().props;
 
   const roleId = auth.user?.role_id;
+const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
+
   const { processing } = useForm({
     approved: ''
   });
@@ -158,28 +160,32 @@ const Show = ({ employee, user, company }) => {
         </div>
 
         <div className="mt-8 text-left flex gap-4">
+          {userPermission.includes('Index employee') &&
           <Link 
             href={route('employees.index')} 
             className="inline-block px-6 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition">
             Back to Employees
-          </Link>
+          </Link>}
 
+          {userPermission.includes('Edit employee') &&
           <Link 
             href={route('employees.edit', employee.id)} 
             className="flex items-center bg-yellow-500 text-white rounded-lg text-xs hover:bg-yellow-600"
           >
             <span className="my-auto px-4 py-2">Edit</span>
-          </Link>
-          {roleId === 1 &&
+          </Link>}
+
+          {userPermission.includes('Delete employee') &&
           <button
             onClick={() => handleDelete(employee.id)}
             className="flex items-center cursor-pointer bg-red-600 text-white rounded-lg text-xs hover:bg-red-700"
           >
             <span className="my-auto px-4 py-2">Delete</span> 
           </button>}
+          
           {employee.salary &&
           <>
-          {(employee.approved !== 'Approved' && roleId !== 3) &&
+          {(employee.approved !== 'Approved' && userPermission.includes('Edit loan')) &&
             <button
               onClick={(e) => handleApprovedUpdate(e, employee.id, 'Approved')}
               disabled={processing}
@@ -188,7 +194,7 @@ const Show = ({ employee, user, company }) => {
               <Check className="w-4 h-4 mr-2" /> Approve
             </button>}
 
-            {(employee?.user?.status !== 'Deactivated' && roleId !== 3) &&
+            {(employee?.user?.status !== 'Deactivated' && userPermission.includes('Delete loan')) &&
             <button
               onClick={(e) => handleApprovedUpdate(e, employee.id, 'Deactivated')}
               disabled={processing}
@@ -197,7 +203,7 @@ const Show = ({ employee, user, company }) => {
               <Check className="w-4 h-4 mr-2" /> Deactivate
             </button>}
 
-          {(employee.approved !== 'Declined' && roleId !== 1) &&
+          {(employee.approved !== 'Declined' && userPermission.includes('Edit loan')) &&
           <button
             onClick={(e) => handleApprovedUpdate(e, employee.id, 'Declined')}
             disabled={processing}

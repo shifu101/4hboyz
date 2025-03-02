@@ -29,7 +29,7 @@ const Employees = ({ companyId, employees }) => {
     doc.setFontSize(14);
     doc.text(`Employees Report`, 14, 50);
     
-    const columns = ["Name", "Email", "Phone", "Salary", "Loan Limit","Unpaid loans","Total Loan Balance"];
+    const columns = ["Name", "Email", "Phone", "Salary", "Salary advance Limit","Unpaid salary advance","Total salary advance balance"];
     
     const rows = employees.data?.map(data => [
         data.user?.name, 
@@ -56,9 +56,9 @@ const Employees = ({ companyId, employees }) => {
         Email: data.user?.email,
         Phone: data.user?.phone || 'N/A',
         Salary: data.salary,
-        Loan_Limit: data.loan_limit,
-        Unpaid_loans: data.unpaid_loans_count,
-        Total_Loan_Balance: data.total_loan_balance,
+        Salary_Advance_Limit: data.loan_limit,
+        Unpaid_salary_advances: data.unpaid_loans_count,
+        Total_Salary_advances_Balance: data.total_loan_balance,
     })));
     
     const wb = XLSX.utils.book_new();
@@ -154,9 +154,9 @@ const Employees = ({ companyId, employees }) => {
               <th className="px-4 py-2">Email</th>
               <th className="px-4 py-2">Phone</th>
               <th className="px-4 py-2">Salary</th>
-              <th className="px-4 py-2">Loan Limit</th>
+              <th className="px-4 py-2">Salary advance Limit</th>
               <th className="px-4 py-2">Unpaid Loans</th>
-              <th className="px-4 py-2">Loan Balance</th>
+              <th className="px-4 py-2">Salary advance Balance</th>
               <th className="px-4 py-2">Actions</th>
             </tr>
           </thead>

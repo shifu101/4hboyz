@@ -8,6 +8,10 @@ const Show = ({ loan }) => {
   const { auth } = usePage().props;
     const roleId = auth.user?.role_id;
 
+  const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
+
+
+
     const handleDelete = (loanId) => {
       Swal.fire({
         title: 'Are you sure?',
@@ -82,20 +86,20 @@ const Show = ({ loan }) => {
         </div>
 
         <div className="flex justify-end space-x-4 mt-4">
+          {userPermission.includes('Index loan') &&
          <Link 
             href={route('loans.index')} 
             className="inline-block px-6 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition">
             Back to Loans
-          </Link>
-          {roleId === 1 &&
-          <>
+          </Link>}
+          {userPermission.includes('Edit loan') &&
             <Link
               href={route('loans.edit', loan.id)}
               className="inline-flex items-center px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition duration-200"
             >
               Edit
-            </Link>
-            {roleId === 1 &&
+            </Link>}
+            {userPermission.includes('Delete loan') &&
             <form
                 onSubmit={(e) => {
                   e.preventDefault();
@@ -108,17 +112,14 @@ const Show = ({ loan }) => {
                 </button>
 
             </form>}
-            </>
-          }
-          <>
-          {((loan.status === 'Pending' || loan.status === 'Declined') && roleId !== 3) && (
+      
+          {((loan.status === 'Pending' || loan.status === 'Declined') && userPermission.includes('Edit loan')) && (
             <Link
               href={route('loans.approval', loan.id)}
               className="inline-flex items-center px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition duration-200"
             >
               Approve
             </Link>)}
-          </>
         </div>
       </div>
     </Layout>

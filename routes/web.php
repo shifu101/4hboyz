@@ -14,6 +14,11 @@ use App\Http\Controllers\RepaymentController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\RemittanceController;
 use App\Http\Controllers\DashboardController;
+use Spatie\Permission\Models\Permission;
+use Illuminate\Http\Request;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -37,6 +42,10 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->name('dashboard');
+
+Route::get('/forbidden', function () {
+    return Inertia::render('Auth/Forbidden');
+})->name('forbidden');
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -77,6 +86,25 @@ Route::middleware('auth')->group(function () {
     Route::resource('users', UserController::class);
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::post('/update-permissions/{user}', function (Request $request, User $user) {
+        $permissions = $request->input('permissions', []);
+    
+        // Ensure permissions exist before syncing
+        $validPermissions = Permission::whereIn('name', $permissions)->pluck('id')->toArray();
+    
+        // Manually update model_has_permissions to ensure model_type is set
+        DB::table('model_has_permissions')->where('model_id', $user->id)->delete();
+        foreach ($validPermissions as $permissionId) {
+            DB::table('model_has_permissions')->insert([
+                'model_id' => $user->id,
+                'permission_id' => $permissionId,
+                'model_type' => User::class, // Explicitly setting model_type
+            ]);
+        }
+    
+        return redirect()->back()->with('success', 'Permissions updated successfully');
+    });
 });
 
 
