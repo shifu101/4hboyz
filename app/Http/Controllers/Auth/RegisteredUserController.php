@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Mail;
 use Spatie\Permission\Models\Role;
 
 use Illuminate\Support\Facades\Http;
-
+use Illuminate\Support\Facades\DB;
 use App\Services\SmsService;
 
 class RegisteredUserController extends Controller
@@ -71,8 +71,18 @@ class RegisteredUserController extends Controller
             $role = Role::find($user->role_id);
             if ($role) {
                 $user->assignRole($role);
+                
+                DB::table('model_has_roles')->where('model_id', $user->id)->update([
+                    'model_type' => User::class
+                ]);
+            
                 $user->syncPermissions($role->permissions);
+            
+                DB::table('model_has_permissions')->where('model_id', $user->id)->update([
+                    'model_type' => User::class
+                ]);
             }
+            
         }
      
          // Send email
