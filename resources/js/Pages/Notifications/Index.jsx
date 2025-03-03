@@ -13,6 +13,9 @@ const Index = () => {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const roleId = auth.user?.role_id;
 
+const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
+
+
   // Function to handle delete confirmation
   const handleDelete = (notificationId) => {
     Swal.fire({
@@ -118,7 +121,7 @@ const Index = () => {
               </h1>
               
               <div className="flex flex-wrap justify-center gap-2 w-full sm:w-auto">
-                {roleId !== 3 &&
+                {userPermission.includes('Create notification') &&
                 <Link
                   href={route('notifications.create')}
                   className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
@@ -128,6 +131,7 @@ const Index = () => {
                   Create
                   </span>
                 </Link>}
+                {userPermission.includes('Export notification') &&
                 <button
                   onClick={generatePDF}
                   disabled={notifications.length === 0}
@@ -137,7 +141,8 @@ const Index = () => {
                   <span className='my-auto'>
                     PDF
                   </span>
-                </button>
+                </button>}
+                {userPermission.includes('Export notification') &&
                 <button
                   onClick={generateExcel}
                   disabled={notifications.length === 0}
@@ -147,7 +152,7 @@ const Index = () => {
                   <span className='my-auto'>
                     Excel
                   </span>
-                </button>
+                </button>}
               </div>
           </div>
 
@@ -192,12 +197,14 @@ const Index = () => {
                     <td className="px-6 py-4 whitespace-nowrap">{notification.is_read}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-right">
                       <div className="flex justify-end gap-3">
+                        {userPermission.includes('Edit notification') &&
                         <Link
                           href={route('notifications.edit', notification.id)}
                           className="inline-flex items-center px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition duration-200"
                         >
                           Edit
-                        </Link>
+                        </Link>}
+                        {userPermission.includes('Delete notification') &&
                         <form
                           onSubmit={(e) => {
                             e.preventDefault();
@@ -208,7 +215,7 @@ const Index = () => {
                           <button type="submit" className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200">
                             Delete
                           </button>
-                        </form>
+                        </form>}
                       </div>
                     </td>
                   </tr>

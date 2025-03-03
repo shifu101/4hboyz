@@ -40,6 +40,11 @@ class LoanController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
+
+        if (!$user->hasPermissionTo('Index loan')) {
+            return Inertia::render('Auth/Forbidden');
+        }
+
         $query = Loan::with(['employee.user', 'employee.company']);
     
         // Filter based on role
@@ -101,6 +106,12 @@ class LoanController extends Controller
 
     public function create()
     {
+        $user = Auth::user();
+
+        if (!$user->hasPermissionTo('Create loan')) {
+            return Inertia::render('Auth/Forbidden');
+        }
+
         $employees = Employee::with(['user', 'loans'])->get()
             ->map(function ($employee) {
                 return $employee->append('unpaid_loans_count', 'total_loan_balance');
@@ -119,6 +130,12 @@ class LoanController extends Controller
 
     public function store(StoreLoanRequest $request)
     {
+        $user = Auth::user();
+
+        if (!$user->hasPermissionTo('create loan')) {
+            return Inertia::render('Auth/Forbidden');
+        }
+
         $loan = Loan::create($request->validated());
     
         if ($loan->status === 'Pending') {
@@ -134,6 +151,12 @@ class LoanController extends Controller
 
     public function bulkUpdate(Request $request)
     {
+        $user = Auth::user();
+
+        if (!$user->hasPermissionTo('Edit loan')) {
+            return Inertia::render('Auth/Forbidden');
+        }
+
         $validated = $request->validate([
             'loanIds' => 'required|array',
             'loanIds.*' => 'exists:loans,id',
@@ -211,6 +234,12 @@ class LoanController extends Controller
 
     public function bulkRepayment(Request $request)
     {
+        $user = Auth::user();
+
+        if (!$user->hasPermissionTo('Edit loan')) {
+            return Inertia::render('Auth/Forbidden');
+        }
+
         $validated = $request->validate([
             'loanIds' => 'required|array',
             'loanIds.*' => 'exists:loans,id',
@@ -256,6 +285,12 @@ class LoanController extends Controller
 
     public function show(Loan $loan)
     {
+        $user = Auth::user();
+
+        if (!$user->hasPermissionTo('View loan')) {
+            return Inertia::render('Auth/Forbidden');
+        }
+
         $loan->load(['employee.user', 'loanProvider']);
 
         return Inertia::render('Loans/Show', [
@@ -265,6 +300,12 @@ class LoanController extends Controller
 
     public function edit(Loan $loan)
     {
+        $user = Auth::user();
+
+        if (!$user->hasPermissionTo('Edit loan')) {
+            return Inertia::render('Auth/Forbidden');
+        }
+
         $employees = Employee::with(['user'])->get();
         $loanProviders = LoanProvider::all();
 
@@ -278,6 +319,12 @@ class LoanController extends Controller
     public function update(UpdateLoanRequest $request, Loan $loan)
     {
     
+        $user = Auth::user();
+
+        if (!$user->hasPermissionTo('Edit loan')) {
+            return Inertia::render('Auth/Forbidden');
+        }
+
         $oldStatus = $loan->status;
     
         $loan->load(['loanProvider', 'employee.user', 'employee.company']);
@@ -300,6 +347,12 @@ class LoanController extends Controller
 
     public function approveLoan(Request $request)
     {
+        $user = Auth::user();
+
+        if (!$user->hasPermissionTo('Edit loan')) {
+            return Inertia::render('Auth/Forbidden');
+        }
+
         // Validate incoming request data
         $validated = $request->validate([
             'id' => 'required|exists:loans,id',
@@ -389,6 +442,12 @@ class LoanController extends Controller
     {
         $user = Auth::user();
 
+        if (!$user->hasPermissionTo('Edit loan')) {
+            return Inertia::render('Auth/Forbidden');
+        }
+
+        $user = Auth::user();
+
         $otp = rand(100000, 999999);
 
         $loan->load(['loanProvider', 'employee.user', 'employee.company']);
@@ -409,6 +468,12 @@ class LoanController extends Controller
 
     public function destroy(Loan $loan)
     {
+        $user = Auth::user();
+
+        if (!$user->hasPermissionTo('Delete loan')) {
+            return Inertia::render('Auth/Forbidden');
+        }
+
         $loan->delete();
 
         return redirect()->route('loans.index')->with('success', 'Loan deleted successfully.');

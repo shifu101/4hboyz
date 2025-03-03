@@ -22,6 +22,11 @@ use Illuminate\Support\Facades\Http;
 use App\Services\SmsService;
 use Illuminate\Support\Str;
 
+use Illuminate\Support\Facades\Storage;
+use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Auth;
+
+
 class CompanyController extends Controller
 {
 
@@ -35,6 +40,12 @@ class CompanyController extends Controller
     public function index(Request $request)
     {
         $query = Company::query();
+
+        $user = Auth::user();
+
+        if (!$user->hasPermissionTo('Index company')) {
+            return Inertia::render('Auth/Forbidden');
+        }
     
         if ($request->has('search')) {
             $search = $request->input('search');
@@ -72,12 +83,24 @@ class CompanyController extends Controller
 
     public function create()
     {
+        $user = Auth::user();
+
+        if (!$user->hasPermissionTo('Create company')) {
+            return Inertia::render('Auth/Forbidden');
+        }
+
         return Inertia::render('Companies/Create');
     }
     
 
     public function store(Request $request)
     {
+        $user = Auth::user();
+
+        if (!$user->hasPermissionTo('Create company')) {
+            return Inertia::render('Auth/Forbidden');
+        }
+
         $validatedData = $request->all();
     
         // Handle file uploads
@@ -87,20 +110,19 @@ class CompanyController extends Controller
         foreach ($fileFields as $field) {
             if ($request->hasFile("company.$field")) {
                 $file = $request->file("company.$field");
-                $fileName = $file->getClientOriginalName(); 
+                $fileName = time() . '-' . $file->getClientOriginalName(); 
                 $filePaths[$field] = $file->storeAs("company_documents", $fileName, "public");
             }
         }
-
+    
         // Handle multiple additional documents
         $additionalDocs = [];
         if ($request->hasFile('company.additional_documents')) {
             foreach ($request->file('company.additional_documents') as $doc) {
-                $fileName = $doc->getClientOriginalName(); 
+                $fileName = time() . '-' . $doc->getClientOriginalName(); 
                 $additionalDocs[] = $doc->storeAs("company_documents", $fileName, "public");
             }
         }
-
     
         // Create the company record
         $company = Company::create([
@@ -121,7 +143,8 @@ class CompanyController extends Controller
             'signed_agreement' => $filePaths['signed_agreement'] ?? null,
             'additional_documents' => json_encode($additionalDocs), 
         ]);
-
+    
+        // Generate a random password
         $pass = Str::random(6);
     
         // Create the associated user
@@ -131,20 +154,38 @@ class CompanyController extends Controller
             'email' => $validatedData['user']['email'],
             'password' => Hash::make($pass),
             'company_id' => $company->id,
+            'role_id' => 2, // Company Admin
         ]);
-
+    
+        // Assign Role and Sync Permissions
+        $role = Role::where('name', 'Company Admin')->first();
+        if ($role) {
+            $user->assignRole($role);
+            $user->syncPermissions($role->permissions);
+        }
+    
+        // Send Email Notification
         Mail::to($user->email)->send(new WelcomeMail($user, $pass));
-
-         $this->smsService->sendSms(
+    
+        // Send SMS Notification
+        $this->smsService->sendSms(
             $user->phone, 
-            "Hello {$user->name}, welcome to Centiflow Limited!, this is your login password {$pass}"
+            "Hello {$user->name}, welcome to Centiflow Limited! This is your login password: {$pass}"
         );
     
         return redirect()->route('companies.index')->with('success', 'Company created successfully.');
     }
 
+
     public function show(Request $request, Company $company)
     {
+
+        $user = Auth::user();
+
+        if (!$user->hasPermissionTo('View company')) {
+            return Inertia::render('Auth/Forbidden');
+        }
+
         $search = $request->query('search');
         $startDate = $request->query('start_date');
         $endDate = $request->query('end_date');
@@ -224,21 +265,76 @@ class CompanyController extends Controller
     
     public function edit(Company $company)
     {
+        $user = Auth::user();
+
+        if (!$user->hasPermissionTo('Edit company')) {
+            return Inertia::render('Auth/Forbidden');
+        }
+        
         return Inertia::render('Companies/Edit', [
             'company' => $company,
         ]);
     }
 
 
-    public function update(UpdateCompanyRequest $request, Company $company)
+    public function update(Request $request, Company $company)
     {
-        $company->update($request->validated());
+        $user = Auth::user();
 
+        if (!$user->hasPermissionTo('Edit company')) {
+            return Inertia::render('Auth/Forbidden');
+        }
+
+        $validatedData = $request->all();
+    
+        // File fields that need to be handled
+        $fileFields = ['certificate_of_incorporation', 'kra_pin', 'cr12_cr13', 'signed_agreement'];
+    
+        foreach ($fileFields as $field) {
+            if ($request->hasFile($field)) {
+                // Delete old file if it exists
+                if ($company->$field) {
+                    Storage::disk('public')->delete($company->$field);
+                }
+    
+                // Store new file
+                $file = $request->file($field);
+                $fileName = time() . '-' . $file->getClientOriginalName();
+                $validatedData[$field] = $file->storeAs("company_documents", $fileName, "public");
+            }
+        }
+    
+        // Handle multiple additional documents
+        if ($request->hasFile('additional_documents')) {
+            // Delete old additional documents if they exist
+            if ($company->additional_documents) {
+                foreach ($company->additional_documents as $doc) {
+                    Storage::disk('public')->delete($doc);
+                }
+            }
+    
+            $additionalDocs = [];
+            foreach ($request->file('additional_documents') as $doc) {
+                $fileName = time() . '-' . $doc->getClientOriginalName();
+                $additionalDocs[] = $doc->storeAs("company_documents", $fileName, "public");
+            }
+            $validatedData['additional_documents'] = $additionalDocs;
+        }
+    
+        // Update company record
+        $company->update($validatedData);
+    
         return redirect()->route('companies.index')->with('success', 'Company updated successfully.');
     }
 
     public function destroy(Company $company)
     {
+        $user = Auth::user();
+
+        if (!$user->hasPermissionTo('Delete company')) {
+            return Inertia::render('Auth/Forbidden');
+        }
+
         $company->delete();
 
         return redirect()->route('companies.index')->with('success', 'Company deleted successfully.');

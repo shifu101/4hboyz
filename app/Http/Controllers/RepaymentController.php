@@ -19,6 +19,10 @@ class RepaymentController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
+
+        if (!$user->hasPermissionTo('Index repayment')) {
+            return Inertia::render('Auth/Forbidden');
+        }
     
         $query = Repayment::with([
             'loan',
@@ -77,6 +81,12 @@ class RepaymentController extends Controller
 
     public function create()
     {
+        $user = Auth::user();
+
+        if (!$user->hasPermissionTo('Create repayment')) {
+            return Inertia::render('Auth/Forbidden');
+        }
+
         $loans = Loan::all();
 
         return Inertia::render('Repayments/Create', [
@@ -86,6 +96,12 @@ class RepaymentController extends Controller
 
     public function store(StoreRepaymentRequest $request)
     {
+        $user = Auth::user();
+
+        if (!$user->hasPermissionTo('Create repayment')) {
+            return Inertia::render('Auth/Forbidden');
+        }
+
         // Create repayment and load related data
         $repayment = Repayment::create($request->validated());
     
@@ -106,6 +122,12 @@ class RepaymentController extends Controller
 
     public function show(Repayment $repayment)
     {
+        $user = Auth::user();
+
+        if (!$user->hasPermissionTo('View repayment')) {
+            return Inertia::render('Auth/Forbidden');
+        }
+
         $repayment->load([
             'loan',
             'loan.loanProvider',
@@ -120,6 +142,12 @@ class RepaymentController extends Controller
 
     public function edit(Repayment $repayment)
     {
+        $user = Auth::user();
+
+        if (!$user->hasPermissionTo('Edit repayment')) {
+            return Inertia::render('Auth/Forbidden');
+        }
+
         $loans = Loan::all();
 
         return Inertia::render('Repayments/Edit', [
@@ -130,6 +158,12 @@ class RepaymentController extends Controller
 
     public function update(UpdateRepaymentRequest $request, Repayment $repayment)
     {
+        $user = Auth::user();
+
+        if (!$user->hasPermissionTo('Edit repayment')) {
+            return Inertia::render('Auth/Forbidden');
+        }
+
         $repayment->update($request->validated());
 
         return redirect()->route('repayments.index')->with('success', 'Repayment updated successfully.');
@@ -138,6 +172,12 @@ class RepaymentController extends Controller
 
     public function destroy(Repayment $repayment)
     {
+        $user = Auth::user();
+
+        if (!$user->hasPermissionTo('Delete repayment')) {
+            return Inertia::render('Auth/Forbidden');
+        }
+
         $repayment->delete();
 
         return redirect()->route('repayments.index')->with('success', 'Repayment deleted successfully.');

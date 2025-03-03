@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import AppMenuitem from './AppMenuitem';
 import { MenuProvider } from './context/menucontext';
 import { usePage } from '@inertiajs/react';
@@ -6,39 +6,42 @@ import { usePage } from '@inertiajs/react';
 const AppMenu = () => {
     const { auth } = usePage().props;
 
-    const roleId = auth.user?.role_id;
+    // Extract user permissions from all assigned roles
+  const userPermissions = auth.user?.permissions?.map(perm => perm.name) || [];
+
+
 
     // Define the complete menu model
     const model = [
         {
             label: 'Home',
             items: [
-                { label: 'Dashboard', icon: 'pi pi-fw pi-home', to: route('dashboard'), roles: [1, 2, 3, 4] },
-                { label: 'Companies', icon: 'pi pi-fw pi-building', to: route('companies.index'), roles: [1, 4] },
-                { label: 'Employees', icon: 'pi pi-fw pi-users', to: route('employees.index'), roles: [1, 2] },
-                { label: 'Salary advances', icon: 'pi pi-fw pi-wallet', to: route('loans.index'), roles: [1, 2, 3] },
-                { label: 'Pending salary advances', icon: 'pi pi-fw pi-wallet', to: route('loans.index', { status: 'Pending' }), roles: [1, 2, 3] },
-                { label: 'Approved salary advances', icon: 'pi pi-fw pi-wallet', to: route('loans.index', { status: 'Approved' }), roles: [1, 2, 3] },
-                { label: 'Declined salary advances', icon: 'pi pi-fw pi-wallet', to: route('loans.index', { status: 'Declined' }), roles: [1, 2, 3] }, 
-                { label: 'Pending Paid salary advances', icon: 'pi pi-fw pi-wallet', to: route('loans.index', { status: 'Pending Paid' }), roles: [1, 2, 3] },  
-                { label: 'Pending Partially Paid Salary advances', icon: 'pi pi-fw pi-wallet', to: route('loans.index', { status: 'Pending Partially Paid' }), roles: [1, 2, 3] },   
-                { label: 'Partially Paid salary advances', icon: 'pi pi-fw pi-wallet', to: route('loans.index', { status: 'Partially Paid' }), roles: [1, 2, 3] },   
-                { label: 'Paid salary advances', icon: 'pi pi-fw pi-wallet', to: route('loans.index', { status: 'Paid' }), roles: [1, 2, 3] },              
-                { label: 'Salary Advance Providers', icon: 'pi pi-fw pi-briefcase', to: route('loanProviders.index'), roles: [1] },
-                { label: 'Notifications', icon: 'pi pi-fw pi-bell', to: route('notifications.index'), roles: [1, 2, 3] },
-                { label: 'Repayments', icon: 'pi pi-fw pi-dollar', to: route('repayments.index'), roles: [1, 2] },
-                { label: 'Remittances', icon: 'pi pi-wallet', to: route('remittances.index'), roles: [1, 2] },
-                { label: 'Users', icon: 'pi pi-fw pi-user', to: route('users.index'), roles: [1, 4] },
-                { label: 'Profile', icon: 'pi pi-user', to: route('profile.edit'), roles: [1, 2, 3, 4] },
+                { label: 'Dashboard', icon: 'pi pi-fw pi-home', to: route('dashboard') }, // Always visible
+                { label: 'Companies', icon: 'pi pi-fw pi-building', to: route('companies.index'), permissions: ['Index company'] },
+                { label: 'Employees', icon: 'pi pi-fw pi-users', to: route('employees.index'), permissions: ['Index employee'] },
+                { label: 'Salary advances', icon: 'pi pi-fw pi-wallet', to: route('loans.index'), permissions: ['Index loan'] },
+                { label: 'Pending salary advances', icon: 'pi pi-fw pi-wallet', to: route('loans.index', { status: 'Pending' }), permissions: ['Index loan'] },
+                { label: 'Approved salary advances', icon: 'pi pi-fw pi-wallet', to: route('loans.index', { status: 'Approved' }), permissions: ['Index loan'] },
+                { label: 'Declined salary advances', icon: 'pi pi-fw pi-wallet', to: route('loans.index', { status: 'Declined' }), permissions: ['Index loan'] },
+                { label: 'Pending Paid salary advances', icon: 'pi pi-fw pi-wallet', to: route('loans.index', { status: 'Pending Paid' }), permissions: ['Index loan'] },
+                { label: 'Paid salary advances', icon: 'pi pi-fw pi-wallet', to: route('loans.index', { status: 'Paid' }), permissions: ['Index loan'] },
+                { label: 'Salary Advance Providers', icon: 'pi pi-fw pi-briefcase', to: route('loanProviders.index'), permissions: ['Index loanProvider'] },
+                { label: 'Notifications', icon: 'pi pi-fw pi-bell', to: route('notifications.index'), permissions: ['Index notification'] },
+                { label: 'Repayments', icon: 'pi pi-fw pi-dollar', to: route('repayments.index'), permissions: ['Index repayment'] },
+                { label: 'Remittances', icon: 'pi pi-wallet', to: route('remittances.index'), permissions: ['Index remittance'] },
+                { label: 'Users', icon: 'pi pi-fw pi-user', to: route('users.index'), permissions: ['Index user'] },
+                { label: 'Profile', icon: 'pi pi-user', to: route('profile.edit'), permissions: ['Edit profile'] },
             ]
         },
     ];
 
-    // Filter menu items based on the user's role
+    // Filter menu items based on the user's permissions (excluding dashboard)
     const filteredModel = model.map(section => ({
         ...section,
-        items: section.items.filter(item => item.roles.includes(roleId)),
-    })).filter(section => section.items.length > 0); // Remove sections with no items
+        items: section.items.filter(item => 
+            !item.permissions || item.permissions.some(perm => userPermissions.includes(perm))
+        ),
+    })).filter(section => section.items.length > 0); 
 
     return (
         <MenuProvider>

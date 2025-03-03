@@ -16,6 +16,10 @@ class NotificationController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
+
+        if (!$user->hasPermissionTo('Index notification')) {
+            return Inertia::render('Auth/Forbidden');
+        }
     
         $query = Notification::with('user');
     
@@ -49,6 +53,12 @@ class NotificationController extends Controller
 
     public function create()
     {
+        $user = Auth::user();
+
+        if (!$user->hasPermissionTo('Create notification')) {
+            return Inertia::render('Auth/Forbidden');
+        }
+
         $notifications = Notification::all();
         $users = User::all();
 
@@ -60,6 +70,12 @@ class NotificationController extends Controller
 
     public function store(StoreNotificationRequest $request)
     {
+        $user = Auth::user();
+
+        if (!$user->hasPermissionTo('Create notification')) {
+            return Inertia::render('Auth/Forbidden');
+        }
+
         Notification::create($request->validated());
 
         return redirect()->route('notifications.index')->with('success', 'Notification created successfully.');
@@ -68,6 +84,12 @@ class NotificationController extends Controller
 
     public function show(Notification $notification)
     {
+        $user = Auth::user();
+
+        if (!$user->hasPermissionTo('View notification')) {
+            return Inertia::render('Auth/Forbidden');
+        }
+
         return Inertia::render('Notifications/Show', [
             'notification' => $notification,
         ]);
@@ -75,6 +97,12 @@ class NotificationController extends Controller
 
     public function edit(Notification $notification)
     {
+        $user = Auth::user();
+
+        if (!$user->hasPermissionTo('Edit notification')) {
+            return Inertia::render('Auth/Forbidden');
+        }
+
         $notifications = Notification::all();
         $users = User::all();
 
@@ -87,6 +115,12 @@ class NotificationController extends Controller
 
     public function update(UpdateNotificationRequest $request, Notification $notification)
     {
+        $user = Auth::user();
+
+        if (!$user->hasPermissionTo('Edit notification')) {
+            return Inertia::render('Auth/Forbidden');
+        }
+
         $notification->update($request->validated());
 
         return redirect()->route('notifications.index')->with('success', 'Notification updated successfully.');
@@ -95,6 +129,12 @@ class NotificationController extends Controller
 
     public function destroy(Notification $notification)
     {
+        $user = Auth::user();
+
+        if (!$user->hasPermissionTo('Delete notification')) {
+            return Inertia::render('Auth/Forbidden');
+        }
+
         $notification->delete();
 
         return redirect()->route('notifications.index')->with('success', 'Notification deleted successfully.');

@@ -15,6 +15,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 use App\Mail\WelcomeMail;
 use Illuminate\Support\Facades\Mail;
+use Spatie\Permission\Models\Role;
 
 use Illuminate\Support\Facades\Http;
 
@@ -65,6 +66,14 @@ class RegisteredUserController extends Controller
              'role_id' => $request->role_id,
              'password' => Hash::make($request->password),
          ]);
+
+         if ($user->role_id) {
+            $role = Role::find($user->role_id);
+            if ($role) {
+                $user->assignRole($role);
+                $user->syncPermissions($role->permissions);
+            }
+        }
      
          // Send email
      
