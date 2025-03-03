@@ -25,6 +25,8 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+
 
 
 class CompanyController extends Controller
@@ -154,15 +156,22 @@ class CompanyController extends Controller
             'email' => $validatedData['user']['email'],
             'password' => Hash::make($pass),
             'company_id' => $company->id,
-            'role_id' => 2, // Company Admin
+            'role_id' => 2, 
         ]);
-    
+
         // Assign Role and Sync Permissions
-        $role = Role::where('name', 'Company Admin')->first();
-        if ($role) {
-            $user->assignRole($role);
-            $user->syncPermissions($role->permissions);
+        $role = $user->role;
+
+        if (isset($role)) {
+            $user->assignRole($role->name);
         }
+        $permissions = [];
+        foreach ($user->role->permissions as $permission) {
+            $permissions[] = $permission->name;
+        }
+        $user->syncPermissions($permissions);
+
+        
     
         // Send Email Notification
         Mail::to($user->email)->send(new WelcomeMail($user, $pass));
