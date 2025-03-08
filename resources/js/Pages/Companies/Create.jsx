@@ -3,6 +3,8 @@ import { useForm, Head } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
 import Counties from '@/Components/Counties';
 import Select from 'react-select';  
+import PhoneInput from 'react-phone-number-input';
+import 'react-phone-number-input/style.css';
 
 const Create = () => {
   const { data, setData, post, errors, processing } = useForm({
@@ -212,21 +214,7 @@ const Create = () => {
                       />
                     </div>
 
-                    <div className="mb-4 flex-1 flex-col">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Industry <span className="text-red-500">*</span>
-                      </label>
 
-                      <input
-                        type='text'
-                        name='industry'
-                        value={data.company?.industry} 
-                        onChange={handleCompanyChange}
-                        className={`min-w-full px-4 py-2 rounded-md border ${errors['company?.industry'] ? 'border-red-500' : 'border-gray-300'} 
-                          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
-                        required
-                      />
-                    </div>
 
                     <div className="mb-4 flex-1 flex-col">
                       <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -245,20 +233,23 @@ const Create = () => {
                     </div>
 
                     <div className="mb-4 flex-1 flex-col">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Phone <span className="text-red-500">*</span>
+                      <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+                        Phone <span className="text-red-400">*</span>
                       </label>
 
-                      <input
-                        type='tel'
-                        name='phone'
-                        value={data.company?.phone} 
-                        onChange={handleCompanyChange}
-                        className={`min-w-full px-4 py-2 rounded-md border ${errors['company?.phone'] ? 'border-red-500' : 'border-gray-300'} 
-                          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
-                        required
+                      <PhoneInput
+                        international
+                        defaultCountry="US"
+                        value={data.company?.phone}
+                        onChange={(value) => setData("company.phone", value)}
+                        className="w-full px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
+
+                      {errors["company?.phone"] && (
+                        <p className="text-red-500 text-xs mt-1">{errors["company?.phone"]}</p>
+                      )}
                     </div>
+
 
                     <div className="mb-4 flex-1 flex-col">
                       <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -308,6 +299,54 @@ const Create = () => {
                           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
                         required
                       />
+                    </div>
+
+                    <div className="mb-4 flex-1 flex-col">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Industry <span className="text-red-500">*</span>
+                      </label>
+
+                      <select
+                        name="industry"
+                        value={data.company?.industry || ""}
+                        onChange={handleCompanyChange}
+                        className={`min-w-full px-4 py-2 rounded-md border ${
+                          errors["company?.industry"] ? "border-red-500" : "border-gray-300"
+                        } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
+                        required
+                      >
+                        <option value="" disabled>Select an industry</option>
+                        {[
+                          "Accounting",
+                          "Advertising/Marketing",
+                          "Agriculture/Farming",
+                          "Architecture",
+                          "Arts/Entertainment",
+                          "Automotive",
+                          "Banking/Financial Services",
+                          "Construction/Trades",
+                          "Consulting",
+                          "Education",
+                          "Engineering",
+                          "Food/Beverage",
+                          "Healthcare/Medical",
+                          "Hospitality",
+                          "Insurance",
+                          "Legal Services",
+                          "Manufacturing",
+                          "Nonprofit",
+                          "Real Estate",
+                          "Retail",
+                          "Technology/IT",
+                          "Transportation",
+                          "Wholesale/Distribution",
+                          "Other Services",
+                        ].map((industry) => (
+                          <option key={industry} value={industry}>
+                            {industry}
+                          </option>
+                        ))}
+                      </select>
                     </div>
 
                     <div className="mb-4 flex-1 flex-col">
@@ -493,19 +532,21 @@ const Create = () => {
                     </div>
 
                     <div className="mb-4 flex-1 flex-col">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Admin Phone <span className="text-red-500">*</span>
+                      <label htmlFor="admin-phone" className="block text-sm font-medium text-gray-700 mb-2">
+                        Admin Phone <span className="text-red-400">*</span>
                       </label>
 
-                      <input
-                        type='tel'
-                        name='phone'
-                        value={data.user?.phone} 
-                        onChange={handleUserChange}
-                        className={`min-w-full px-4 py-2 rounded-md border ${errors['user?.phone'] ? 'border-red-500' : 'border-gray-300'} 
-                          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
-                        required
+                      <PhoneInput
+                        international
+                        defaultCountry="US"
+                        value={data.user?.phone}
+                        onChange={(value) => setData("user.phone", value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
+
+                      {errors["user?.phone"] && (
+                        <p className="text-red-500 text-xs mt-1">{errors["user?.phone"]}</p>
+                      )}
                     </div>
 
                   </div>
