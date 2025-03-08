@@ -13,6 +13,7 @@ const Dashboard = ({ auth }) => {
     const [lineOptions, setLineOptions] = useState({});
     const { layoutConfig } = useContext(LayoutContext);
     const roleId = auth.user?.role_id;
+    const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
 
     const applyLightTheme = () => {
         const lineOptions = {
@@ -116,10 +117,26 @@ const Dashboard = ({ auth }) => {
     return (
         <Layout>
              {roleId === 2 && 
-            <div>
-                <h4 className='font-bold'>{motherCompany.name} - {motherCompany.unique_number}</h4>
+            <div className='flex gap-8 items-center'>
+                <h4 className='font-bold flex items-center my-auto'>Company: {motherCompany.name} - {motherCompany.unique_number}</h4>
             </div>}
-            <div className="grid">
+
+            {roleId === 3 && 
+            <div className='flex gap-8 items-center'>
+                <h4 className='font-bold flex items-center my-auto'>Phone number: {auth.user?.phone}</h4>
+                {userPermission.includes('Create loan') &&
+                <Link
+                  href={route('loans.create')}
+                  className="flex items-center mt-auto justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                >
+                  <Plus className="w-4 h-4 mr-2 my-auto" />
+                  <span className='my-auto flex items-center'>
+                  Request for an advance
+                  </span>
+                </Link>}
+            </div>}
+
+            <div className="grid pt-4">
                 {roleId === 1 && 
                 <DashboardInfoCard
                     title="Companies"
