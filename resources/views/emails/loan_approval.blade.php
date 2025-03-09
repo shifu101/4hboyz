@@ -19,17 +19,17 @@
 <body>
 
     <h2>Congratulations, {{ $loan->employee->user->name }}!</h2>
-    <p>We are excited to inform you that your loan application has been approved.</p>
+    <p>We are excited to inform you that your salary advance application has been approved.</p>
     
-    <p>Details of your loan:</p>
+    <p>Details of your salary advance:</p>
     <ul>
-        <li><strong>Loan Number:</strong> {{ $loan->number }}</li>
+        <li><strong>Salary advance Number:</strong> {{ $loan->number }}</li>
         <li><strong>Principle:</strong> {{ round(($loan->amount - $loan->charges),2) }}</li>
         <li><strong>Charges:</strong> {{ round(($loan->charges),2) }}</li>
         <li><strong>Amount due:</strong> {{ $loan->amount }}</li>
     </ul>
 
-    <p>Your loan is now in process. You will receive further instructions shortly.</p>
+    <p>Your salary advance is now in process. You will receive further instructions shortly.</p>
     <p>If you have any questions or concerns, please don't hesitate to reach out to us.</p>
     
     <p>Thank you for choosing Centiflow!</p>

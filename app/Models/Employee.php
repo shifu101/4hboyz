@@ -46,6 +46,7 @@ class Employee extends Model
     {
         return $this->loans()
             ->where('status', '!=', 'paid')
+            ->where('status', '!=', 'rejected')
             ->count();
     }
 
@@ -54,6 +55,7 @@ class Employee extends Model
         return round(
             $this->loans()
                 ->where('status', '!=', 'paid')
+                ->where('status', '!=', 'rejected')
                 ->get()
                 ->sum(function ($loan) {
                     return $loan->currentBalance;

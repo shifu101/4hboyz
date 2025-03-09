@@ -17,7 +17,7 @@ class RoleSeeder extends Seeder
     public function run()
     {
         // Centiflow Admin (Full access to everything)
-        $centiflowAdminRole = Role::create(['name' => 'Centiflow Admin', 'guard_name' => 'web']);
+        $centiflowAdminRole = Role::create(['name' => 'Super Admin', 'guard_name' => 'web']);
         $centiflowAdminRole->givePermissionTo(Permission::all());
 
         // Company Admin
@@ -32,6 +32,33 @@ class RoleSeeder extends Seeder
             'Index repayments', 'View repayments', 'Create repayments', 'Edit repayments', 'Export repayments'
         ];
         $companyAdminRole->syncPermissions($companyAdminPermissions);
+
+        // Employee Role (Limited access)
+        $employeeRole = Role::create(['name' => 'Employee', 'guard_name' => 'web']);
+        $employeePermissions = [
+            'View user',
+            'View employee', 'Create employee',
+            'Create loan', 'Index loan', 'View loan',
+            'Index notification', 'View notification',
+            'Index remittance', 'View remittance',
+            'Index repayments', 'View repayments'
+        ];
+        $employeeRole->syncPermissions($employeePermissions);
+
+
+        // Office Admin Role
+        $officeAdminRole = Role::create(['name' => 'Office Admin', 'guard_name' => 'web']);
+        $officeAdminPermissions = [
+            'Index user', 'View user',
+            'Index company', 'View company', 'Create company', 'Edit company', 'Export company',
+            'Index employee', 'View employee', 'Create employee', 'Edit employee', 'Export employee',
+            'Index loan', 'View loan', 'Edit loan', 'Export loan',
+            'Index loan provider', 'View loan provider', 'Create loan provider', 'Edit loan provider', 'Export loan provider',
+            'Index remittance', 'View remittance', 'Create remittance', 'Edit remittance', 'Export remittance',
+            'Index repayments', 'View repayments', 'Create repayments', 'Edit repayments', 'Export repayments',
+            'Index notification', 'View notification', 'Create notification'
+        ];
+        $officeAdminRole->syncPermissions($officeAdminPermissions);
 
         // HR Role
         $hrRole = Role::create(['name' => 'HR', 'guard_name' => 'web']);
@@ -49,6 +76,7 @@ class RoleSeeder extends Seeder
         $financeRole = Role::create(['name' => 'Finance', 'guard_name' => 'web']);
         $financePermissions = [
             'Index user', 'View user',
+            'Index employee', 'View employee', 'Create employee', 'Edit employee', 'Export employee',
             'Index loan', 'View loan', 'Edit loan', 'Export loan',
             'Index loan provider', 'View loan provider', 'Create loan provider', 'Edit loan provider', 'Export loan provider',
             'Index remittance', 'View remittance', 'Create remittance', 'Edit remittance', 'Export remittance',
@@ -57,15 +85,5 @@ class RoleSeeder extends Seeder
         ];
         $financeRole->syncPermissions($financePermissions);
 
-        // Employee Role (Limited access)
-        $employeeRole = Role::create(['name' => 'Employee', 'guard_name' => 'web']);
-        $employeePermissions = [
-            'View user',
-            'Create loan', 'Index loan', 'View loan',
-            'Index notification', 'View notification',
-            'Index remittance', 'View remittance',
-            'Index repayments', 'View repayments'
-        ];
-        $employeeRole->syncPermissions($employeePermissions);
     }
 }

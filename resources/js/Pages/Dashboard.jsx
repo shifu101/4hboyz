@@ -1,10 +1,11 @@
 
 import { Chart } from 'primereact/chart';
-import React, { useContext, useEffect, useState, Head } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { LayoutContext } from '@/Layouts/layout/context/layoutcontext';
 import Layout from "@/Layouts/layout/layout.jsx";
 import DashboardInfoCard from "@/Components/DashboardInfoCard.jsx";
-import { usePage } from '@inertiajs/react';
+import { usePage, Link, Head } from '@inertiajs/react';
+import { Plus } from 'lucide-react';
 
 const Dashboard = ({ auth }) => {
     // Get data from the page props
@@ -116,9 +117,10 @@ const Dashboard = ({ auth }) => {
 
     return (
         <Layout>
+            <Head title="Dashboard" />
              {roleId === 2 && 
             <div className='flex gap-8 items-center'>
-                <h4 className='font-bold flex items-center my-auto'>Company: {motherCompany.name} - {motherCompany.unique_number}</h4>
+                <h4 className='font-bold flex items-center my-auto'>Company: {motherCompany?.name} - {motherCompany?.unique_number}</h4>
             </div>}
 
             {roleId === 3 && 
@@ -127,7 +129,7 @@ const Dashboard = ({ auth }) => {
                 {userPermission.includes('Create loan') &&
                 <Link
                   href={route('loans.create')}
-                  className="flex items-center mt-auto justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                  className="flex items-center mt-auto justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm min-w-fit"
                 >
                   <Plus className="w-4 h-4 mr-2 my-auto" />
                   <span className='my-auto flex items-center'>

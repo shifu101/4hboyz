@@ -132,7 +132,7 @@ class LoanController extends Controller
     {
         $user = Auth::user();
 
-        if (!$user->hasPermissionTo('create loan')) {
+        if (!$user->hasPermissionTo('Create loan')) {
             return Inertia::render('Auth/Forbidden');
         }
 
@@ -325,6 +325,8 @@ class LoanController extends Controller
             return Inertia::render('Auth/Forbidden');
         }
 
+        $validated = $request->validated();
+
         $oldStatus = $loan->status;
     
         $loan->load(['loanProvider', 'employee.user', 'employee.company']);
@@ -338,10 +340,12 @@ class LoanController extends Controller
                 Mail::to($loan->employee->user->email)->send(new LoanApprovalMail($loan));
 
             } elseif ($loan->status === 'Declined') {
-                Mail::to($loan->employee->user->email)->send(new LoanDeclinedMail($loan));
+                $reason = $validated['reason'] ?? 'No reason provided';
+                Mail::to($loan->employee->user->email)->send(new LoanDeclinedMail($loan, $reason));
             }
         }
-    
+        $reason = $validated['reason'] ?? 'No reason provided';
+        Mail::to($loan->employee->user->email)->send(new LoanDeclinedMail($loan, $reason));
         return redirect()->route('loans.index')->with('success', 'Loan updated successfully.');
     }
 
@@ -357,7 +361,8 @@ class LoanController extends Controller
         $validated = $request->validate([
             'id' => 'required|exists:loans,id',
             'otp' => 'required|string',
-            'status' => 'required|in:Approved,Declined'
+            'status' => 'required|in:Approved,Declined',
+            'reason' => 'nullable'
         ]);
     
         // Retrieve loan details
@@ -401,16 +406,17 @@ class LoanController extends Controller
                     // Send approval email
                     Mail::to($loan->employee->user->email)->send(new LoanApprovalMail($loan));
                 } elseif ($loan->status === 'Declined') {
-                    Mail::to($loan->employee->user->email)->send(new LoanDeclinedMail($loan));
+                    $reason = $validated['reason'] ?? 'No reason provided';
+                    Mail::to($loan->employee->user->email)->send(new LoanDeclinedMail($loan, $reason));
                 }
             }
     
             DB::commit();
-            return redirect()->route('loans.index')->with('success', 'Loan updated successfully.');
+            return redirect()->route('loans.index')->with('success', 'Salary advance updated successfully.');
         } catch (\Exception $e) {
             DB::rollback();
-            Log::error('Loan approval failed:', ['error' => $e->getMessage()]);
-            return redirect()->route('loans.index')->with('error', 'Loan approval process failed.');
+            Log::error('Salary advance approval failed:', ['error' => $e->getMessage()]);
+            return redirect()->route('loans.index')->with('error', 'Salary advance approval process failed.');
         }
     }
     

@@ -8,17 +8,19 @@ const EditUser = ({ errors }) => {
   
 
   const roleOptions = [
-    { value: 1, label: 'Super Admin' },
-    { value: 2, label: 'Admin' },
-    { value: 3, label: 'Employee' },
-    { value: 4, label: 'Office Admin' }
+      { value: 1, label: 'Super Admin' },
+      { value: 2, label: 'Company Admin' },
+      { value: 3, label: 'Employee' },
+      { value: 4, label: 'Office Admin' },
+      { value: 5, label: 'Hr' },
+      { value: 6, label: 'Finance' }
   ];
 
-  const roleId = auth.user?.role_id;
-
   const cRoleOptions = [
-    { value: 2, label: 'Admin' },
-    { value: 3, label: 'Employee' }
+      { value: 2, label: 'Company Admin' },
+      { value: 3, label: 'Employee' },
+      { value: 5, label: 'Hr' },
+      { value: 6, label: 'Finance' }
   ];
 
 

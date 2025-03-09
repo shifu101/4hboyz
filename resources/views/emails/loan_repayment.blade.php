@@ -47,9 +47,9 @@
     <div class="content">
         <h2>Dear {{ $repayment->loan->employee->user->name ?? '' }},</h2>
 
-        <p>We have received your loan repayment of <strong>{{ $repayment->amount }}</strong> for your loan from {{ $repayment->loan->company->name ?? '' }}.</p>
+        <p>We have received your salary advance repayment of <strong>{{ $repayment->amount }}</strong> for your advance from {{ $repayment->loan->company->name ?? '' }}.</p>
 
-        <p>Details of your loan repayment:</p>
+        <p>Details of your salary advance repayment:</p>
         <ul>
             <li><strong>Repayment Number:</strong> {{ $repayment->number }}</li>
             <li><strong>Employee Company:</strong> {{ $repayment->loan->employee->company->name ?? '' }}</li>

@@ -17,13 +17,13 @@
         }
     </style>
 
-    <title>Your Loan OTP</title>
+    <title>Your salary advance OTP</title>
 </head>
 <body>
 
     <h2>Hello,</h2>
-    <p>Your OTP for loan verification is: <strong>{{ $otp }}</strong></p>
-    <p>For this loan number <strong>{{ $number }}</strong></p>
+    <p>Your OTP for salary advance verification is: <strong>{{ $otp }}</strong></p>
+    <p>For this salary advance number <strong>{{ $number }}</strong></p>
     <p>This OTP is valid for a limited time. Do not share it with anyone.</p>
     <p>Thank you for using our services.</p>
     

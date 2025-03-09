@@ -27,7 +27,8 @@ class UpdateLoanRequest extends FormRequest
             'otp' => 'nullable',
             'disbursed_at' => 'nullable',
             'employee_id' => 'nullable',
-            'loan_provider_id' => 'nullable'
+            'loan_provider_id' => 'nullable',
+            'reason'=>'reason'
         ];
     }
 }

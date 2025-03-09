@@ -7,16 +7,23 @@ import Swal from "sweetalert2";
 const Approval = ({ loan }) => {
     const [otp, setOtp] = useState("");
     const [error, setError] = useState("");
+    const [status, setStatus] = useState("Approved");
+    const [reason, setReason] = useState("");
     const { processing } = useForm();
 
-    const handleStatusUpdate = (e, id, status) => {
+    const handleStatusUpdate = (e, id) => {
         e.preventDefault();
         
-        // Create a form data object with the specific status
+        if (status === "Declined" && !reason.trim()) {
+            Swal.fire("Error", "Please provide a reason for declining.", "error");
+            return;
+        }
+
         const formData = {
-            status: status,
-            id: id,
-            otp: otp,
+            status,
+            id,
+            otp,
+            reason: status === "Declined" ? reason : "",
         };
 
         Swal.fire({
@@ -33,12 +40,11 @@ const Approval = ({ loan }) => {
                     onSuccess: () => {
                         Swal.fire(
                             `${status}!`, 
-                            `The loan has been ${status.toLowerCase()}.`, 
+                            `The salary advance has been ${status.toLowerCase()}.`, 
                             'success'
                         );
                     },
                     onError: (err) => {
-                        // Capture the error message from the response
                         const errorMessage = err?.response?.data?.error || 'There was a problem updating the loan status.';
                         setError(errorMessage);
                         console.error(`${status} error:`, err);
@@ -53,13 +59,10 @@ const Approval = ({ loan }) => {
         <Layout>
             <Head title={loan.number} />
             <div className="max-w-4xl bg-white shadow-md rounded-lg p-6">
-                <h1 className="text-2xl font-bold text-gray-800 text-left mb-6">
-                    Loan Details
-                </h1>
-
+                <h1 className="text-2xl font-bold text-gray-800 text-left mb-6">Loan Details</h1>
                 <div className="space-y-4">
-                    <div className="flex justify-between">
-                        <strong className="text-gray-600">Loan Number:</strong>
+                <div className="flex justify-between">
+                        <strong className="text-gray-600">Salary Advance Number:</strong>
                         <span className="text-gray-800">{loan.number}</span>
                     </div>
                     <div className="flex justify-between">
@@ -71,7 +74,7 @@ const Approval = ({ loan }) => {
                         <span className="text-gray-800">{loan.amount}</span>
                     </div>
                     <div className="flex justify-between">
-                        <strong className="text-gray-600">Loan Provider:</strong>
+                        <strong className="text-gray-600">Salary Advance Provider:</strong>
                         <span className="text-gray-800">{loan.loan_provider?.name}</span>
                     </div>
                     <div className="flex justify-between">
@@ -87,7 +90,7 @@ const Approval = ({ loan }) => {
                         <span className="text-gray-800">{loan.currentBalance}</span>
                     </div>
                     <div className="flex justify-between">
-                        <strong className="text-gray-600">Loan due:</strong>
+                        <strong className="text-gray-600">Salary advance due:</strong>
                         <span className="text-gray-800">{loan.eventualPay}</span>
                     </div>
                     <div className="flex justify-between">
@@ -96,12 +99,9 @@ const Approval = ({ loan }) => {
                     </div>
                 </div>
 
-                {/* OTP Input Section */}
                 {loan.status === "Pending" && (
                     <div className="mt-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2">
-                            Enter OTP:
-                        </label>
+                        <label className="block text-gray-700 text-sm font-bold mb-2">Enter OTP:</label>
                         <input
                             type="text"
                             value={otp}
@@ -114,35 +114,47 @@ const Approval = ({ loan }) => {
                     </div>
                 )}
 
-                {/* Approve/Decline Buttons */}
-                <div className="mt-8 text-left left space-x-4">
-                    <Link
-                        href={route("loans.index")}
-                        className="inline-block px-6 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition"
-                    >
+                {loan.status === "Pending" && (
+                    <div className="mt-4">
+                        <label className="block text-gray-700 text-sm font-bold mb-2">Salary Advance Approval:</label>
+                        <div className="flex space-x-4">
+                            <label className="flex items-center space-x-2">
+                                <input type="radio" name="status" value="Approved" checked={status === "Approved"} onChange={() => setStatus("Approved")} />
+                                <span>Approve</span>
+                            </label>
+                            <label className="flex items-center space-x-2">
+                                <input type="radio" name="status" value="Declined" checked={status === "Declined"} onChange={() => setStatus("Declined")} />
+                                <span>Decline</span>
+                            </label>
+                        </div>
+                    </div>
+                )}
+                
+                {status === "Declined" && (
+                    <div className="mt-4">
+                        <label className="block text-gray-700 text-sm font-bold mb-2">Reason for Declining:</label>
+                        <textarea
+                            value={reason}
+                            onChange={(e) => setReason(e.target.value)}
+                            className="border rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-red-400"
+                            placeholder="Provide reason for declining the salary advance"
+                        ></textarea>
+                    </div>
+                )}
+                
+                <div className="mt-8 text-left space-x-4">
+                    <Link href={route("loans.index")} className="inline-block px-6 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition">
                         Back to Loans
                     </Link>
-                    <>
-                        {loan.status === "Pending" && (
-                            <>
-                                <button
-                                    onClick={(e) => handleStatusUpdate(e, loan.id, "Approved")}
-                                    disabled={processing}
-                                    className="inline-flex items-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-200 disabled:opacity-50"
-                                >
-                                    <Check className="w-4 h-4 mr-2" /> Approve
-                                </button>
-
-                                <button
-                                    onClick={(e) => handleStatusUpdate(e, loan.id, "Declined")}
-                                    disabled={processing}
-                                    className="inline-flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-200 disabled:opacity-50"
-                                >
-                                    <XCircle className="w-4 h-4 mr-2" /> Decline
-                                </button>
-                            </>
-                        )}
-                    </>
+                    {loan.status === "Pending" && (
+                        <button
+                            onClick={(e) => handleStatusUpdate(e, loan.id)}
+                            disabled={processing}
+                            className="inline-flex items-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-200 disabled:opacity-50"
+                        >
+                            <Check className="w-4 h-4 mr-2" /> Submit
+                        </button>
+                    )}
                 </div>
             </div>
         </Layout>
