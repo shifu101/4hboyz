@@ -3,6 +3,8 @@ import { useForm, usePage, Link, Head } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
 import Select from 'react-select';  
 import DashboardInfoCard from "@/Components/DashboardInfoCard.jsx";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Create = () => {
     const { employees, auth, companies } = usePage().props; 
@@ -33,9 +35,15 @@ const Create = () => {
         e.preventDefault();
         
         const loanFloat = selectedEmployee?.loan_limit - selectedEmployee?.total_loan_balance;
-        
+        const amountToReceive = parseFloat(data.amount) - (parseFloat(data.amount) * (parseFloat(selectedCompany?.percentage) || 0) / 100);
+    
         if (parseFloat(data.amount) > loanFloat) {
-            alert("Loan amount cannot exceed the available loan float.");
+            toast.error("Advance amount cannot exceed the available advance float.");
+            return;
+        }
+    
+        if (amountToReceive < 100) {
+            toast.error("Amount to receive must be at least 100 KES.");
             return;
         }
     
@@ -80,11 +88,23 @@ const Create = () => {
 
     return (
         <Layout>
-           <Head title="Create loan" />
+           <Head title="Create advance" />
+            <ToastContainer
+                position="top-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
             {selectedEmployee !== null && 
             <div className="grid">
                 <DashboardInfoCard
-                    title="Loan limit"
+                    title="Advance limit"
                     value={        new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(selectedEmployee.loan_limit)}
                     icon="map-marker"
                     iconColor="blue"
@@ -92,7 +112,7 @@ const Create = () => {
                     descriptionText="you can borrow"
                 />
                 <DashboardInfoCard
-                    title="Loan float"
+                    title="Advance float"
                     value={ new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(selectedEmployee.loan_limit - selectedEmployee.total_loan_balance)}
                     icon="map-marker"
                     iconColor="blue"
@@ -116,7 +136,7 @@ const Create = () => {
                         />
                         {parseFloat(data.amount) > (selectedEmployee?.loan_limit - selectedEmployee?.total_loan_balance) && (
                             <div className="text-sm text-red-500 mt-1">
-                                Loan amount cannot exceed the available loan float.
+                                Loan amount cannot exceed the available advance float.
                             </div>
                         )}
                         {errors.amount && <div className="text-sm text-red-500 mt-1">{errors.amount}</div>}
@@ -154,13 +174,13 @@ const Create = () => {
                             type="submit"
                             className="w-full mt-4 bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         >
-                            Request for a loan
+                            Request for salary advance
                         </button>
                     )}
                 </form>
 
                 <div className='flex flex-col rounded-md border p-4 bg-white min-w-[250px]'>
-                    <h2>Loan details</h2>
+                    <h2>Salary advance details</h2>
                     <div className="space-y-4">
                         <div className="flex justify-between items-center gap-4">
                             <strong className="text-gray-600">Amount to receive:</strong> 

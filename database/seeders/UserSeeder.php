@@ -5,17 +5,19 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Artisan;
 
 class UserSeeder extends Seeder
 {
     public function run()
     {
         $roleMap = [
-            1 => 'Centiflow Admin',
+            1 => 'Super Admin',
             2 => 'Company Admin',
-            3 => 'HR',
-            4 => 'Finance',
-            5 => 'Employee'
+            3 => 'Employee',
+            4 => 'Office Admin',
+            5 => 'HR',
+            6 => 'Finance',
         ];
 
         // Create 50 random users and assign roles + permissions
@@ -44,6 +46,8 @@ class UserSeeder extends Seeder
                 $user->syncPermissions($role->permissions);
             }
         }
+
+        // Run the permissions sync command
+        Artisan::call('permissions:sync-users-with-roles');
     }
 }
-

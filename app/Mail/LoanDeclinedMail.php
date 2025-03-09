@@ -12,13 +12,15 @@ class LoanDeclinedMail extends Mailable
     use Queueable, SerializesModels;
 
     public $loan;
+    public $reason;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(Loan $loan)
+    public function __construct(Loan $loan, $reason)
     {
         $this->loan = $loan;
+        $this->reason = $reason;
     }
 
     /**
@@ -30,6 +32,7 @@ class LoanDeclinedMail extends Mailable
                     ->view('emails.loan_declined')
                     ->with([
                         'loan' => $this->loan,
+                        'reason' => $this->reason,
                     ]);
     }
 }

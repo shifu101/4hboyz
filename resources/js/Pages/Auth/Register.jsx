@@ -133,7 +133,7 @@ export default function Register() {
                     </ol>
 
                     <div className="bg-white shadow-md rounded-lg p-8">
-                        <h2 className="text-center text-3xl font-bold mb-6">Set up your account</h2>
+                        <h2 className="text-center text-3xl font-bold mb-6">{!company ? 'Enter your company unique number and search' : 'Proceed to set up your account'}</h2>
                         
                         <div className="mb-6">
                             <label htmlFor="unique_number" className="block text-sm font-medium text-gray-700 mb-2">
@@ -164,14 +164,6 @@ export default function Register() {
 
                         {showForm && (
                             <form onSubmit={submit} className="space-y-4">
-                                {company &&
-                                <div>
-                                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Company Name
-                                    </label>
-                                    <p className="text-red-500 text-xs mt-1">{company.name}</p>
-                                </div>}
-
                                 <div>
                                     <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
                                         Your name <span className='text-red-400'>*</span>
