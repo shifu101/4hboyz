@@ -367,6 +367,10 @@ class LoanController extends Controller
     
         // Retrieve loan details
         $loan = Loan::find($validated['id']);
+        $company = Company::find($user->company_id);
+        
+        // Now you have the result as an integer
+        
     
         if (!$loan) {
             return redirect()->route('loans.index')->with('error', 'Loan not found.');
@@ -392,7 +396,14 @@ class LoanController extends Controller
             if ($loan->status !== $oldStatus) {
                 if ($loan->status === 'Approved') {
                     $phone = $loan->employee->user->phone;
-                    $amountToSend = '100';
+
+                            
+                    // Get the loan amount and company percentage
+                    $loanAmount = (float) $loan->amount;
+                    $companyPercentage = (float) $company->percentage;
+                    
+                    // Calculate the amount to disburse
+                    $amountToSend = (int) ($loanAmount - ($loanAmount * $companyPercentage / 100));
     
                     // Initiate M-Pesa Payment
                     $response = $this->mpesaService->sendB2CPayment($phone, $amountToSend);
