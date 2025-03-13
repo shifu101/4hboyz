@@ -16,15 +16,10 @@ const Create = () => {
     const roleOptions = [
         { value: 1, label: 'Super Admin' },
         { value: 2, label: 'Company Admin' },
-        { value: 3, label: 'Employee' },
-        { value: 4, label: 'Office Admin' },
-        { value: 5, label: 'Hr' },
-        { value: 6, label: 'Finance' }
+        { value: 4, label: 'Office Admin' }
     ];
   
     const cRoleOptions = [
-        { value: 2, label: 'Company Admin' },
-        { value: 3, label: 'Employee' },
         { value: 5, label: 'Hr' },
         { value: 6, label: 'Finance' }
     ];  
