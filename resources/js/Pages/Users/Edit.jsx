@@ -6,7 +6,8 @@ import Select from 'react-select';
 const EditUser = ({ errors }) => {
   const { companies, user, auth } = usePage().props; 
   
-
+  const roleId = auth.user?.role_id;
+  
   const roleOptions = [
       { value: 1, label: 'Super Admin' },
       { value: 2, label: 'Company Admin' },
