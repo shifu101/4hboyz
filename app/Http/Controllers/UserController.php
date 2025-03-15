@@ -123,7 +123,7 @@ class UserController extends Controller
     {
         $permissions = Permission::all();
 
-        $user->load('role'); 
+        $user->load('role', 'company'); 
         $user->append('simple_permissions');        
 
         return Inertia::render('Users/Show', [
