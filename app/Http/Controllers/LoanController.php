@@ -27,16 +27,21 @@ use Carbon\Carbon;
 use App\Services\MpesaService;
 use Illuminate\Support\Facades\Log;
 
+use App\Services\SmsService;
+use Illuminate\Support\Str;
+
 class LoanController extends Controller
 {
 
     protected $mpesaService;
+    protected $smsService;
 
-    public function __construct(MpesaService $mpesaService)
+    public function __construct(MpesaService $mpesaService = null, SmsService $smsService = null)
     {
         $this->mpesaService = $mpesaService;
+        $this->smsService = $smsService;
     }
-
+    
     public function index(Request $request)
     {
         $user = Auth::user();
@@ -416,6 +421,7 @@ class LoanController extends Controller
     
                     // Send approval email
                     Mail::to($loan->employee->user->email)->send(new LoanApprovalMail($loan));
+                
                 } elseif ($loan->status === 'Declined') {
                     $reason = $validated['reason'] ?? 'No reason provided';
                     Mail::to($loan->employee->user->email)->send(new LoanDeclinedMail($loan, $reason));
@@ -474,6 +480,11 @@ class LoanController extends Controller
         ]);
 
         Mail::to($user->email)->send(new LoanOtpMail($otp, $loan->number));
+
+        $this->smsService->sendSms(
+            $user->phone, 
+            "Hello {$user->name}, Your OTP for salary advance verification is: {$otp}"
+        );
 
         return Inertia::render('Loans/Approval', [
             'loan' => $loan
