@@ -165,7 +165,7 @@ const Show = ({ user }) => {
         </div>
       </div>
 
-      {roleId === 1 &&
+      {(roleId === 1 || roleId === 2) &&
       <PermissionManager selectedPermissions={userPermissions} onUpdate={handlePermissionsUpdate} />}
     </Layout>
   );
