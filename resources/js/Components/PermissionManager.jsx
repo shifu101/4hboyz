@@ -5,16 +5,28 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const PermissionManager = ({ onUpdate }) => {
-  const { permissions, user } = usePage().props; 
+  const { permissions, user, auth } = usePage().props; 
   const permissionsList = permissions.map((data) => data.name);
+
+  const roleId = auth.user?.role_id;
+
+  // Array of permissions to exclude if roleId is 2
+  const permissionsToExclude = ['Delete user', 'Index company', 'Create company', 'Edit company', 'Show company', 'View company', 'Export company', 'Delete company', 'Create employee', 'Delete employee', 'Create loan', 'Edit loan', 'Delete loan', 'Index loan provider', 'View loan provider', 'Create loan provider', 'Index loan provider', 'View loan provider', 'Edit loan provider', 'Delete loan provider', 'Export loan provider', 'Delete remittance', 'Create repayments', 'Edit repayments', 'Delete repayments']; 
+
+  // Filter out specific permissions based on roleId using the exclusion array
+  const filteredPermissions = roleId === 2
+    ? permissions.filter(permission => !permissionsToExclude.includes(permission.name))
+    : permissions;
+
+  const filteredPermissionsList = filteredPermissions.map((data) => data.name);
 
   // Function to group permissions dynamically
   const groupPermissions = () => {
     const groups = {};
-    permissionsList.forEach((perm) => {
+    filteredPermissionsList.forEach((perm) => {
       const parts = perm.split(" ");
-      const action = parts[0]; // Extract action (e.g., "View", "Create")
-      const entity = parts.slice(1).join(" "); // Extract entity name (e.g., "user", "company")
+      const action = parts[0];
+      const entity = parts.slice(1).join(" "); 
       if (!groups[entity]) {
         groups[entity] = [];
       }
@@ -34,13 +46,13 @@ const PermissionManager = ({ onUpdate }) => {
       return acc;
     }, {});
     setExpandedGroups(initialExpandState);
-  }, [permissionsList]);
+  }, [filteredPermissionsList]);
 
   const handlePermissionChange = (permission) => {
     setFormData((prev) =>
       prev.includes(permission)
-        ? prev.filter((p) => p !== permission) // Remove if already selected
-        : [...prev, permission] // Add if not selected
+        ? prev.filter((p) => p !== permission) 
+        : [...prev, permission] 
     );
   };
   
@@ -106,9 +118,6 @@ const PermissionManager = ({ onUpdate }) => {
           <h3 className="text-xl font-bold text-white">Permission Management</h3>
         </div>
         <p className="text-blue-100 text-sm mt-1">Configure access rights and capabilities for this user</p>
-        <button onClick={handleSubmit} className="bg-black text-white px-4 py-2 mt-4 rounded">
-          Update Permissions
-        </button>
       </div>
       
       <div className="p-6">
@@ -178,10 +187,17 @@ const PermissionManager = ({ onUpdate }) => {
                   </div>
                 </div>
               )}
+
+
             </div>
           );
         })}
+
+          <button onClick={handleSubmit} className="bg-black text-white px-4 py-2 my-4 mx-auto rounded">
+            Update Permissions
+          </button>
       </div>
+
     </div>
   );
 };

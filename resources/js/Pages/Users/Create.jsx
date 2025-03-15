@@ -30,7 +30,7 @@ const Create = () => {
         email: '',
         role_id: 2, 
         password: '1234boys',  
-        company_id: '', 
+        company_id: roleId === 2 ? auth.user?.company_id : '', 
         status: 'Active'
     });
 
