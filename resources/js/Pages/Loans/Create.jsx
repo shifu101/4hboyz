@@ -191,14 +191,6 @@ const Create = () => {
                             </span>
                         </div>
                         <div className="flex justify-between items-center gap-4">
-                            <strong className="text-gray-600">Charges:</strong> 
-                            <span className="text-gray-800 font-bold text-2xl">
-                                {new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(
-                                    ((parseFloat(data?.amount) || 0) * (parseFloat(selectedCompany?.percentage) || 0) / 100)
-                                )}
-                            </span>
-                        </div>
-                        <div className="flex justify-between items-center gap-4">
                             <strong className="text-gray-600">Amount to repay:</strong> 
                             <span className="text-gray-800 font-bold text-2xl">
                                 {new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(parseFloat(data?.amount) || 0)}
