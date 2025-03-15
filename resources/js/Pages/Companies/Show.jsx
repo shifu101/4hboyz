@@ -115,11 +115,11 @@ const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
             <div className="mt-4 p-4 bg-gray-100 rounded-lg">
               {activeTab === "Details" && <Details company={company} />}
               {activeTab === "Employees" && <Employees companyId={company.id} employees={employees} />}
-              {activeTab === "Loans" && <Loans companyId={company.id} loans={loans} status='All' />}
-              {activeTab === "Approved Loans" && <Loans companyId={company.id} loans={loans} status='Approved' />}
-              {activeTab === "Pending Loans" && <Loans companyId={company.id} loans={loans} status='Pending' />}
-              {activeTab === "Declined Loans" && <Loans companyId={company.id} loans={loans} status='Declined' />}
-              {activeTab === "Paid Loans" && <Loans companyId={company.id} loans={loans} status='Paid' />}
+              {activeTab === "Advances" && <Loans companyId={company.id} loans={loans} status='All' />}
+              {activeTab === "Approved Advances" && <Loans companyId={company.id} loans={loans} status='Approved' />}
+              {activeTab === "Pending Advances" && <Loans companyId={company.id} loans={loans} status='Pending' />}
+              {activeTab === "Declined Advances" && <Loans companyId={company.id} loans={loans} status='Declined' />}
+              {activeTab === "Paid Advances" && <Loans companyId={company.id} loans={loans} status='Paid' />}
               {activeTab === "Repayments" && <Repayments companyId={company.id} repayments={repayments} />}
               {activeTab === "Remittances" && <Remittances companyId={company.id} remittances={remittances} />}
             </div>
