@@ -83,11 +83,6 @@ const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
       <div className="w-full">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-2xl font-semibold text-gray-900">Remittances Directory</h1>
-          {userPermission.includes('Create remittance') && (
-            <Link href={route('remittances.create')} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-              <Plus className="w-4 h-4 mr-2 inline" /> Create
-            </Link>
-          )}
         </div>
         
         <input

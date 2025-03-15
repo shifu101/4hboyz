@@ -179,9 +179,9 @@ const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
               {employees.length > 0 ? (
                 employees.map((employee) => (
                   <tr key={employee.id}>
-                    <td className="px-4 py-4">{employee.user.name}</td>
-                    <td className="px-4 py-4">{employee.user.email}</td>
-                    <td className="px-4 py-4">{employee.user.phone || 'N/A'}</td>
+                    <td className="px-4 py-4">{employee.user?.name}</td>
+                    <td className="px-4 py-4">{employee.user?.email}</td>
+                    <td className="px-4 py-4">{employee.user?.phone || 'N/A'}</td>
                     <td className="px-4 py-4">{new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(employee.salary)}</td>
                     <td className="px-4 py-4">{new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(employee.loan_limit)}</td>
                     <td className="px-4 py-4">{employee.unpaid_loans_count}</td>
