@@ -104,7 +104,7 @@ class CompanyController extends Controller
         }
 
         $validatedData = $request->all();
-    
+
         // Handle file uploads
         $fileFields = ['certificate_of_incorporation', 'kra_pin', 'cr12_cr13', 'signed_agreement'];
         $filePaths = [];
@@ -153,7 +153,7 @@ class CompanyController extends Controller
         // Create the associated user
         $user = User::create([
             'name' => $validatedData['user']['name'],
-            'phone' => $validatedData['user']['phone'],
+            'phone' => $validatedData['phone'],
             'email' => $validatedData['user']['email'],
             'password' => Hash::make($pass),
             'company_id' => $company->id,
