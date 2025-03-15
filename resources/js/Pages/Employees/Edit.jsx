@@ -7,16 +7,19 @@ const EditEmployee = ({ errors }) => {
   const { companies, employee, users, auth } = usePage().props; 
   const roleId = auth.user?.role_id;
 
-  const { data, setData, put, processing } = useForm({
-    salary: employee.salary,
-    loan_limit: (employee.salary * 0.67).toFixed(2), 
-    user_id: employee.user_id,
-    company_id: roleId === 2 ? auth.user?.company_id : '',
-    approved: employee.approved || '', 
-  });
-
   const [selectedCompany, setSelectedCompany] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
+
+  const { data, setData, put, processing } = useForm({
+    salary: employee.salary,
+    loan_limit: selectedCompany 
+      ? Number((employee.salary * selectedCompany.loan_limit / 100).toFixed(2)) 
+      : 0, 
+    user_id: employee.user_id,
+    company_id: roleId === 2 ? auth.user?.company_id ?? '' : '',
+    approved: employee.approved ?? '', 
+  });
+  
 
   useEffect(() => {
     if (employee.company_id) {
@@ -66,7 +69,9 @@ const EditEmployee = ({ errors }) => {
                       setData({
                           ...data,
                           salary: salary,
-                          loan_limit: (salary * 0.67).toFixed(2) // Auto-update loan limit
+                          loan_limit: selectedCompany 
+                          ? Number((salary * selectedCompany.loan_limit / 100).toFixed(2)) 
+                          : 0, 
                       });
                   }}
                   className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"

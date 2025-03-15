@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('email')->unique()->nullable();
             $table->string('phone')->nullable();
             $table->double('percentage')->nullable();
+            $table->double('loan_limit')->nullable();
             $table->string('unique_number')->nullable();
             $table->string('certificate_of_incorporation')->nullable();
             $table->string('kra_pin')->nullable();

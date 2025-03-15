@@ -69,6 +69,8 @@ class RegisteredUserController extends Controller
 
          if ($user->role_id) {
             $role = Role::find($user->role_id);
+
+
             if ($role) {
                 $user->assignRole($role);
                 
