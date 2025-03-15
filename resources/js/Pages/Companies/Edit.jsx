@@ -16,6 +16,7 @@ const EditCompany = ({ company, errors }) => {
     email: company.email,
     phone: company.phone,
     percentage: company.percentage,
+    loan_limit: company.loan_limit,
     unique_number: company.unique_number,
     certificate_of_incorporation: company.unique_number,
     kra_pin: company.kra_pin,
@@ -80,7 +81,7 @@ const EditCompany = ({ company, errors }) => {
         <h1>Edit Company</h1>
         <form onSubmit={handleSubmit} className="space-y-6" encType="multipart/form-data">
           {/* Text Inputs */}
-          {['name', 'registration_number', 'industry', 'sectors', 'county', 'sub_county', 'location', 'address', 'email', 'phone', 'percentage', 'unique_number'].map((field) => (
+          {['name', 'registration_number', 'industry', 'sectors', 'county', 'sub_county', 'location', 'address', 'email', 'phone', 'percentage', 'loan_limit', 'unique_number'].map((field) => (
             <div key={field}>
               <label className="block text-sm font-medium text-gray-700">
                 {field.replace('_', ' ').toUpperCase()}

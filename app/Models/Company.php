@@ -26,7 +26,8 @@ class Company extends Model
         'kra_pin',
         'cr12_cr13',
         'signed_agreement',
-        'additional_documents'
+        'additional_documents',
+        'loan_limit'
     ];
 
     protected $casts = [

@@ -134,6 +134,7 @@ class CompanyController extends Controller
             'email' => $validatedData['company']['email'],
             'phone' => $validatedData['company']['phone'],
             'percentage' => $validatedData['company']['percentage'],
+            'loan_limit' => $validatedData['company']['loan_limit'],
             'registration_number' => $validatedData['company']['registration_number'],
             'sectors' => $validatedData['company']['sectors'],
             'county' => $validatedData['company']['county'],
