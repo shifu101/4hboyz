@@ -38,7 +38,7 @@ class DashboardController extends Controller
         $activeLoansQuery = Loan::with(['loanProvider', 'employee.user', 'employee.company'])
         ->where('status', '=', 'Approved');
     
-        if ($user->role_id == 2) {
+           if ($user->role_id == 2 || $user->role_id == 5 || $user->role_id == 6) {
             $activeLoansQuery->whereHas('employee.user', function ($q) use ($user) {
                 $q->where('company_id', '=', $user->company_id);
             });
@@ -60,7 +60,7 @@ class DashboardController extends Controller
         $pendingLoanQuery = Loan::with(['loanProvider', 'employee.user', 'employee.company'])
         ->where('status', '=', 'Pending');
     
-        if ($user->role_id == 2) {
+           if ($user->role_id == 2 || $user->role_id == 5 || $user->role_id == 6) {
             $pendingLoanQuery->whereHas('employee.user', function ($q) use ($user) {
                 $q->where('company_id', '=', $user->company_id);
             });
@@ -81,7 +81,7 @@ class DashboardController extends Controller
     
         $inactiveLoansQuery = Loan::where('status', '=', 'Declined');
 
-        if ($user->role_id == 2) {
+           if ($user->role_id == 2 || $user->role_id == 5 || $user->role_id == 6) {
             $inactiveLoansQuery->whereHas('employee.user', function ($q) use ($user) {
                 $q->where('company_id', '=', $user->company_id);
             });
@@ -107,7 +107,7 @@ class DashboardController extends Controller
             'loan.employee.company',
         ]);
         
-        if ($user->role_id == 2) {
+           if ($user->role_id == 2 || $user->role_id == 5 || $user->role_id == 6) {
             $repaidLoansQuery->whereHas('loan.employee.user', function ($q) use ($user) {
                 $q->where('company_id', '=', $user->company_id);
             });
@@ -129,7 +129,7 @@ class DashboardController extends Controller
                 ->where('status', '!=', 'Declined')
                 ->whereMonth('created_at', $month);
 
-            if ($user->role_id == 2) {
+               if ($user->role_id == 2 || $user->role_id == 5 || $user->role_id == 6) {
                 $loanQuery->whereHas('employee.user', function ($q) use ($user) {
                     $q->where('company_id', '=', $user->company_id);
                 });
@@ -162,7 +162,7 @@ class DashboardController extends Controller
             ])->whereYear('created_at', $currentYear)
             ->whereMonth('created_at', $month);
 
-            if ($user->role_id == 2) {
+               if ($user->role_id == 2 || $user->role_id == 5 || $user->role_id == 6) {
                 $repaymentQuery->whereHas('loan.employee.user', function ($q) use ($user) {
                     $q->where('company_id', '=', $user->company_id);
                 });

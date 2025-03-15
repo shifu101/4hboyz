@@ -31,7 +31,7 @@ class EmployeeController extends Controller
         $query = Employee::with('user', 'loans', 'company');
     
         // Filter by company if the user has role_id 2
-        if ($user->role_id == 2) {
+        if ($user->role_id == 2 || $user->role_id == 5 || $user->role_id == 6) {
             $query->where('company_id', '=', $user->company_id);
         }
     

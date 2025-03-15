@@ -22,7 +22,7 @@ class RemittanceController extends Controller
         $query = Remittance::with('company');
 
         // Filter based on user role
-        if ($user->role_id == 2) {
+        if ($user->role_id == 2 || $user->role_id == 5 || $user->role_id == 6) {
             $query->whereHas('company', fn($q) => $q->where('id', $user->company_id));
         }
 

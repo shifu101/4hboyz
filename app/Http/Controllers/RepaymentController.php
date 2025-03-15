@@ -32,7 +32,7 @@ class RepaymentController extends Controller
         ]);
     
         // Filter based on role
-        if ($user->role_id == 2) {
+        if ($user->role_id == 2 || $user->role_id == 5 || $user->role_id == 6) {
             $query->whereHas('loan.employee.user', function ($q) use ($user) {
                 $q->where('company_id', '=', $user->company_id);
             });
