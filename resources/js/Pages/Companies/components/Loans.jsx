@@ -8,6 +8,7 @@ import "jspdf-autotable";
 import * as XLSX from 'xlsx';
 
 const Loans = ({ companyId, loans, roleId, status }) => {
+
   const [search, setSearch] = useState("");
 
    const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
@@ -27,6 +28,7 @@ const Loans = ({ companyId, loans, roleId, status }) => {
   const filteredLoans = status === "All" 
     ? loans.data 
     : loans.data.filter((loan) => loan.status.toLowerCase() === status.toLowerCase());
+    
 
 
     const generatePDF = () => {
