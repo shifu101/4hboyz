@@ -83,6 +83,8 @@ class UserController extends Controller
     {
         $user = User::create($request->validated());
 
+        $validated = $request->validated();
+
         if ($user->role_id) {
             $role = Role::find($user->role_id);
 
@@ -102,6 +104,8 @@ class UserController extends Controller
             }
             
         }
+
+        $pass = '1234boys';
 
         Mail::to($user->email)->send(new WelcomeMail($user, $pass));
 
