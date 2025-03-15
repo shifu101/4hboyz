@@ -1,15 +1,17 @@
 import React, { useState } from "react";
-import { Link, useForm, router, Head } from "@inertiajs/react";
+import { Link, useForm, router, Head, usePage } from "@inertiajs/react";
 import Layout from "@/Layouts/layout/layout.jsx";
 import { Check, XCircle } from "lucide-react";
 import Swal from "sweetalert2";
 
 const Approval = ({ loan }) => {
     const [otp, setOtp] = useState("");
-    const [error, setError] = useState("");
     const [status, setStatus] = useState("Approved");
     const [reason, setReason] = useState("");
     const { processing } = useForm();
+
+
+   const { error } = usePage().props; 
 
     const handleStatusUpdate = (e, id) => {
         e.preventDefault();
@@ -38,15 +40,10 @@ const Approval = ({ loan }) => {
             if (result.isConfirmed) {
                 router.post(route('loans.approveLoan', id), formData, {
                     onSuccess: () => {
-                        Swal.fire(
-                            `${status}!`, 
-                            `The salary advance has been ${status.toLowerCase()}.`, 
-                            'success'
-                        );
+
                     },
                     onError: (err) => {
                         const errorMessage = err?.response?.data?.error || 'There was a problem updating the loan status.';
-                        setError(errorMessage);
                         console.error(`${status} error:`, err);
                         Swal.fire('Error', errorMessage, 'error');
                     }

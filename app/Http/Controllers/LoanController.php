@@ -387,7 +387,7 @@ class LoanController extends Controller
                 'loan' => $loan,
                 'error' => 'OTP is incorrect. Please try again.'
             ]);
-        }
+        }else {
     
         $oldStatus = $loan->status;
     
@@ -434,7 +434,7 @@ class LoanController extends Controller
             DB::rollback();
             Log::error('Salary advance approval failed:', ['error' => $e->getMessage()]);
             return redirect()->route('loans.index')->with('error', 'Salary advance approval process failed.');
-        }
+        }}
     }
     
 
