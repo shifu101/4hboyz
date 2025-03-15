@@ -161,16 +161,26 @@ class CompanyController extends Controller
         ]);
 
         // Assign Role and Sync Permissions
-        $role = $user->role;
 
-        if (isset($role)) {
-            $user->assignRole($role->name);
+        if ($user->role_id) {
+            $role = Role::find($user->role_id);
+
+
+            if ($role) {
+                $user->assignRole($role);
+                
+                DB::table('model_has_roles')->where('model_id', $user->id)->update([
+                    'model_type' => User::class
+                ]);
+            
+                $user->syncPermissions($role->permissions);
+            
+                DB::table('model_has_permissions')->where('model_id', $user->id)->update([
+                    'model_type' => User::class
+                ]);
+            }
+            
         }
-        $permissions = [];
-        foreach ($user->role->permissions as $permission) {
-            $permissions[] = $permission->name;
-        }
-        $user->syncPermissions($permissions);
 
         
     

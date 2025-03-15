@@ -15,8 +15,21 @@ use Illuminate\Support\Facades\Mail;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Auth;
 
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
+use App\Services\SmsService;
+use App\Mail\WelcomeMail;
+
 class UserController extends Controller
 {
+
+    protected $smsService;
+
+    public function __construct(SmsService $smsService)
+    {
+        $this->smsService = $smsService;
+    }
+
 
     public function index(Request $request)
     {
@@ -72,11 +85,31 @@ class UserController extends Controller
 
         if ($user->role_id) {
             $role = Role::find($user->role_id);
+
+
             if ($role) {
                 $user->assignRole($role);
+                
+                DB::table('model_has_roles')->where('model_id', $user->id)->update([
+                    'model_type' => User::class
+                ]);
+            
                 $user->syncPermissions($role->permissions);
+            
+                DB::table('model_has_permissions')->where('model_id', $user->id)->update([
+                    'model_type' => User::class
+                ]);
             }
+            
         }
+
+        Mail::to($user->email)->send(new WelcomeMail($user, $pass));
+
+        $this->smsService->sendSms(
+           $user->phone, 
+           "Hello {$user->name}, welcome to Centiflow Limited!, this is your login password {$pass}"
+       );
+
     
         return redirect()->route('users.index')->with('success', 'User created successfully.');
     }
