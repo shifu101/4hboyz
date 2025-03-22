@@ -12,6 +12,7 @@ class EmployeeDeclinedMail extends Mailable
     use Queueable, SerializesModels;
 
     public $employee;
+    public $reason;
 
     /**
      * Create a new message instance.
@@ -19,9 +20,10 @@ class EmployeeDeclinedMail extends Mailable
      * @param  \App\Models\Employee  $employee
      * @return void
      */
-    public function __construct(Employee $employee)
+    public function __construct(Employee $employee, $reason)
     {
         $this->employee = $employee;
+        $this->reason = $reason;
     }
 
     /**
@@ -35,7 +37,8 @@ class EmployeeDeclinedMail extends Mailable
         return $this->subject('Your Details Have Been Declined')
                     ->view('emails.employee_declined')
                     ->with([
-                        'employee' => $this->employee
+                        'employee' => $this->employee,
+                        'reason'=> $this->reason
                     ]);
     }
 }

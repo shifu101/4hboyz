@@ -134,7 +134,7 @@ const Show = ({ user }) => {
             >
               Edit
             </Link>}
-            {(user.status !== 'Activated' && userPermission.includes('Delete user') && user.status !== 'Approved') &&
+            {(user.status !== 'Activated' && userPermission.includes('Delete user') && user.status !== 'Approved' && user.status !== 'Active') &&
               <button
                 onClick={(e) => handleActivatedUpdate(e, user.id, 'Activated')}
                 disabled={processing}
@@ -142,7 +142,7 @@ const Show = ({ user }) => {
               >
                 <Check className="w-4 h-4 mr-2" /> Activate
               </button>}
-            {(user?.status !== 'Deactivated' && userPermission.includes('Delete user')) &&
+            {(user?.status !== 'Deactivated' && userPermission.includes('Delete user') && user.status !== 'Approved') &&
               <button
                 onClick={(e) => handleActivatedUpdate(e, user.id, 'Deactivated')}
                 disabled={processing}

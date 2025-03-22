@@ -3,6 +3,7 @@ import { Link, router, Head, useForm, usePage } from "@inertiajs/react";
 import Layout from "@/Layouts/layout/layout.jsx";
 import Employees from "./components/Employees";
 import Loans from "./components/Loans";
+import Users from "./components/Users";
 import Remittances from "./components/Remittances";
 import Repayments from "./components/Repayments";
 import DatePicker from "react-datepicker";
@@ -10,7 +11,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import Swal from 'sweetalert2';
 import Details from "./components/Details";
 
-const Show = ({ company, employees, loans, remittances, repayments }) => {
+const Show = ({ company, employees, loans, remittances, repayments, users }) => {
   const [activeTab, setActiveTab] = useState("Details");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -96,7 +97,7 @@ const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
           <div className="card flex-1 justify-start items-start">
             <div className="flex justify-start">
               <nav className="flex overflow-x-auto items-start p-1 space-x-1 text-sm text-gray-600 bg-gray-500/5 rounded-xl">
-              {["Details", "Employees", "Advances", "Approved Advances", "Pending Advances", "Declined Advances", "Paid Advances","Repayments", "Remittances"].map((tab) => (
+              {["Details", "Employees", "Advances", "Approved Advances", "Pending Advances", "Declined Advances", "Paid Advances","Repayments", "Remittances", "Users"].map((tab) => (
                   <button
                     key={tab}
                     type="button"
@@ -122,6 +123,7 @@ const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
               {activeTab === "Paid Advances" && <Loans companyId={company.id} loans={loans} status='Paid' />}
               {activeTab === "Repayments" && <Repayments companyId={company.id} repayments={repayments} />}
               {activeTab === "Remittances" && <Remittances companyId={company.id} remittances={remittances} />}
+              {activeTab === "Users" && <Users companyId={company.id} users={users} />}
             </div>
           </div>
         </div>

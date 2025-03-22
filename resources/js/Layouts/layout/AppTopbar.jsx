@@ -3,13 +3,14 @@
 import { classNames } from 'primereact/utils';
 import React, { forwardRef, useContext, useImperativeHandle, useRef } from 'react';
 import { LayoutContext } from './context/layoutcontext';
-import {Link} from "@inertiajs/react";
+import {Link, usePage} from "@inertiajs/react";
 
 const AppTopbar = forwardRef((props, ref) => {
     const { layoutConfig, layoutState, onMenuToggle, showProfileSidebar } = useContext(LayoutContext);
     const menubuttonRef = useRef(null);
     const topbarmenuRef = useRef(null);
     const topbarmenubuttonRef = useRef(null);
+        const { auth } = usePage().props; 
 
     useImperativeHandle(ref, () => ({
         menubutton: menubuttonRef.current,
@@ -28,10 +29,13 @@ const AppTopbar = forwardRef((props, ref) => {
                 <i className="pi pi-bars" />
             </button>
 
+            <div className='ml-auto flex gap-2 items-center'>
+                <p className='ml-auto my-auto'>{auth.user?.name}</p>
 
-            <button ref={topbarmenubuttonRef} type="button" className="p-link layout-topbar-menu-button layout-topbar-button" onClick={showProfileSidebar}>
-                <i className="pi pi-user" />
-            </button>
+                <button ref={topbarmenubuttonRef} type="button" className="p-link layout-topbar-menu-button layout-topbar-button flex gap-4" onClick={showProfileSidebar}>
+                    <i className="pi pi-user" />
+                </button>
+            </div>
 
             <div ref={topbarmenuRef} className={classNames('layout-topbar-menu', { 'layout-topbar-menu-mobile-active': layoutState.profileSidebarVisible })}>
                 <Link href={route('profile.edit')} className="p-link layout-topbar-button">

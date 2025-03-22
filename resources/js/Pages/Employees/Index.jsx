@@ -191,7 +191,7 @@ const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
                         {userPermission.includes('View employee') &&
                         <Link 
                           href={route('employees.show', employee.id)} 
-                          className="bg-blue-600 text-white rounded-lg text-xs hover:bg-blue-700 flex items-center"
+                          className={`${employee.user?.kyc !== null ? 'bg-green-500' : 'bg-red-500'} text-white rounded-lg text-xs hover:bg-blue-700 flex items-center`}
                         >
                           <span className="my-auto px-4 py-2">View</span>
                         </Link>}

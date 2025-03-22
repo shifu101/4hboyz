@@ -83,7 +83,7 @@ const Show = ({ loan }) => {
             <strong className="text-gray-600">Phone:</strong> 
             <span className="text-gray-800">{loan.employee?.user?.phone}</span>
           </div>
-        </div>
+        </div> 
 
         <div className="flex justify-end space-x-4 mt-4">
           {userPermission.includes('Index loan') &&
@@ -92,6 +92,13 @@ const Show = ({ loan }) => {
             className="inline-block px-6 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition">
             Back to Loans
           </Link>}
+          {userPermission.includes('View employee') &&
+            <Link
+              href={route('employees.show', loan?.employee?.id)}
+              className="inline-flex items-center px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition duration-200"
+            >
+              View profile
+            </Link>}
           {userPermission.includes('Edit loan') &&
             <Link
               href={route('loans.edit', loan.id)}

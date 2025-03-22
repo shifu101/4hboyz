@@ -69,7 +69,7 @@ const Create = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Loan Limit (33% of Salary)</label>
+                        <label className="block text-sm font-medium text-gray-700">Loan Limit (% of net salary)</label>
                         <input
                             type="number"
                             value={data.loan_limit}

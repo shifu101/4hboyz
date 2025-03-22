@@ -9,10 +9,11 @@ use App\Models\Repayment;
 use Carbon\Carbon;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         // Fetching basic statistics
         $companyCount = Company::count();
@@ -31,6 +32,14 @@ class DashboardController extends Controller
             return Inertia::render('Auth/VerifyEmail', [
                 'companies' => $companies,
                 'user' => $user
+            ]);
+        }
+
+        if ($user->password_reset == 0) {
+            return Inertia::render('Auth/ChangePassword', [
+                'companies' => $companies,
+                'user' => $user,
+                'email' => $user->email
             ]);
         }
 

@@ -186,7 +186,7 @@ const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
                     Excel
                   </span>
                 </button>}
-                {userPermission.includes('Edit loan') &&
+                {(userPermission.includes('Edit loan') && status === 'Approved') &&
                 <button
                   onClick={handleBulkAction}
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"

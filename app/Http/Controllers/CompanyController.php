@@ -27,6 +27,8 @@ use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
+use App\Notifications\CustomVerifyEmail;
+
 
 
 class CompanyController extends Controller
@@ -153,11 +155,12 @@ class CompanyController extends Controller
         // Create the associated user
         $user = User::create([
             'name' => $validatedData['user']['name'],
-            'phone' => $validatedData['phone'],
+            'phone' => $validatedData['user']['phone'],
             'email' => $validatedData['user']['email'],
             'password' => Hash::make($pass),
             'company_id' => $company->id,
             'role_id' => 2, 
+            'remember_token' => Str::random(10)
         ]);
 
         // Assign Role and Sync Permissions
@@ -185,8 +188,8 @@ class CompanyController extends Controller
         
     
         // Send Email Notification
-        Mail::to($user->email)->send(new WelcomeMail($user, $pass));
-    
+        $user->notify(new CustomVerifyEmail($pass));
+
         // Send SMS Notification
         $this->smsService->sendSms(
             $user->phone, 
@@ -272,12 +275,29 @@ class CompanyController extends Controller
         ->paginate(5)
         ->withQueryString();
 
+
+        // Employees Filter
+        $users = User::with(['company'])
+        ->where('company_id', $company->id)
+        ->where(function ($q) use ($search) {
+            $q->where('name', 'LIKE', "%$search%")
+              ->orWhere('email', 'LIKE', "%$search%");
+        })
+        ->when($filterByDate, function ($query) use ($startDate, $endDate) {
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        })
+        ->orderBy('created_at', 'desc') // Order by latest
+        ->paginate(5)
+        ->withQueryString();
+    
+
         return Inertia::render('Companies/Show', [
             'company' => $company,
             'employees' => $employees,
             'loans' => $loans,
             'remittances' => $remittances,
-            'repayments' => $repayments
+            'repayments' => $repayments,
+            'users'=>$users
         ]);
     }
 
