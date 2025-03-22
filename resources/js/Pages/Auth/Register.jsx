@@ -10,8 +10,6 @@ import 'react-toastify/dist/ReactToastify.css';
 export default function Register() {
     const [showForm, setShowForm] = useState(false);
     const [isSearching, setIsSearching] = useState(false);
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const { company, er } = usePage().props; 
     
@@ -27,11 +25,6 @@ export default function Register() {
         company_id: company ? company.id : null,
     });
 
-    useEffect(() => {
-        return () => {
-            reset('password', 'password_confirmation');
-        };
-    }, []);
 
     const searchCompany = () => {
         if (!data.unique_number) {
@@ -66,35 +59,6 @@ export default function Register() {
             setShowForm(true)
         }
     }, [company]);
-
-    const renderPasswordInput = (name, label, placeholder, showPass, setShowPass) => (
-        <div key={name}>
-            <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-2">
-                {label} <span className='text-red-400'>*</span>
-            </label>
-            <div className="relative">
-                <input
-                    id={name}
-                    name={name}
-                    type={showPass ? 'text' : 'password'}
-                    placeholder={placeholder}
-                    value={data[name]}
-                    onChange={(e) => setData(name, e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
-                />
-                <button
-                    type="button"
-                    onClick={() => setShowPass(!showPass)}
-                    className="absolute inset-y-0 right-0 px-3 flex items-center"
-                >
-                    {showPass ? <EyeOff className="h-8 w-8 text-gray-400" /> : <Eye className="h-8 w-8 text-gray-400" />}
-                </button>
-            </div>
-            {errors[name] && (
-                <p className="text-red-500 text-xs mt-1">{errors[name]}</p>
-            )}
-        </div>
-    );
 
     return (
         <Guest>
@@ -135,6 +99,7 @@ export default function Register() {
                     <div className="bg-white shadow-md rounded-lg p-8">
                         <h2 className="text-center text-3xl font-bold mb-6">{!company ? 'Enter your company unique number and search' : 'Proceed to set up your account'}</h2>
                         
+                        {!company &&
                         <div className="mb-6">
                             <label htmlFor="unique_number" className="block text-sm font-medium text-gray-700 mb-2">
                                 Company number
@@ -160,10 +125,17 @@ export default function Register() {
                             {errors.unique_number && (
                                 <p className="text-red-500 text-xs mt-1">{errors.unique_number}</p>
                             )}
-                        </div>
+                        </div>}
 
                         {showForm && (
                             <form onSubmit={submit} className="space-y-4">
+                                {company &&
+                                <div>
+                                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                                        Company <span className='text-red-400'>*</span>
+                                    </label>
+                                    <p className="text-gray-600 text-xl mt-1">{company.name}</p>
+                                </div>}
                                 <div>
                                     <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
                                         Your name <span className='text-red-400'>*</span>
@@ -204,7 +176,7 @@ export default function Register() {
                                     </label>
                                     <PhoneInput
                                         international
-                                        defaultCountry="US"
+                                        defaultCountry="KE"
                                         value={data.phone}
                                         onChange={(value) => setData('phone', value)}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -213,9 +185,6 @@ export default function Register() {
                                         <p className="text-red-500 text-xs mt-1">{errors.phone}</p>
                                     )}
                                 </div>
-
-                                {renderPasswordInput('password', 'Password', 'Enter your password', showPassword, setShowPassword)}
-                                {renderPasswordInput('password_confirmation', 'Confirm Password', 'Confirm your password', showConfirmPassword, setShowConfirmPassword)}
 
                                 <div>
                                     <label htmlFor="staff_number" className="block text-sm font-medium text-gray-700 mb-2">

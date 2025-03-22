@@ -19,6 +19,9 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
 use App\Services\SmsService;
 use App\Mail\WelcomeMail;
+use Illuminate\Support\Str;
+
+use App\Notifications\CustomVerifyEmail;
 
 class UserController extends Controller
 {
@@ -38,10 +41,11 @@ class UserController extends Controller
 
         $user = Auth::user();
 
-        if ($user->role_id != 1) {
+        if (!in_array($user->role_id, [1, 4])) {
             $query->where('company_id', '=', $user->company_id);
-        }
-    
+        } else {
+            $query->whereIn('role_id', [1, 4]);
+        }        
     
         if ($request->has('search')) {
             $search = $request->input('search');
@@ -81,7 +85,12 @@ class UserController extends Controller
 
     public function store(StoreUserRequest $request)
     {
-        $user = User::create($request->validated());
+
+        $validatedData = $request->validated();
+        $validatedData['password'] = Str::random(6);
+        $validatedData['remember_token'] = Str::random(10);
+
+        $user = User::create($validatedData);
 
         $validated = $request->validated();
 
@@ -105,9 +114,9 @@ class UserController extends Controller
             
         }
 
-        $pass = '1234boys';
+        $pass = $validatedData['password'];
 
-        Mail::to($user->email)->send(new WelcomeMail($user, $pass));
+        $user->notify(new CustomVerifyEmail($pass));
 
         $this->smsService->sendSms(
            $user->phone, 

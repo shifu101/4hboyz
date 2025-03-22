@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { useForm, Head } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
 import Counties from '@/Components/Counties';
+import Sectors from '@/Components/Sectors';
 import Select from 'react-select';  
 import PhoneInput from 'react-phone-number-input';
 import 'react-phone-number-input/style.css';
@@ -38,40 +39,111 @@ const Create = () => {
 
   const [step, setStep] = useState(1);
   const totalSteps = 3;
+  const [validationErrors, setValidationErrors] = useState({});
 
-  const nextStep = () => setStep((prev) => prev + 1);
+  const validateStep1 = () => {
+    const errors = {};
+    
+    // Check required fields for step 1
+    if (!data.company.name) errors.name = "Company name is required";
+    if (!data.company.email) errors.email = "Email is required";
+    if (!data.company.phone) errors.phone = "Phone is required";
+    if (!data.company.address) errors.address = "Address is required";
+    if (!data.company.percentage) errors.percentage = "Salary advance fee rate is required";
+    if (!data.company.loan_limit) errors.loan_limit = "Salary advance limit percentage is required";
+    if (!data.company.registration_number) errors.registration_number = "Registration number is required";
+    if (!data.company.industry) errors.industry = "Industry is required";
+    if (!data.company.sectors) errors.sectors = "Sector is required";
+    if (!data.company.county) errors.county = "County is required";
+    if (!data.company.sub_county) errors.sub_county = "Sub county is required";
+    if (!data.company.location) errors.location = "Location is required";
+    
+    return errors;
+  };
+
+  const validateStep2 = () => {
+    const errors = {};
+    
+    // For step 2, you might want to make some documents required
+    if (!data.company.certificate_of_incorporation) errors.certificate_of_incorporation = "Certificate of incorporation is required";
+    if (!data.company.kra_pin) errors.kra_pin = "KRA PIN is required";
+    if (!data.company.cr12_cr13) errors.cr12_cr13 = "CR12/CR13 is required";
+    if (!data.company.signed_agreement) errors.signed_agreement = "Signed agreement is required";
+    
+    return errors;
+  };
+
+  const validateStep3 = () => {
+    const errors = {};
+    
+    // Check admin user information
+    if (!data.user.name) errors.name = "Admin name is required";
+    if (!data.user.email) errors.email = "Admin email is required";
+    if (!data.user.phone) errors.phone = "Admin phone is required";
+    
+    return errors;
+  };
+
+  const nextStep = () => {
+    let stepErrors = {};
+    
+    // Validate based on current step
+    if (step === 1) {
+      stepErrors = validateStep1();
+    } else if (step === 2) {
+      stepErrors = validateStep2();
+    }
+    
+    setValidationErrors(stepErrors);
+    
+    // Only proceed if there are no validation errors
+    if (Object.keys(stepErrors).length === 0) {
+      setStep((prev) => prev + 1);
+    }
+  };
+
   const prevStep = () => setStep((prev) => prev - 1);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    console.log(data);
     
+    // Validate the final step before submission
+    const finalErrors = validateStep3();
+    setValidationErrors(finalErrors);
+    
+    if (Object.keys(finalErrors).length > 0) {
+      return; // Don't submit if there are errors
+    }
 
-      const formData = new FormData();
-      Object.entries(data.company).forEach(([key, value]) => {
-          if (value) {
-              if (Array.isArray(value)) {
-                  value.forEach((file, index) => formData.append(`${key}[${index}]`, file));
-              } else {
-                  formData.append(key, value);
-              }
-          }
-      });
+    
+    const formData = new FormData();
+    Object.entries(data.company).forEach(([key, value]) => {
+        if (value) {
+            if (Array.isArray(value)) {
+                value.forEach((file, index) => formData.append(`${key}[${index}]`, file));
+            } else {
+                formData.append(key, value);
+            }
+        }
+    });
 
-      Object.entries(data.user).forEach(([key, value]) => {
-          formData.append(key, value);
-      });
+    Object.entries(data.user).forEach(([key, value]) => {
+        formData.append(key, value);
+    });
 
-      post(route("companies.store"), formData);
+    post(route("companies.store"), formData);
   };
-
-  
 
   // Handle File Selection
   const handleCompanyChange = useCallback((e) => {
     const { name, files, value, type } = e.target;
 
+    // Clear validation error when field is changed
+    setValidationErrors(prev => {
+      const updated = {...prev};
+      delete updated[name];
+      return updated;
+    });
 
     if (name === "additional_documents") {
       setData(prevData => ({
@@ -117,6 +189,14 @@ const Create = () => {
   // Handle text input change
   const handleUserChange = useCallback((e) => {
     const { name, value } = e.target;
+    
+    // Clear validation error when field is changed
+    setValidationErrors(prev => {
+      const updated = {...prev};
+      delete updated[name];
+      return updated;
+    });
+    
     setData(prevData => ({
       ...prevData,
       user: {
@@ -128,6 +208,13 @@ const Create = () => {
 
   // Handle select changes
   const handleSelectChange = useCallback((name, selectedOption) => {
+    // Clear validation error when field is changed
+    setValidationErrors(prev => {
+      const updated = {...prev};
+      delete updated[name];
+      return updated;
+    });
+    
     setData(prevData => ({
       ...prevData,
       company: {
@@ -145,6 +232,16 @@ const Create = () => {
   const subCountyOptions = data?.company?.county
     ? Counties[data?.company?.county]?.map((sub) => ({ value: sub, label: sub }))
     : [];
+
+
+  const industryOptions = Object.keys(Sectors)?.map((data) => ({
+    value: data,
+    label: data,
+  })); 
+  
+  const sectorOptions = data?.company?.industry
+  ? Sectors[data?.company?.industry]?.map((data) => ({ value: data, label: data }))
+  : [];
 
   // Progress indicator
   const ProgressBar = () => {
@@ -176,6 +273,13 @@ const Create = () => {
     );
   };
 
+  // Show error message helper
+  const ErrorMessage = ({ name }) => {
+    return validationErrors[name] ? (
+      <p className="text-red-500 text-xs mt-1">{validationErrors[name]}</p>
+    ) : null;
+  };
+
   return (
     <Layout>
       <Head title="Register Company with Admin" />
@@ -189,6 +293,17 @@ const Create = () => {
           
           <div className="p-8">
             <ProgressBar />
+            
+            {Object.keys(validationErrors).length > 0 && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
+                <p className="font-medium">Please fix the following errors:</p>
+                <ul className="mt-1 ml-4 list-disc list-inside text-sm">
+                  {Object.values(validationErrors).map((error, index) => (
+                    <li key={index}>{error}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
             
             <form onSubmit={handleSubmit} className="space-y-6" encType="multipart/form-data">
               {/* Step 1: Company Information */}
@@ -209,17 +324,16 @@ const Create = () => {
                         name='name'
                         value={data.company?.name} 
                         onChange={handleCompanyChange}
-                        className={`min-w-full px-4 py-2 rounded-md border ${errors['company?.name'] ? 'border-red-500' : 'border-gray-300'} 
+                        className={`min-w-full px-4 py-2 rounded-md border ${validationErrors.name || errors['company?.name'] ? 'border-red-500' : 'border-gray-300'} 
                           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
                         required
                       />
+                      <ErrorMessage name="name" />
                     </div>
-
-
 
                     <div className="mb-4 flex-1 flex-col">
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Email <span className="text-red-500">*</span>
+                      Company Email <span className="text-red-500">*</span>
                       </label>
 
                       <input
@@ -227,22 +341,32 @@ const Create = () => {
                         name='email'
                         value={data.company?.email} 
                         onChange={handleCompanyChange}
-                        className={`min-w-full px-4 py-2 rounded-md border ${errors['company?.email'] ? 'border-red-500' : 'border-gray-300'} 
+                        className={`min-w-full px-4 py-2 rounded-md border ${validationErrors.email || errors['company?.email'] ? 'border-red-500' : 'border-gray-300'} 
                           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
                         required
                       />
+                      <ErrorMessage name="email" />
                     </div>
+
 
                     <div className="mb-4 flex-1 flex-col">
                       <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-                        Phone <span className="text-red-400">*</span>
+                       Company Phone <span className="text-red-400">*</span>
                       </label>
 
                       <PhoneInput
                         international
-                        defaultCountry="US"
+                        defaultCountry="KE"
                         value={data.company?.phone}
-                        onChange={(value) => setData("company.phone", value)}
+                        onChange={(value) => {
+                          setData(prevData => ({
+                            ...prevData,
+                            company: {
+                              ...prevData.company,
+                              phone: value
+                            }
+                          }));
+                        }}
                         className="w-full px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
 
@@ -250,7 +374,6 @@ const Create = () => {
                         <p className="text-red-500 text-xs mt-1">{errors["company?.phone"]}</p>
                       )}
                     </div>
-
 
                     <div className="mb-4 flex-1 flex-col">
                       <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -262,15 +385,16 @@ const Create = () => {
                         name='address'
                         value={data.company?.address} 
                         onChange={handleCompanyChange}
-                        className={`min-w-full px-4 py-2 rounded-md border ${errors['company?.address'] ? 'border-red-500' : 'border-gray-300'} 
+                        className={`min-w-full px-4 py-2 rounded-md border ${validationErrors.address || errors['company?.address'] ? 'border-red-500' : 'border-gray-300'} 
                           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
                         required
                       />
+                      <ErrorMessage name="address" />
                     </div>
 
                     <div className="mb-4 flex-1 flex-col">
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Loan interest rate <span className="text-red-500">*</span>
+                      Salary advance fee <span className="text-red-500">*</span>
                       </label>
 
                       <input
@@ -280,15 +404,16 @@ const Create = () => {
                         name='percentage'
                         value={data.company?.percentage} 
                         onChange={handleCompanyChange}
-                        className={`min-w-full px-4 py-2 rounded-md border ${errors['company?.percentage'] ? 'border-red-500' : 'border-gray-300'} 
+                        className={`min-w-full px-4 py-2 rounded-md border ${validationErrors.percentage || errors['company?.percentage'] ? 'border-red-500' : 'border-gray-300'} 
                           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
                         required
                       />
+                      <ErrorMessage name="percentage" />
                     </div>
 
                     <div className="mb-4 flex-1 flex-col">
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Loan limit Percentage <span className="text-red-500">*</span>
+                      Salary advance limit Percentage <span className="text-red-500">*</span>
                       </label>
 
                       <input
@@ -298,10 +423,11 @@ const Create = () => {
                         name='loan_limit'
                         value={data.company?.loan_limit} 
                         onChange={handleCompanyChange}
-                        className={`min-w-full px-4 py-2 rounded-md border ${errors['company?.loan_limit'] ? 'border-red-500' : 'border-gray-300'} 
+                        className={`min-w-full px-4 py-2 rounded-md border ${validationErrors.loan_limit || errors['company?.loan_limit'] ? 'border-red-500' : 'border-gray-300'} 
                           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
                         required
                       />
+                      <ErrorMessage name="loan_limit" />
                     </div>
 
                     <div className="mb-4 flex-1 flex-col">
@@ -314,10 +440,11 @@ const Create = () => {
                         name='registration_number'
                         value={data.company?.registration_number} 
                         onChange={handleCompanyChange}
-                        className={`min-w-full px-4 py-2 rounded-md border ${errors['company?.registration_number'] ? 'border-red-500' : 'border-gray-300'} 
+                        className={`min-w-full px-4 py-2 rounded-md border ${validationErrors.registration_number || errors['company?.registration_number'] ? 'border-red-500' : 'border-gray-300'} 
                           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
                         required
                       />
+                      <ErrorMessage name="registration_number" />
                     </div>
 
                     <div className="mb-4 flex-1 flex-col">
@@ -325,47 +452,17 @@ const Create = () => {
                         Industry <span className="text-red-500">*</span>
                       </label>
 
-                      <select
+                      <Select
                         name="industry"
-                        value={data.company?.industry || ""}
-                        onChange={handleCompanyChange}
-                        className={`min-w-full px-4 py-2 rounded-md border ${
-                          errors["company?.industry"] ? "border-red-500" : "border-gray-300"
-                        } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
-                        required
-                      >
-                        <option value="" disabled>Select an industry</option>
-                        {[
-                          "Accounting",
-                          "Advertising/Marketing",
-                          "Agriculture/Farming",
-                          "Architecture",
-                          "Arts/Entertainment",
-                          "Automotive",
-                          "Banking/Financial Services",
-                          "Construction/Trades",
-                          "Consulting",
-                          "Education",
-                          "Engineering",
-                          "Food/Beverage",
-                          "Healthcare/Medical",
-                          "Hospitality",
-                          "Insurance",
-                          "Legal Services",
-                          "Manufacturing",
-                          "Nonprofit",
-                          "Real Estate",
-                          "Retail",
-                          "Technology/IT",
-                          "Transportation",
-                          "Wholesale/Distribution",
-                          "Other Services",
-                        ].map((industry) => (
-                          <option key={industry} value={industry}>
-                            {industry}
-                          </option>
-                        ))}
-                      </select>
+                        value={industryOptions.find(option => option.value === data.company.industry) || null}
+                        onChange={(selectedOption) => handleSelectChange('industry', selectedOption)}
+                        options={industryOptions}
+                        className={`w-full min-w-[250px] lg:min-w-[300px]`}
+                        classNamePrefix={validationErrors.industry || errors['company?.industry'] ? 'border-red-500' : ''}
+                        placeholder="Select industry"
+                        isClearable
+                      />
+                      <ErrorMessage name="industry" />
                     </div>
 
                     <div className="mb-4 flex-1 flex-col">
@@ -373,15 +470,17 @@ const Create = () => {
                       Sectors <span className="text-red-500">*</span>
                       </label>
 
-                      <input
-                        type='text'
-                        name='sectors'
-                        value={data.company?.sectors} 
-                        onChange={handleCompanyChange}
-                        className={`min-w-full px-4 py-2 rounded-md border ${errors['company?.sectors'] ? 'border-red-500' : 'border-gray-300'} 
-                          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
-                        required
+                      <Select
+                        name="sectors"
+                        value={sectorOptions.find(option => option.value === data.company.sectors) || null}
+                        onChange={(selectedOption) => handleSelectChange('sectors', selectedOption)}
+                        options={sectorOptions}
+                        className={`w-full min-w-[250px] lg:min-w-[300px]`}
+                        classNamePrefix={validationErrors.sectors || errors['company?.sectors'] ? 'border-red-500' : ''}
+                        placeholder="Select sectors"
+                        isClearable
                       />
+                      <ErrorMessage name="sectors" />
                     </div>
 
                     <div className="mb-4 flex-1 flex-col">
@@ -394,12 +493,12 @@ const Create = () => {
                         value={countyOptions.find(option => option.value === data.company.county) || null}
                         onChange={(selectedOption) => handleSelectChange('county', selectedOption)}
                         options={countyOptions}
-                        className={`w-full min-w-[250px] lg:min-w-[300px] ${
-                          errors['company?.county'] ? 'border-red-500' : 'border-gray-300'
-                        } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
+                        className={`w-full min-w-[250px] lg:min-w-[300px]`}
+                        classNamePrefix={validationErrors.county || errors['company?.county'] ? 'border-red-500' : ''}
                         placeholder="Select county"
                         isClearable
                       />
+                      <ErrorMessage name="county" />
                     </div>
 
                     <div className="mb-4 flex-1 flex-col">
@@ -412,12 +511,12 @@ const Create = () => {
                         value={subCountyOptions.find(option => option.value === data.company.sub_county) || null}
                         onChange={(selectedOption) => handleSelectChange('sub_county', selectedOption)}
                         options={subCountyOptions}
-                        className={`w-full min-w-[250px] lg:min-w-[300px] ${
-                          errors['company?.sub_county'] ? 'border-red-500' : 'border-gray-300'
-                        } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
+                        className={`w-full min-w-[250px] lg:min-w-[300px]`}
+                        classNamePrefix={validationErrors.sub_county || errors['company?.sub_county'] ? 'border-red-500' : ''}
                         placeholder="Select sub county"
                         isClearable
                       />
+                      <ErrorMessage name="sub_county" />
                     </div>
 
                     <div className="mb-4 flex-1 flex-col">
@@ -429,10 +528,11 @@ const Create = () => {
                         name="location"
                         value={data.company?.location}
                         onChange={handleCompanyChange}
-                        className={`w-full px-4 py-2 rounded-md border ${errors['company?.location'] ? 'border-red-500' : 'border-gray-300'} 
+                        className={`w-full px-4 py-2 rounded-md border ${validationErrors.location || errors['company?.location'] ? 'border-red-500' : 'border-gray-300'} 
                           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
                         required
                       ></textarea>
+                      <ErrorMessage name="location" />
                     </div>
                     
                   </div>
@@ -447,12 +547,14 @@ const Create = () => {
                   {/* File Inputs */}
                   {["certificate_of_incorporation", "kra_pin", "cr12_cr13", "signed_agreement"].map((fileKey) => (
                     <div key={fileKey} className="mb-4">
-                      <label className="block text-sm font-medium text-gray-700 capitalize">{fileKey.replace(/_/g, " ")}</label>
+                      <label className="block text-sm font-medium text-gray-700 capitalize">
+                        {fileKey.replace(/_/g, " ")} <span className="text-red-500">*</span>
+                      </label>
                       <input
                         type="file"
                         name={fileKey}
                         onChange={handleCompanyChange}
-                        className="mt-1 block w-full text-sm border border-gray-300 rounded-lg p-2"
+                        className={`mt-1 block w-full text-sm border ${validationErrors[fileKey] ? 'border-red-500' : 'border-gray-300'} rounded-lg p-2`}
                       />
                       {data.company[fileKey] && (
                         <div className="mt-2 flex items-center">
@@ -466,6 +568,7 @@ const Create = () => {
                           </button>
                         </div>
                       )}
+                      <ErrorMessage name={fileKey} />
                     </div>
                   ))}
 
@@ -528,10 +631,11 @@ const Create = () => {
                         name='name'
                         value={data.user?.name} 
                         onChange={handleUserChange}
-                        className={`min-w-full px-4 py-2 rounded-md border ${errors['user?.name'] ? 'border-red-500' : 'border-gray-300'} 
+                        className={`min-w-full px-4 py-2 rounded-md border ${validationErrors.name || errors['user?.name'] ? 'border-red-500' : 'border-gray-300'} 
                           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
                         required
                       />
+                      <ErrorMessage name="name" />
                     </div>
 
                     <div className="mb-4 flex-1 flex-col">
@@ -544,10 +648,11 @@ const Create = () => {
                         name='email'
                         value={data.user?.email} 
                         onChange={handleUserChange}
-                        className={`min-w-full px-4 py-2 rounded-md border ${errors['user?.email'] ? 'border-red-500' : 'border-gray-300'} 
+                        className={`min-w-full px-4 py-2 rounded-md border ${validationErrors.email || errors['user?.email'] ? 'border-red-500' : 'border-gray-300'} 
                           focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors`}
                         required
                       />
+                      <ErrorMessage name="email" />
                     </div>
 
                     <div className="mb-4 flex-1 flex-col">
@@ -557,17 +662,21 @@ const Create = () => {
 
                       <PhoneInput
                         international
-                        defaultCountry="US"
+                        defaultCountry="KE"
                         value={data.user?.phone}
-                        onChange={(value) => setData("phone", value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        onChange={(value) => {
+                          setData(prevData => ({
+                            ...prevData,
+                            user: {
+                              ...prevData.user,
+                              phone: value
+                            }
+                          }));
+                        }}
+                        className={`w-full px-3 py-2 border ${validationErrors.phone || errors["user?.phone"] ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500`}
                       />
-
-                      {errors["user?.phone"] && (
-                        <p className="text-red-500 text-xs mt-1">{errors["user?.phone"]}</p>
-                      )}
+                      <ErrorMessage name="phone" />
                     </div>
-
                   </div>
                   
                   <button

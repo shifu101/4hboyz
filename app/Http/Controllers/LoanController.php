@@ -296,7 +296,7 @@ class LoanController extends Controller
             return Inertia::render('Auth/Forbidden');
         }
 
-        $loan->load(['employee.user', 'loanProvider']);
+        $loan->load(['employee.user', 'loanProvider', 'employee']);
 
         return Inertia::render('Loans/Show', [
             'loan' => $loan,
@@ -387,6 +387,7 @@ class LoanController extends Controller
                 'loan' => $loan,
                 'error' => 'OTP is incorrect. Please try again.'
             ]);
+            
         }else {
     
         $oldStatus = $loan->status;

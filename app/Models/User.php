@@ -29,7 +29,8 @@ class User extends Authenticatable
         'staff_number',
         'status',
         'kyc',
-        'company_id'
+        'company_id',
+        'password_reset'
     ];
 
     public function permissions()

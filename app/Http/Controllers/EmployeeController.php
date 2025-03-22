@@ -254,7 +254,7 @@ class EmployeeController extends Controller
                     'status'=>$validatedData['approved']
                 ]);
                 // Send declined email
-                Mail::to($employee->user->email)->send(new EmployeeDeclinedMail($employee));
+                Mail::to($employee->user->email)->send(new EmployeeDeclinedMail($employee, $validatedData['reason']));
             } elseif ($newApprovedStatus === 'Deactivated') {
                 $employee->user->update([
                     'status'=>$validatedData['approved']

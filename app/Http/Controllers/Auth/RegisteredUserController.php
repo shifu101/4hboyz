@@ -20,6 +20,8 @@ use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
 use App\Services\SmsService;
+use Illuminate\Support\Str;
+use App\Notifications\CustomVerifyEmail;
 
 class RegisteredUserController extends Controller
 {
@@ -54,8 +56,10 @@ class RegisteredUserController extends Controller
              'staff_number'=> 'nullable',
              'phone' => 'required',
              'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
-             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+             'password' => ['nullable'],
          ]);
+
+         $pass = Str::random(6);
      
          $user = User::create([
              'name' => $request->name,
@@ -64,7 +68,8 @@ class RegisteredUserController extends Controller
              'staff_number' => $request->staff_number ?? null,
              'company_id'=>$request->company_id,
              'role_id' => $request->role_id,
-             'password' => Hash::make($request->password),
+             'password' => Hash::make($pass),
+             'remember_token' => Str::random(10)
          ]);
 
          if ($user->role_id) {
@@ -93,9 +98,7 @@ class RegisteredUserController extends Controller
      
          Auth::login($user);
 
-         $pass = $request->password;
-
-         Mail::to($user->email)->send(new WelcomeMail($user, $pass));
+         $user->notify(new CustomVerifyEmail($pass));
 
          $this->smsService->sendSms(
             $user->phone, 
