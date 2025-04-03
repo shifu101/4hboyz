@@ -117,35 +117,7 @@ function Header() {
                                 id="ekit-megamenu-main-menu"
                                 className="elementskit-menu-container elementskit-menu-offcanvas-elements elementskit-navbar-nav-default ekit-nav-menu-one-page-no ekit-nav-dropdown-hover"
                                 >
-                                <ul
-                                    id="menu-main-menu"
-                                    className="elementskit-navbar-nav elementskit-menu-po-right submenu-click-on-icon"
-                                >
-                                    <li
-                                    id="menu-item-353"
-                                    className="menu-item menu-item-type-post_type menu-item-object-page menu-item-home current-menu-item page_item page-item-293 current_page_item menu-item-353 nav-item nav-item elementskit-mobile-builder-content active"
-                                    data-vertical-menu="750px"
-                                    >
-                                    <Link
-                                        href={route('home')}
-                                        className="ekit-menu-nav-link active"
-                                    >
-                                        Home
-                                    </Link>
-                                    </li>
-                                    <li
-                                    id="menu-item-360"
-                                    className="menu-item menu-item-type-post_type menu-item-object-page menu-item-360 nav-item nav-item elementskit-mobile-builder-content"
-                                    data-vertical-menu="750px"
-                                    >
-                                    <Link
-                                        href={route('login')}
-                                        className="ekit-menu-nav-link"
-                                    >
-                                        Login
-                                    </Link>
-                                    </li>
-                                </ul>
+                                
                                 <div className="elementskit-nav-identity-panel">
                                     <div className="elementskit-site-title">
                                     <a
