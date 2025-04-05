@@ -171,7 +171,7 @@ const Layout = ({ children }) => {
                 <div ref={sidebarRef} className="layout-sidebar">
                     <AppSidebar />
                 </div>
-                <div className="layout-main-container" style={{backgroundColor: '#003c56'}}>
+                <div className="layout-main-container min-h-screen" style={{backgroundColor: '#003c56'}}>
                     <div className="layout-main">{children}</div>
                     <AppFooter />
                 </div>

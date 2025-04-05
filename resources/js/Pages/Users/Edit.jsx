@@ -111,22 +111,6 @@ const EditUser = ({ errors }) => {
               {errors.role_id && <div className="text-sm text-red-500 mt-1">{errors.role_id}</div>}
           </div>
 
-          {/* Company Select */}
-          {roleId === 1 &&
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Company</label>
-            <Select
-              value={selectedCompany}
-              onChange={handleCompanyChange}
-              options={companies.map((company) => ({
-                value: company.id,
-                label: company.name
-              }))}
-              placeholder="Select a company"
-            />
-            {errors.company_id && <div className="text-sm text-red-500 mt-1">{errors.company_id}</div>}
-          </div>}
-
           {/* Submit Button */}
           <button
             type="submit"
