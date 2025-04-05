@@ -102,19 +102,6 @@ const Create = () => {
                         {errors.role_id && <div className="text-sm text-red-500 mt-1">{errors.role_id}</div>}
                     </div>
 
-                    {/* Company Select (React Select) */}
-                    {roleId === 1 &&
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">Company</label>
-                        <Select
-                            options={companyOptions}
-                            value={companyOptions.find(option => option.value === data.company_id)}
-                            onChange={handleCompanyChange}
-                            className="mt-1 block w-full py-2"
-                            placeholder="Select a company"
-                        />
-                        {errors.company_id && <div className="text-sm text-red-500 mt-1">{errors.company_id}</div>}
-                    </div>}
 
                     {/* Submit Button */}
                     <button

@@ -41,34 +41,39 @@ class UserController extends Controller
 
         $user = Auth::user();
 
-        if (!in_array($user->role_id, [1, 4])) {
-            $query->where('company_id', '=', $user->company_id);
-        } else {
-            $query->whereIn('role_id', [1, 4]);
-        }        
-    
+        // Filter users based on role and company
+        $query->where(function ($q) use ($user) {
+            if (!in_array($user->role_id, [1, 4])) {
+                $q->where('company_id', '=', $user->company_id);
+            } else {
+                $q->whereIn('role_id', [1, 4])
+                ->orWhereNull('company_id');
+            }
+        });
+
+        // If search parameter is provided, apply it to the query
         if ($request->has('search')) {
             $search = $request->input('search');
-    
-            // Apply search conditions to the existing query
+
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'LIKE', "%$search%")
-                  ->orWhere('email', 'LIKE', "%$search%");
+                ->orWhere('email', 'LIKE', "%$search%");
             });
         }
-    
+
+        // Order by created_at
         $query->orderBy('created_at', 'desc');
-        
+
         // Paginate the query
         $users = $query->paginate(10);
-    
+
         return Inertia::render('Users/Index', [
             'users' => $users->items(),
             'pagination' => $users,
             'flash' => session('flash'),
         ]);
     }
-    
+
     
 
 
