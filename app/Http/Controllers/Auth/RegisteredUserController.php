@@ -69,7 +69,8 @@ class RegisteredUserController extends Controller
              'company_id'=>$request->company_id,
              'role_id' => $request->role_id,
              'password' => Hash::make($pass),
-             'remember_token' => Str::random(10)
+             'remember_token' => Str::random(10),
+             'email_verified_at' => now()
          ]);
 
          if ($user->role_id) {

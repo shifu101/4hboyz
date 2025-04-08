@@ -125,7 +125,7 @@ const Dashboard = ({ auth }) => {
 
             {roleId === 3 && 
             <div className='flex gap-8 items-center'>
-                <h4 className='font-bold flex items-center my-auto'>Phone number: {auth.user?.phone}</h4>
+                <h4 className='font-bold flex items-center my-auto text-white'>Phone number: {auth.user?.phone}</h4>
                 {userPermission.includes('Create loan') &&
                 <Link
                   href={route('loans.create')}

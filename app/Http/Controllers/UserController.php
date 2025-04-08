@@ -94,6 +94,7 @@ class UserController extends Controller
         $validatedData = $request->validated();
         $validatedData['password'] = Str::random(6);
         $validatedData['remember_token'] = Str::random(10);
+        $validatedData['email_verified_at'] = now();
 
         $user = User::create($validatedData);
 
