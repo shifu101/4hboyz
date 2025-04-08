@@ -279,7 +279,7 @@ const SelectCompany = () => {
                         <div>
                             <label className="block text-sm font-medium text-gray-700">ID number</label>
                             <input
-                                type="text"
+                                type="number"
                                 value={data.id_number}
                                 onChange={(e) => setData('id_number', e.target.value)}
                                 className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"

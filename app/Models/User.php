@@ -30,7 +30,8 @@ class User extends Authenticatable
         'status',
         'kyc',
         'company_id',
-        'password_reset'
+        'password_reset',
+        'email_verified_at'
     ];
 
     public function permissions()
