@@ -32,6 +32,22 @@ class ProfileController extends Controller
             'employee' => $employee, 
         ]);
     }
+
+    public function updatePhone(Request $request): Response
+    {
+        $user = Auth::user();
+        $employee = null; 
+    
+        if ($user->role_id == 3) {
+            $employee = Employee::where('user_id', '=', $user->id)->first();
+        }
+    
+        return Inertia::render('UpdatePhone', [
+            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
+            'status' => session('status'),
+            'employee' => $employee, 
+        ]);
+    }
     
 
     /**
