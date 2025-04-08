@@ -6,6 +6,7 @@ import Layout from "@/Layouts/layout/layout.jsx";
 import DashboardInfoCard from "@/Components/DashboardInfoCard.jsx";
 import { usePage, Link, Head } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
+import { FiEdit } from 'react-icons/fi'
 
 const Dashboard = ({ auth }) => {
     // Get data from the page props
@@ -124,8 +125,13 @@ const Dashboard = ({ auth }) => {
             </div>}
 
             {roleId === 3 && 
-            <div className='flex gap-8 items-center'>
-                <h4 className='font-bold flex items-center my-auto text-white'>Phone number: {auth.user?.phone}</h4>
+            <div className='flex lg:flex-row flex-col gap-8 items-center'>
+                <h4 className="font-bold flex items-center my-auto text-white">
+                    Phone number: {auth.user?.phone}
+                    <Link href={route('update-phone')} className="ml-2 text-blue-300 hover:text-blue-500">
+                        <FiEdit className="inline-block" />
+                    </Link>
+                </h4>
                 {userPermission.includes('Create loan') &&
                 <Link
                   href={route('loans.create')}
