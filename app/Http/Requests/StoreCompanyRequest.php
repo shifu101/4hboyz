@@ -29,6 +29,8 @@ class StoreCompanyRequest extends FormRequest
              'sectors' => 'nullable|string|max:255',
              'county' => 'nullable|string|max:255',
              'loan_limit' => 'nullable',
+             'status' => 'nullable',
+             'reason' => 'nullable',
              'sub_county' => 'nullable|string|max:255',
              'location' => 'nullable|string|max:255',
              'address' => 'nullable|string|max:255',

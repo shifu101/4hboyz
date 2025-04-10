@@ -32,16 +32,17 @@ export default function ResetPassword({ token, email }) {
 
             <div className="flex min-h-screen items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
                 <div className="w-full max-w-md space-y-8">
-                    <div className="text-center">
-                        <h2 className="mt-6 text-3xl font-bold tracking-tight text-gray-900">
-                            Reset Your Password
-                        </h2>
-                        <p className="mt-2 text-sm text-gray-600">
-                            Please enter your new password below
-                        </p>
-                    </div>
-                    
+
                     <div className="mt-8 bg-white py-8 px-6 shadow-lg rounded-lg">
+                        <div className='flex flex-col'>
+                            <h2 className="text-3xl font-extrabold text-gray-900">
+                            Reset Your Password
+                            </h2>
+                            <p className="mt-3 text-sm text-gray-600">
+                            Please enter your new password below
+                            </p>
+                        </div>
+
                         <form onSubmit={submit} className="space-y-6">
                             <div>
                                 <InputLabel htmlFor="email" value="Email" className="block text-sm font-medium text-gray-700" />

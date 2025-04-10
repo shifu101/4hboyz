@@ -31,7 +31,9 @@ class User extends Authenticatable
         'kyc',
         'company_id',
         'password_reset',
-        'email_verified_at'
+        'email_verified_at',
+        'phone_verified_at',
+        'otp'
     ];
 
     public function permissions()

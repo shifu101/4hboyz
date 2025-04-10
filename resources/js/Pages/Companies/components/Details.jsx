@@ -64,6 +64,11 @@ function Details({ company }) {
           <span className="text-gray-800">{company.unique_number}</span>
         </div>
 
+        <div className="flex justify-between">
+          <strong className="text-gray-600">Status:</strong> 
+          <span className="text-gray-800">{company.status}</span>
+        </div>
+
         {/* Document Links */}
         <div className="border-t pt-4">
           <strong className="text-gray-600 mb-4">Documents:</strong>

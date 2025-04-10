@@ -21,6 +21,8 @@ class Employee extends Model
         'passport_front',
         'passport_back',
         'approved',
+        'status',
+        'reason'
     ];
 
     // Relationship with Company

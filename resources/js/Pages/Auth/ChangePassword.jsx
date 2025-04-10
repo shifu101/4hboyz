@@ -1,10 +1,11 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import GuestLayout from '@/Layouts/GuestLayout';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, Link } from '@inertiajs/react';
+import { EyeIcon, EyeOffIcon } from 'lucide-react';
 
 export default function ChangePassword({ token, email }) {
     const { data, setData, put, processing, errors, reset } = useForm({
@@ -13,6 +14,9 @@ export default function ChangePassword({ token, email }) {
         password: '',
         password_confirmation: '',
     });
+
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     useEffect(() => {
         return () => {
@@ -25,69 +29,52 @@ export default function ChangePassword({ token, email }) {
         put(route('password.update'));
     };
 
+    const togglePasswordVisibility = () => setShowPassword(!showPassword);
+    const toggleConfirmPasswordVisibility = () => setShowConfirmPassword(!showConfirmPassword);
+
     return (
         <GuestLayout>
             <Head title="Change Password" />
 
             <div className="flex min-h-screen items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
                 <div className="w-full max-w-md">
-                    <div className="text-center mb-8">
-                        <h2 className="text-3xl font-extrabold text-gray-900">
-                            Change Your Password
-                        </h2>
-                        <p className="mt-3 text-sm text-gray-600">
-                            Please enter your current password and choose a new secure password
-                        </p>
-                    </div>
                     
-                    <div className="bg-white py-8 px-6 shadow-xl rounded-lg border border-gray-100">
+                    <div className="bg-white py-8 px-6 shadow-xl rounded-lg border border-gray-100 mt-20">
                         <form onSubmit={submit} className="space-y-6">
-                            <div>
-                                <InputLabel htmlFor="email" value="Email Address" className="block text-sm font-medium text-gray-700" />
-
-                                <TextInput
-                                    id="email"
-                                    type="email"
-                                    name="email"
-                                    value={data.email}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                    autoComplete="username"
-                                    onChange={(e) => setData('email', e.target.value)}
-                                    disabled
-                                />
-
-                                <InputError message={errors.email} className="mt-2" />
-                            </div>
-
-                            <div>
-                                <InputLabel htmlFor="current_password" value="Current Password" className="block text-sm font-medium text-gray-700" />
-
-                                <TextInput
-                                    id="current_password"
-                                    type="password"
-                                    name="current_password"
-                                    value={data.current_password}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                    autoComplete="current-password"
-                                    isFocused={true}
-                                    onChange={(e) => setData('current_password', e.target.value)}
-                                />
-
-                                <InputError message={errors.current_password} className="mt-2" />
+                            <div className='flex flex-col'>
+                                <h2 className="text-3xl font-extrabold text-gray-900">
+                                    Change Your Password
+                                </h2>
+                                <p className="mt-3 text-sm text-gray-600">
+                                    Please enter your current password and choose a new secure password
+                                </p>
                             </div>
 
                             <div className="border-t border-gray-200 pt-6">
                                 <InputLabel htmlFor="password" value="New Password" className="block text-sm font-medium text-gray-700" />
 
-                                <TextInput
-                                    id="password"
-                                    type="password"
-                                    name="password"
-                                    value={data.password}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                    autoComplete="new-password"
-                                    onChange={(e) => setData('password', e.target.value)}
-                                />
+                                <div className="relative">
+                                    <TextInput
+                                        id="password"
+                                        type={showPassword ? 'text' : 'password'}
+                                        name="password"
+                                        value={data.password}
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                        autoComplete="new-password"
+                                        onChange={(e) => setData('password', e.target.value)}
+                                    />
+                                    <button 
+                                        type="button"
+                                        onClick={togglePasswordVisibility}
+                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                                    >
+                                        {showPassword ? (
+                                          <EyeOffIcon className="h-8 w-8" />
+                                        ) : (
+                                          <EyeIcon className="h-8 w-8" />
+                                        )}
+                                    </button>
+                                </div>
 
                                 <InputError message={errors.password} className="mt-2" />
                                 
@@ -99,23 +86,36 @@ export default function ChangePassword({ token, email }) {
                             <div>
                                 <InputLabel htmlFor="password_confirmation" value="Confirm New Password" className="block text-sm font-medium text-gray-700" />
 
-                                <TextInput
-                                    type="password"
-                                    name="password_confirmation"
-                                    value={data.password_confirmation}
-                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                    autoComplete="new-password"
-                                    onChange={(e) => setData('password_confirmation', e.target.value)}
-                                />
+                                <div className="relative">
+                                    <TextInput
+                                        type={showConfirmPassword ? 'text' : 'password'}
+                                        name="password_confirmation"
+                                        value={data.password_confirmation}
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                        autoComplete="new-password"
+                                        onChange={(e) => setData('password_confirmation', e.target.value)}
+                                    />
+                                    <button 
+                                        type="button"
+                                        onClick={toggleConfirmPasswordVisibility}
+                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                                    >
+                                        {showConfirmPassword ? (
+                                           <EyeOffIcon className="h-8 w-8" />
+                                        ) : (
+                                            <EyeIcon className="h-8 w-8" />
+                                        )}
+                                    </button>
+                                </div>
 
                                 <InputError message={errors.password_confirmation} className="mt-2" />
                             </div>
 
                             <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:justify-between sm:items-center pt-2">
                                 <div className="text-sm">
-                                    <a href={route('login')} className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors">
+                                    <Link href={route('logout')} method="post" as="button" className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors">
                                         Return to login
-                                    </a>
+                                    </Link>
                                 </div>
                                 
                                 <PrimaryButton 

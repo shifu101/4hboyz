@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->double('amount')->nullable();
             $table->string('status')->nullable();
+            $table->string('reason')->nullable();
+            $table->longText('comment')->nullable();
             $table->string('number')->nullable();
             $table->string('otp')->nullable();
             $table->dateTime('disbursed_at')->nullable();

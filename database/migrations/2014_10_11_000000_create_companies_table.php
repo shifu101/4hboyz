@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('registration_number')->nullable();
             $table->string('industry')->nullable();
             $table->string('sectors')->nullable();
+            $table->string('status')->default('Pending Approval');
+            $table->longText('reason')->nullable();
             $table->string('county')->nullable();
             $table->string('sub_county')->nullable();
             $table->string('location')->nullable();

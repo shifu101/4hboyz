@@ -34,7 +34,9 @@ class UpdateEmployeeRequest extends FormRequest
             'passport_back' => 'nullable',
             'approved' => 'nullable',
             'unique_number'=> 'nullable',
-            'reason'=> 'nullable'
+            'reason'=> 'nullable',
+            'status' => 'nullable',
+            'reason' => 'nullable',
         ];
     }
 }

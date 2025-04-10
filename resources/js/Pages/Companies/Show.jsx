@@ -10,6 +10,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Swal from 'sweetalert2';
 import Details from "./components/Details";
+import { Check  } from 'lucide-react';
 
 const Show = ({ company, employees, loans, remittances, repayments, users }) => {
   const [activeTab, setActiveTab] = useState("Details");
@@ -18,8 +19,12 @@ const Show = ({ company, employees, loans, remittances, repayments, users }) => 
   const { delete: destroy } = useForm();
 
   const { auth } = usePage().props; 
-  
-const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
+
+  const { processing } = useForm({
+    status: ''
+  });
+
+  const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
 
     
 
@@ -53,17 +58,55 @@ const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
     });
   };
 
+
+    const handleActivatedUpdate = (e, id, activated) => {
+      e.preventDefault();
+      
+      const formData = {
+        _method: 'PUT', 
+        status: activated,
+        id: id
+      };
+    
+      Swal.fire({
+        title: `Are you sure you want to ${activated.toLowerCase()} this company?`,
+        text: 'This action will update the company status.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: activated === 'Activated' ? '#3085d6' : '#d33',
+        cancelButtonColor: '#gray',
+        confirmButtonText: `Yes, ${activated.toLowerCase()} it!`,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          router.post(route('companies.update', id), formData, {
+            onSuccess: () => {
+              Swal.fire(
+                `${activated}!`, 
+                `The company has been ${activated.toLowerCase()}.`, 
+                'success'
+              );
+            },
+            onError: (err) => {
+              console.error(`${activated} error:`, err);
+              Swal.fire('Error', 'There was a problem updating the company status.', 'error');
+            }
+          });
+        }
+      });
+    };
+  
+
   return (
     <Layout>
       <Head title={company.name} />
-      <div className="max-w-full bg-white shadow-md rounded-lg p-6">
+      <div className="max-w-full bg-white shadow-md rounded-lg p-4 lg:p-6">
         <h1 className="text-2xl font-bold text-gray-800 text-left mb-6">{company.name} - {company.unique_number}</h1>
 
         <div className="grid grid-cols-2 gap-4">
           {/* Date Range Filter */}
           <div className="space-y-4 card">
             <h2 className="text-lg font-semibold text-gray-700">Filter by Date Range</h2>
-            <div className="flex space-x-4">
+            <div className="flex flex-col items-start justify-start lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4">
               <DatePicker
                 selected={startDate}
                 onChange={(date) => setStartDate(date)}
@@ -71,7 +114,7 @@ const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
                 startDate={startDate}
                 endDate={endDate}
                 placeholderText="Start Date"
-                className="border rounded px-3 py-2"
+                className="border rounded lg:px-3 lg:py-2"
               />
               <DatePicker
                 selected={endDate}
@@ -80,7 +123,7 @@ const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
                 startDate={startDate}
                 endDate={endDate}
                 placeholderText="End Date"
-                className="border rounded px-3 py-2"
+                className="border rounded lg:px-3 lg:py-2"
               />
               <button
                 onClick={handleFilter}
@@ -96,13 +139,13 @@ const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
           {/* Tabs Navigation */}
           <div className="card flex-1 justify-start items-start">
             <div className="flex justify-start">
-              <nav className="flex overflow-x-auto items-start p-1 space-x-1 text-sm text-gray-600 bg-gray-500/5 rounded-xl">
+              <nav className="flex p-1 overflow-x-auto items-start space-x-1 text-sm text-gray-600 bg-gray-500/5 rounded-xl">
               {["Details", "Employees", "Advances", "Approved Advances", "Pending Advances", "Declined Advances", "Paid Advances","Repayments", "Remittances", "Users"].map((tab) => (
                   <button
                     key={tab}
                     type="button"
                     className={`h-8 px-5 font-medium rounded-lg outline-none ${
-                      activeTab === tab ? "text-yellow-600 shadow bg-white" : "hover:text-gray-800"
+                      activeTab === tab ? "text-yellow-600 shadow bg-black" : "hover:text-gray-800"
                     }`}
                     onClick={() => setActiveTab(tab)}
                   >
@@ -129,29 +172,46 @@ const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
         </div>
 
         {/* Back Button */}
-        <div className="mt-8 text-left flex gap-4">
+        <div className="mt-8 text-left flex flex-col lg:flex-row gap-4">
           {userPermission.includes('Index company') &&
           <Link 
             href={route("companies.index")} 
             className="inline-block px-6 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition">
-            Back to Companies
+            <span className="my-auto px-4 py-2 mx-auto">Back to Companies</span>
           </Link>}
 
-          {userPermission.includes('Edit company') &&
-          <Link 
-            href={route('companies.edit', company.id)} 
-            className="flex items-center bg-yellow-500 text-white rounded-lg text-xs hover:bg-yellow-600"
-          >
-            <span className="my-auto px-4 py-2">Edit</span>
-          </Link>}
+          {(userPermission.includes('Delete company') && (company.status === 'Pending Approval') || company.status === 'Deactivated') &&
+              <button
+                onClick={(e) => handleActivatedUpdate(e, company.id, 'Activated')}
+                disabled={processing}
+                className="inline-flex items-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-200 disabled:opacity-50"
+              >
+                <Check className="w-4 h-4 mr-2" /> Activate
+              </button>}
+            {(company?.status !== 'Deactivated' && userPermission.includes('Delete company') && company.status !== 'Pending Approval') &&
+              <button
+                onClick={(e) => handleActivatedUpdate(e, company.id, 'Deactivated')}
+                disabled={processing}
+                className="inline-flex items-center px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-green-600 transition duration-200 disabled:opacity-50"
+              >
+                <Check className="w-4 h-4 mr-2" /> Suspend
+              </button>}
 
-          {userPermission.includes('Delete company') &&
-          <button
-            onClick={() => handleDelete(company.id)}
-            className="flex items-center cursor-pointer bg-red-600 text-white rounded-lg text-xs hover:bg-red-700"
-          >
-            <span className="my-auto px-4 py-2">Delete</span> 
-          </button>}
+            {userPermission.includes('Edit company') &&
+            <Link 
+              href={route('companies.edit', company.id)} 
+              className="flex items-center bg-yellow-500 text-white rounded-lg text-xs hover:bg-yellow-600"
+            >
+              <span className="my-auto px-4 py-2 mx-auto">Edit</span>
+            </Link>}
+
+            {userPermission.includes('Delete company') &&
+            <button
+              onClick={() => handleDelete(company.id)}
+              className="flex items-center cursor-pointer bg-red-600 text-white rounded-lg text-xs hover:bg-red-700"
+            >
+              <span className="my-auto px-4 py-2 mx-auto">Delete</span> 
+            </button>}
         </div>
       </div>
     </Layout>

@@ -19,6 +19,8 @@ return new class extends Migration
             $table->integer('role_id')->nullable();
             $table->string('email')->unique()->nullable();
             $table->timestamp('email_verified_at')->nullable();
+            $table->timestamp('phone_verified_at')->nullable();
+            $table->string('otp')->default('Active');
             $table->integer('password_reset')->default(0);
             $table->string('status')->default('Active');
             $table->string('staff_number')->nullable();

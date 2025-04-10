@@ -30,6 +30,8 @@ class UpdateUserRequest extends FormRequest
             'company_id' => 'nullable',
             'status' => 'nullable',
             'staff_number' => 'nullable',
+            'phone_verified_at' => 'nullable',
+            'otp' => 'nullable',
             'kyc'=> 'nullable'
         ];
     }
