@@ -44,7 +44,7 @@ class UserController extends Controller
         // Filter users based on role and company
         $query->where(function ($q) use ($user) {
             if (!in_array($user->role_id, [1, 4])) {
-                $q->where('company_id', '=', $user->company_id);
+                $q->whereIn('role_id', [2, 5, 6])->where('company_id', '=', $user->company_id);
             } else {
                 $q->whereIn('role_id', [1, 4])
                 ->orWhereNull('company_id');
@@ -123,12 +123,6 @@ class UserController extends Controller
         $pass = $validatedData['password'];
 
         $user->notify(new CustomVerifyEmail($pass));
-
-        $this->smsService->sendSms(
-           $user->phone, 
-           "Hello {$user->name}, welcome to Centiflow Limited!, this is your login password {$pass}"
-       );
-
     
         return redirect()->route('users.index')->with('success', 'User created successfully.');
     }

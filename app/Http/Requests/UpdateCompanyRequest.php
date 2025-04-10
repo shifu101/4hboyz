@@ -35,6 +35,8 @@ class UpdateCompanyRequest extends FormRequest
             'phone' => 'nullable|string|max:15',
             'percentage' => 'nullable|numeric',
             'loan_limit' => 'nullable',
+            'status' => 'nullable',
+            'reason' => 'nullable',
             'unique_number'=> 'nullable|string|max:255',
             'certificate_of_incorporation' => 'nullable|string|max:255',
             'kra_pin' => 'nullable|string|max:255',

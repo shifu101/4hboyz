@@ -135,6 +135,7 @@ class CompanyController extends Controller
             'address' => $validatedData['company']['address'],
             'email' => $validatedData['company']['email'],
             'phone' => $validatedData['company']['phone'],
+            'status' => 'Pending Approval',
             'percentage' => $validatedData['company']['percentage'],
             'loan_limit' => $validatedData['company']['loan_limit'],
             'registration_number' => $validatedData['company']['registration_number'],
@@ -167,8 +168,6 @@ class CompanyController extends Controller
 
         if ($user->role_id) {
             $role = Role::find($user->role_id);
-
-
             if ($role) {
                 $user->assignRole($role);
                 
@@ -189,12 +188,6 @@ class CompanyController extends Controller
     
         // Send Email Notification
         $user->notify(new CustomVerifyEmail($pass));
-
-        // Send SMS Notification
-        $this->smsService->sendSms(
-            $user->phone, 
-            "Hello {$user->name}, welcome to Centiflow Limited! This is your login password: {$pass}"
-        );
     
         return redirect()->route('companies.index')->with('success', 'Company created successfully.');
     }

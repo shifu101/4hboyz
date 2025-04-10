@@ -96,15 +96,8 @@ class RegisteredUserController extends Controller
          // Send email
      
          event(new Registered($user));
-     
-         Auth::login($user);
 
          $user->notify(new CustomVerifyEmail($pass));
-
-         $this->smsService->sendSms(
-            $user->phone, 
-            "Hello {$user->name}, welcome to Centiflow Limited!, this is your login password {$pass}"
-        );
      
          return redirect(RouteServiceProvider::HOME);
      }

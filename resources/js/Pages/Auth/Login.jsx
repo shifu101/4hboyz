@@ -97,11 +97,9 @@ export default function Login({ status, canResetPassword }) {
                                         Remember me
                                     </label>
                                 </div>
-                                {canResetPassword && (
-                                    <Link href={route('password.request')} className="text-sm text-blue-500 hover:underline">
-                                        Forgot your password?
-                                    </Link>
-                                )}
+                                <Link href={route('password.request')} className="text-sm text-blue-500 hover:underline">
+                                    Forgot your password?
+                                </Link>
                             </div>
 
                             <button

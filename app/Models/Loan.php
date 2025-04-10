@@ -16,6 +16,8 @@ class Loan extends Model
         'employee_id',
         'loan_provider_id',
         'loan',
+        'reason',
+        'comment',
         'otp'
     ];
 

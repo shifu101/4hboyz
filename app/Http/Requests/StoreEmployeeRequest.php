@@ -33,7 +33,9 @@ class StoreEmployeeRequest extends FormRequest
             'passport_front' => 'nullable',
             'passport_back' => 'nullable',
             'approved' => 'nullable',
-            'unique_number'=> 'nullable'
+            'unique_number'=> 'nullable',
+            'status' => 'nullable',
+            'reason' => 'nullable',
         ];
     }
 }

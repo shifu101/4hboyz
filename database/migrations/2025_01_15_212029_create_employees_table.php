@@ -16,6 +16,8 @@ return new class extends Migration
             $table->double('salary')->nullable();
             $table->string('passport_number')->nullable();
             $table->string('id_number')->nullable();
+            $table->string('status')->nullable();
+            $table->longText('reason')->nullable();
             $table->string('id_front')->nullable();
             $table->string('id_back')->nullable();
             $table->string('passport_front')->nullable();

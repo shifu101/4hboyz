@@ -14,6 +14,8 @@ class Company extends Model
         'registration_number',
         'industry',
         'sectors',
+        'status',
+        'reason',
         'county',
         'sub_county',
         'location',
@@ -27,7 +29,7 @@ class Company extends Model
         'cr12_cr13',
         'signed_agreement',
         'additional_documents',
-        'loan_limit'
+        'loan_limit',
     ];
 
     protected $casts = [
