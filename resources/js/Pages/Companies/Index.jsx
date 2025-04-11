@@ -170,6 +170,7 @@ const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">Email</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">Phone</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">Loan percentage</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase">Status</th>
                 <th className="px-6 py-3 text-right text-sm font-semibold text-gray-600 uppercase">Actions</th>
               </tr>
             </thead>
@@ -183,6 +184,7 @@ const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
                     <td className="px-6 py-4">{company.email}</td>
                     <td className="px-6 py-4">{company.phone}</td>
                     <td className="px-6 py-4">{company.percentage}</td>
+                    <td className="px-6 py-4">{company.status}</td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-2">
                         {userPermission.includes('View company') &&
