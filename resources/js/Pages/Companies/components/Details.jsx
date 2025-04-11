@@ -111,6 +111,12 @@ function Details({ company }) {
             </ul>
           </div>
         )}
+
+        {company.status === 'Declined' &&
+        <div className="flex flex-col">
+          <h2>Reason for declining company registration</h2>
+          <p>{company.reason}</p>
+        </div>}
       </div>
     </div>
   );

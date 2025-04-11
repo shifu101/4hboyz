@@ -10,7 +10,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Swal from 'sweetalert2';
 import Details from "./components/Details";
-import { Check  } from 'lucide-react';
+import { Check } from 'lucide-react';
 
 const Show = ({ company, employees, loans, remittances, repayments, users }) => {
   const [activeTab, setActiveTab] = useState("Details");
@@ -20,13 +20,13 @@ const Show = ({ company, employees, loans, remittances, repayments, users }) => 
 
   const { auth } = usePage().props; 
 
+  const roleId = auth.user?.role_id;
+
   const { processing } = useForm({
     status: ''
   });
 
   const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
-
-    
 
   const handleFilter = () => {
     router.get(route("companies.show", company.id), {
@@ -58,43 +58,95 @@ const Show = ({ company, employees, loans, remittances, repayments, users }) => 
     });
   };
 
-
-    const handleActivatedUpdate = (e, id, activated) => {
-      e.preventDefault();
-      
+  const handleActivatedUpdate = (e, id, activated) => {
+    e.preventDefault();
+    
+    // If declining, show the modal with text input for reason
+    if (activated === 'Declined') {
+      Swal.fire({
+        title: 'Enter reason for declining',
+        input: 'textarea',
+        inputPlaceholder: 'Enter your reason here...',
+        inputAttributes: {
+          'aria-label': 'Reason for declining',
+          'required': 'required'
+        },
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        confirmButtonText: 'Decline',
+        preConfirm: (reason) => {
+          if (!reason.trim()) {
+            Swal.showValidationMessage('Reason is required');
+            return false;
+          }
+          return reason;
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const formData = {
+            _method: 'PUT',
+            status: activated,
+            id: id,
+            reason: result.value
+          };
+          
+          submitStatusUpdate(id, formData);
+        }
+      });
+    } else {
+      // For other status updates, proceed without asking for a reason
       const formData = {
         _method: 'PUT', 
         status: activated,
         id: id
       };
-    
+      
+      // Create action verbs and proper confirmation messages
+      let actionVerb = '';
+      let actionPastTense = '';
+      
+      if (activated === 'Activated') {
+        actionVerb = 'activate';
+        actionPastTense = 'activated';
+      } else if (activated === 'Deactivated') {
+        actionVerb = 'suspend';
+        actionPastTense = 'suspended';
+      }
+      
       Swal.fire({
-        title: `Are you sure you want to ${activated.toLowerCase()} this company?`,
+        title: `Are you sure you want to ${actionVerb} this company?`,
         text: 'This action will update the company status.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: activated === 'Activated' ? '#3085d6' : '#d33',
         cancelButtonColor: '#gray',
-        confirmButtonText: `Yes, ${activated.toLowerCase()} it!`,
+        confirmButtonText: `Yes, ${actionVerb} it!`,
       }).then((result) => {
         if (result.isConfirmed) {
-          router.post(route('companies.update', id), formData, {
-            onSuccess: () => {
-              Swal.fire(
-                `${activated}!`, 
-                `The company has been ${activated.toLowerCase()}.`, 
-                'success'
-              );
-            },
-            onError: (err) => {
-              console.error(`${activated} error:`, err);
-              Swal.fire('Error', 'There was a problem updating the company status.', 'error');
-            }
-          });
+          submitStatusUpdate(id, formData, actionPastTense);
         }
       });
-    };
+    }
+  };
   
+  const submitStatusUpdate = (id, formData, customStatusText = null) => {
+    router.post(route('companies.update', id), formData, {
+      onSuccess: () => {
+        const status = formData.status;
+        const statusText = customStatusText || status.toLowerCase();
+        
+        Swal.fire(
+          `${status}!`, 
+          `The company has been ${statusText}.`, 
+          'success'
+        );
+      },
+      onError: (err) => {
+        console.error(`Status update error:`, err);
+        Swal.fire('Error', 'There was a problem updating the company status.', 'error');
+      }
+    });
+  };
 
   return (
     <Layout>
@@ -180,7 +232,7 @@ const Show = ({ company, employees, loans, remittances, repayments, users }) => 
             <span className="my-auto px-4 py-2 mx-auto">Back to Companies</span>
           </Link>}
 
-          {(userPermission.includes('Delete company') && (company.status === 'Pending Approval') || company.status === 'Deactivated') &&
+          {((roleId === 1 && userPermission.includes('Delete company')) && (company.status === 'Pending Approval' || company.status === 'Deactivated' || company.status === 'Declined')) &&
               <button
                 onClick={(e) => handleActivatedUpdate(e, company.id, 'Activated')}
                 disabled={processing}
@@ -188,7 +240,7 @@ const Show = ({ company, employees, loans, remittances, repayments, users }) => 
               >
                 <Check className="w-4 h-4 mr-2" /> Activate
               </button>}
-            {(company?.status !== 'Deactivated' && userPermission.includes('Delete company') && company.status !== 'Pending Approval') &&
+            {((roleId === 1 && company?.status !== 'Deactivated') && userPermission.includes('Delete company') && (company.status !== 'Pending Approval') && company.status !== 'Declined') &&
               <button
                 onClick={(e) => handleActivatedUpdate(e, company.id, 'Deactivated')}
                 disabled={processing}
@@ -196,6 +248,15 @@ const Show = ({ company, employees, loans, remittances, repayments, users }) => 
               >
                 <Check className="w-4 h-4 mr-2" /> Suspend
               </button>}
+
+            {((roleId === 1 && userPermission.includes('Delete company')) && company.status === 'Pending Approval') &&
+            <button
+              onClick={(e) => handleActivatedUpdate(e, company.id, 'Declined')}
+              disabled={processing}
+              className="inline-flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-200 disabled:opacity-50"
+            >
+              <Check className="w-4 h-4 mr-2" /> Decline
+            </button>}
 
             {userPermission.includes('Edit company') &&
             <Link 

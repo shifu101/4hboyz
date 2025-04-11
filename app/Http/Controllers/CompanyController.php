@@ -15,6 +15,7 @@ use App\Models\Remittance;
 use Illuminate\Support\Facades\Hash;
 
 use App\Mail\WelcomeMail;
+use App\Mail\CompanySignupMail;
 use Illuminate\Support\Facades\Mail;
 
 use Illuminate\Support\Facades\Http;
@@ -188,6 +189,12 @@ class CompanyController extends Controller
     
         // Send Email Notification
         $user->notify(new CustomVerifyEmail($pass));
+
+        $adminUsers = User::where('role_id','=',1)->get();
+
+        foreach($adminUsers as $adminUser){
+            Mail::to($adminUser->email)->send(new CompanySignupMail($company, $user));
+        }
     
         return redirect()->route('companies.index')->with('success', 'Company created successfully.');
     }
