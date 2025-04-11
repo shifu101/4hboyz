@@ -144,7 +144,7 @@ const Dashboard = ({ auth }) => {
                 </Link>}
             </div>}
 
-            <div className="grid pt-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch pt-4">
                 {roleId === 1 && 
                 <DashboardInfoCard
                     title="Companies"
@@ -159,7 +159,7 @@ const Dashboard = ({ auth }) => {
                 <DashboardInfoCard
                     title="Salary"
                     value={new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(employee?.salary)}
-                    icon="map-marker"
+                    icon="credit-card"
                     iconColor="blue"
                     descriptionValue="The salary"
                     descriptionText="you earn"
@@ -169,7 +169,7 @@ const Dashboard = ({ auth }) => {
                 <DashboardInfoCard
                     title="Salary advance limit"
                     value={new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(employee?.loan_limit)}
-                    icon="map-marker"
+                    icon="credit-card"
                     iconColor="blue"
                     descriptionValue="The maximum amount"
                     descriptionText="you can borrow"
@@ -178,7 +178,7 @@ const Dashboard = ({ auth }) => {
                 <DashboardInfoCard
                     title="Approved and active salary advances"
                     value={`${activeLoansCount} (${activeLoansValue})`}
-                    icon="map-marker"
+                    icon="check-circle"
                     iconColor="orange"
                     descriptionValue="Active salary advances"
                     descriptionText="currently active"
@@ -187,7 +187,7 @@ const Dashboard = ({ auth }) => {
                 <DashboardInfoCard
                     title="Pending salary advances"
                     value={`${pendingLoansCount} (${new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(pendingLoansValue)})`}
-                    icon="map-marker"
+                    icon="clock"
                     iconColor="orange"
                     descriptionValue="Active salary advances"
                     descriptionText="currently active"
@@ -196,7 +196,7 @@ const Dashboard = ({ auth }) => {
                 <DashboardInfoCard
                     title="Declined salary advances"
                     value={`${inactiveLoansCount} (${new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(inactiveLoansValue)})`}
-                    icon="inbox"
+                    icon="times-circle"
                     iconColor="cyan"
                     descriptionValue="Inactive salary advances"
                     descriptionText="currently inactive"
@@ -205,7 +205,7 @@ const Dashboard = ({ auth }) => {
                   <DashboardInfoCard
                     title="Repaid salary advances"
                     value={`${new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(repaidLoansValue)}`}
-                    icon="comment"
+                    icon="check-circle"
                     iconColor="purple"
                     descriptionValue="Total Repaid"
                     descriptionText="salary advance repayments"
@@ -214,7 +214,7 @@ const Dashboard = ({ auth }) => {
                 <DashboardInfoCard
                     title="Pending paid salary advances"
                     value={`${pendingPaidLoansCount} (${new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(pendingPaidLoansValue)})`}
-                    icon="comment"
+                    icon="clock"
                     iconColor="purple"
                     descriptionValue="Total pending paid"
                     descriptionText="salary advance repayments"
@@ -222,7 +222,7 @@ const Dashboard = ({ auth }) => {
                 />
             </div>
 
-            <div className="grid">
+            <div className="grid my-4">
                 <div className="col-12 xl:col-6">
                     <div className="card">
                         <h5>Salary advances and Repayment Trends</h5>
