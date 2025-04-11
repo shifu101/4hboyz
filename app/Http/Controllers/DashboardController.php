@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Company;
 use App\Models\Loan;
+use App\Models\User;
 use App\Models\Employee;
+use App\Models\Remittance;
 use App\Models\Repayment;
 use Carbon\Carbon;
 use Inertia\Inertia;
@@ -126,7 +128,31 @@ class DashboardController extends Controller
             });
         }
         
+        $repaidLoansCount = $repaidLoansQuery->count();
         $repaidLoansValue = $repaidLoansQuery->sum('amount');
+
+
+        // Pending paid loans counts
+        $pendingPaidLoansQuery = Loan::with(['loanProvider', 'employee.user', 'employee.company'])
+        ->where('status', '=', 'Pending Paid');
+    
+           if ($user->role_id == 2 || $user->role_id == 5 || $user->role_id == 6) {
+            $pendingPaidLoansQuery->whereHas('employee.user', function ($q) use ($user) {
+                $q->where('company_id', '=', $user->company_id);
+            });
+        } elseif ($user->role_id == 3) {
+            $pendingPaidLoansQuery->whereHas('employee.user', function ($q) use ($user) {
+                $q->where('id', '=', $user->id);
+            });
+        }
+        
+        // Fetch the loans and append the currentBalance
+        $pendingPaidLoans = $pendingPaidLoansQuery->get();
+        $pendingPaidLoansValue = $pendingPaidLoans->sum(function ($loan) {
+            return $loan->currentBalance;
+        });
+        
+        $pendingPaidLoansCount = $pendingPaidLoans->count();
         
 
         $currentYear = Carbon::now()->year;
@@ -208,13 +234,19 @@ class DashboardController extends Controller
             }
 
             $employeesCount = 0; 
+            $usersCount = 0; 
+            $remittancesCount = 0; 
 
-            if ($user->role_id == "2") {
+            if ($user->role_id == "2" || $user->role_id == "4" || $user->role_id == "6") {
                 $employeesCount = Employee::where('company_id', $user->company_id)->count();
+                $usersCount = User::where('company_id', $user->company_id)->count();
+                $remittancesCount = Remittance::where('company_id', $user->company_id)->count();
             }
             
-            if ($user->role_id == "1") {
+            if ($user->role_id == "1" || $user->role_id == "4") {
                 $employeesCount = Employee::count();
+                $usersCount = User::whereIn('role_id', [1, 4])->count();
+                $remittancesCount = Remittance::count();
             }
             
             return Inertia::render('Dashboard', [
@@ -225,12 +257,17 @@ class DashboardController extends Controller
                 'pendingLoansValue'=> $pendingLoansValue,
                 'inactiveLoansCount' => $inactiveLoansCount,
                 'inactiveLoansValue'=> $inactiveLoansValue,
+                'repaidLoansCount'=>$repaidLoansCount,
                 'repaidLoansValue' => $repaidLoansValue,
                 'loanTrends' => $loanTrends,
                 'repaymentTrends' => $repaymentTrends,
                 'employeesCount' => $employeesCount,
                 'employee'=>$employee,
-                'motherCompany'=>$motherCompany ?? null
+                'motherCompany'=>$motherCompany ?? null,
+                'usersCount'=> $usersCount,
+                'remittancesCount'=>$remittancesCount,
+                'pendingPaidLoansCount'=>$pendingPaidLoansCount,
+                'pendingPaidLoansValue'=>$pendingPaidLoansValue
             ]);
             
         }

@@ -1,11 +1,12 @@
 import React from "react";
+import { Link } from '@inertiajs/react';
 
-export default function DashboardInfoCard({ title, value, icon = '', iconColor = '', descriptionValue = '', descriptionText = '' }) {
+export default function DashboardInfoCard({ title, value, icon = '', iconColor = '', descriptionValue = '', descriptionText = '', to }) {
     const iconClass = `pi pi-${icon} text-${iconColor}-500 text-xl`;
     const iconBackgroundClass = `flex align-items-center justify-content-center bg-${iconColor}-100 border-round`;
 
     return (
-        <div className="col-12 lg:col-6 xl:col-3">
+        <Link href={to} className="col-12 lg:col-6 xl:col-3">
             <div className="card mb-0">
                 <div className="flex justify-content-between mb-3">
                     <div>
@@ -20,6 +21,6 @@ export default function DashboardInfoCard({ title, value, icon = '', iconColor =
                 <span className="text-green-500 font-medium">{ descriptionValue}</span>
                 <span className="text-500"> {descriptionText}</span>
             </div>
-        </div>
+        </Link>
     );
 }
