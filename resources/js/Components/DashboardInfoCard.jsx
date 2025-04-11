@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from '@inertiajs/react';
 
 export default function DashboardInfoCard({ title, value, icon = '', iconColor = '', descriptionValue = '', descriptionText = '', to }) {
-    const iconClass = `pi pi-${icon} text-${iconColor}-500 text-xl`;
+    const iconClass = `pi pi-${icon} text-${iconColor}-500 text-xl p-2`;
     const iconBackgroundClass = `flex align-items-center justify-content-center bg-${iconColor}-100 border-round`;
 
     return (
