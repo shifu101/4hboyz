@@ -10,7 +10,7 @@ import { FiEdit } from 'react-icons/fi'
 
 const Dashboard = ({ auth }) => {
     // Get data from the page props
-    const { companyCount, activeLoansCount, inactiveLoansCount, pendingLoansCount, pendingLoansValue, repaidLoansValue,activeLoansValue, inactiveLoansValue, loanTrends, repaymentTrends, employee, motherCompany } = usePage().props;
+    const { companyCount, activeLoansCount, inactiveLoansCount, pendingLoansCount, pendingLoansValue, repaidLoansValue,activeLoansValue, inactiveLoansValue, loanTrends, repaymentTrends, employee, motherCompany, pendingPaidLoansCount, pendingPaidLoansValue } = usePage().props;
     
     const [lineOptions, setLineOptions] = useState({});
     const { layoutConfig } = useContext(LayoutContext);
@@ -153,6 +153,7 @@ const Dashboard = ({ auth }) => {
                     iconColor="blue"
                     descriptionValue="Total Companies"
                     descriptionText="in the system"
+                    to={route('companies.index')}
                 />}
                  {roleId === 3 && 
                 <DashboardInfoCard
@@ -162,6 +163,7 @@ const Dashboard = ({ auth }) => {
                     iconColor="blue"
                     descriptionValue="The salary"
                     descriptionText="you earn"
+                    to={route('dashboard')}
                 />}
                 {roleId === 3 && 
                 <DashboardInfoCard
@@ -171,14 +173,16 @@ const Dashboard = ({ auth }) => {
                     iconColor="blue"
                     descriptionValue="The maximum amount"
                     descriptionText="you can borrow"
+                    to={route('dashboard')}
                 />}
                 <DashboardInfoCard
-                    title="Active salary advances"
+                    title="Approved and active salary advances"
                     value={`${activeLoansCount} (${activeLoansValue})`}
                     icon="map-marker"
                     iconColor="orange"
                     descriptionValue="Active salary advances"
                     descriptionText="currently active"
+                    to={route('loans.index', { status: 'Approved' })}
                 />
                 <DashboardInfoCard
                     title="Pending salary advances"
@@ -187,6 +191,7 @@ const Dashboard = ({ auth }) => {
                     iconColor="orange"
                     descriptionValue="Active salary advances"
                     descriptionText="currently active"
+                    to={route('loans.index', { status: 'Pending Paid' })}
                 />
                 <DashboardInfoCard
                     title="Declined salary advances"
@@ -195,14 +200,25 @@ const Dashboard = ({ auth }) => {
                     iconColor="cyan"
                     descriptionValue="Inactive salary advances"
                     descriptionText="currently inactive"
+                    to={route('loans.index', { status: 'Declined' })}
                 />
-                <DashboardInfoCard
+                  <DashboardInfoCard
                     title="Repaid salary advances"
                     value={`${new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(repaidLoansValue)}`}
                     icon="comment"
                     iconColor="purple"
                     descriptionValue="Total Repaid"
-                    descriptionText="loan repayments"
+                    descriptionText="salary advance repayments"
+                    to={route('loans.index', { status: 'Paid' })}
+                />
+                <DashboardInfoCard
+                    title="Pending paid salary advances"
+                    value={`${pendingPaidLoansCount} (${new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(pendingPaidLoansValue)})`}
+                    icon="comment"
+                    iconColor="purple"
+                    descriptionValue="Total pending paid"
+                    descriptionText="salary advance repayments"
+                    to={route('loans.index', { status: 'Pending Paid' })}
                 />
             </div>
 
