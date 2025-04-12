@@ -121,7 +121,7 @@ const Dashboard = ({ auth }) => {
             <Head title="Dashboard" />
              {roleId === 2 && 
             <div className='flex gap-8 items-center'>
-                <h4 className='font-bold flex items-center my-auto'>Company: {motherCompany?.name} - {motherCompany?.unique_number}</h4>
+                <h4 className='font-bold flex items-center my-auto text-white'>Company: {motherCompany?.name} - {motherCompany?.unique_number}</h4>
             </div>}
 
             {roleId === 3 && 
