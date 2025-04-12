@@ -6,6 +6,7 @@ use App\Http\Requests\StoreLoanRequest;
 use App\Http\Requests\UpdateLoanRequest;
 use App\Models\Loan;
 use App\Models\Employee;
+use App\Models\User;
 use App\Models\Remittance;
 use App\Models\Company;
 use App\Models\Repayment;
@@ -21,6 +22,7 @@ use App\Mail\LoanDeclinedMail;
 use Illuminate\Support\Facades\Mail;
 
 use App\Mail\LoanRepaymentMail;
+use App\Mail\EmployeeAdvanceRequestMail;
 use App\Mail\LoanOtpMail;
 use Carbon\Carbon;
 
@@ -148,6 +150,14 @@ class LoanController extends Controller
     
             if ($employee) {
                 Mail::to($employee->user->email)->send(new LoanRequestMail($employee));
+            }
+
+            $approvingGuys = User::where('company_id', $user->company_id)
+            ->whereIn('role_id', [6, 2])
+            ->get();
+
+            foreach ($approvingGuys as $approver) {
+                Mail::to($approver->email)->send(new EmployeeAdvanceRequestMail($loan, $employee, $approver));
             }
         }
 
@@ -291,17 +301,19 @@ class LoanController extends Controller
     public function show(Loan $loan)
     {
         $user = Auth::user();
-
+    
         if (!$user->hasPermissionTo('View loan')) {
             return Inertia::render('Auth/Forbidden');
         }
-
-        $loan->load(['employee.user', 'loanProvider', 'employee']);
-
+    
+        $loan->load(['employee.loans.repayments', 'loanProvider', 'employee.user']);
+    
         return Inertia::render('Loans/Show', [
             'loan' => $loan,
+            'totalOutstanding' => $loan->employee->total_outstanding_loan_balance,
         ]);
     }
+    
 
     public function edit(Loan $loan)
     {
@@ -353,6 +365,74 @@ class LoanController extends Controller
         Mail::to($loan->employee->user->email)->send(new LoanDeclinedMail($loan, $reason));
         return redirect()->route('loans.index')->with('success', 'Loan updated successfully.');
     }
+
+
+    public function sendOtp(Loan $loan)
+    {
+        $otp = rand(100000, 999999);
+        $loan->otp = $otp;
+        $loan->save();
+
+        $user = Auth::user();
+
+        Mail::to($user->email)->send(new LoanOtpMail($otp, $loan->number));
+
+        $this->smsService->sendSms(
+            $user->phone, 
+            "Hello {$user->name}, Your OTP for salary advance verification is: {$otp}"
+        );
+
+        return back()->with('success', 'OTP sent successfully.');
+    }
+
+
+    public function verifyOtp(Request $request, Loan $loan)
+    {
+        $request->validate([
+            'otp' => 'required|string',
+        ]);
+    
+        if ($loan->otp != $request->otp) {
+            return back()->withErrors(['otp' => 'Invalid OTP.']);
+        }
+    
+        $loan->save();
+    
+        $disbursementSuccessful = $this->processLoanDisbursement($loan);
+    
+        if ($disbursementSuccessful) {
+            return back()->with('success', 'OTP verified and loan disbursed successfully.');
+        } else {
+            return back()->with('error', 'OTP verified but disbursement failed.');
+        }
+    }
+    
+
+
+    public function processLoanDisbursement(Loan $loan)
+    {
+        DB::beginTransaction();
+        try {
+            $phone = $loan->employee->user->phone;
+
+            $loanAmount = (float) $loan->amount;
+            $company = $loan->employee->company;
+            $companyPercentage = (float) $company->percentage;
+
+            $amountToSend = (int) ($loanAmount - ($loanAmount * $companyPercentage / 100));
+
+            $response = $this->mpesaService->sendB2CPayment($phone, $amountToSend);
+
+            DB::commit();
+            return true;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Loan disbursement failed:', ['error' => $e->getMessage()]);
+            return false;
+        }
+    }
+
+
 
     public function approveLoan(Request $request)
     {

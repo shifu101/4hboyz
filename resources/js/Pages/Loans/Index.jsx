@@ -166,9 +166,10 @@ const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
                   </span>
                 </Link>
                 :
+                (roleId === 3 &&
                 <Link href={route('update-phone')} className="ml-2 text-blue-300 hover:text-blue-500 flex items-center gap-2">
                     <FiPhone className="inline-block" /> Confirm phone in order to request advance
-                </Link>
+                </Link>)
                 }
                 {userPermission.includes('Export loan') &&
                 <button
@@ -240,7 +241,6 @@ const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
                 {roleId !== 3 &&
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Employee Name</th>}
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Principle</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Charges</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Salary advance due</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Current balance</th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Status</th>
@@ -263,7 +263,6 @@ const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
                     {roleId !== 3 &&
                     <td className="px-6 py-4 whitespace-nowrap">{loan.employee?.user?.name}</td>}
                     <td className="px-6 py-4 whitespace-nowrap">  {new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(loan.amount - loan.charges)}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">  {new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(loan.charges)}</td>
                     <td className="px-6 py-4 whitespace-nowrap">  {new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(loan.amount)}</td>
                     <td className="px-6 py-4 whitespace-nowrap">  {new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(loan.currentBalance)}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{loan.status}</td>

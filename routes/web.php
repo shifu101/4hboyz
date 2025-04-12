@@ -91,6 +91,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('remittances', RemittanceController::class);
     Route::resource('users', UserController::class);
 
+    Route::post('/loans/{loan}/send-otp', [LoanController::class, 'sendOtp'])->name('loans.sendOtp');
+    Route::post('/loans/{loan}/verify-otp', [LoanController::class, 'verifyOtp'])->name('loans.verifyOtp');
+
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::post('/update-permissions/{user}', function (Request $request, User $user) {

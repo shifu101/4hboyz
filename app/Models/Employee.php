@@ -38,9 +38,18 @@ class Employee extends Model
     }
 
     // Relationship with Loan
+
     public function loans()
     {
-        return $this->hasMany('App\Models\Loan', 'employee_id');
+        return $this->hasMany(Loan::class);
+    }
+
+
+    public function getTotalOutstandingLoanBalanceAttribute()
+    {
+        return $this->loans->sum(function ($loan) {
+            return $loan->currentBalance;
+        });
     }
 
     // Accessor for the number of unpaid loans
