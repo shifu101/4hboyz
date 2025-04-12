@@ -339,7 +339,8 @@ class EmployeeController extends Controller
     
         if ($user) {
             $user->update([
-                'kyc' => 'Added'
+                'kyc' => 'Added',
+                'status'=> 'Pending'
             ]);
         }
     
