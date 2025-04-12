@@ -38,6 +38,8 @@ class MpesaService
     
         $formattedPhone = $this->formatPhoneNumber($phone);
     
+        $resultUrlWithLoanId = env('MPESA_RESULT_URL') . '?loanId=' . $loanId;
+    
         $response = Http::withToken($accessToken)
             ->post("{$this->baseUrl}/mpesa/b2c/v1/paymentrequest", [
                 'InitiatorName' => env('MPESA_INITIATOR_NAME'),
@@ -48,13 +50,13 @@ class MpesaService
                 'PartyB' => $formattedPhone,
                 'Remarks' => 'Loan Disbursement',
                 'QueueTimeOutURL' => env('MPESA_QUEUE_TIMEOUT_URL'),
-                'ResultURL' => env('MPESA_RESULT_URL'),
+                'ResultURL' => $resultUrlWithLoanId, 
                 'Occasion' => 'LoanID_' . $loanId,
             ]);
-  
     
         return $response->json();
     }
+    
     
 
     private function formatPhoneNumber($phone)

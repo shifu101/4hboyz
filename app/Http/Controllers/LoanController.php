@@ -530,45 +530,45 @@ class LoanController extends Controller
         return response()->json(['message' => 'Timeout callback received'], 200);
     }
 
+
     public function handleMpesaCallback(Request $request)
     {
         Log::info('B2C Callback Received: ', $request->all());
 
-        $content = $request->json('Result.ResultParameters.ResultParameter', []);
-        $data = [];
+        // Retrieve the loanId from the query parameters
+        $loanId = $request->query('loanId');
 
-        foreach ($content as $row) {
-            $data[$row['Key']] = $row['Value'];
-        }
-
-        Log::info('data: ', $data);
-
-        // Get the Occasion from the callback data
-        $occasion = $data['Occasion'] ?? null;
-
-        // If Occasion is missing, try fetching it from cache
-        if (!$occasion) {
-            $transactionId = $data['TransactionReceipt'] ?? null;  
-
-            if ($transactionId) {
-                $cacheKey = 'loan_' . $transactionId; 
-                $occasion = Cache::get($cacheKey); 
-            }
-        }
-
-        // Proceed with loan processing
-        if ($occasion && str_starts_with($occasion, 'LoanID_')) {
-            $loanId = (int) str_replace('LoanID_', '', $occasion);
+        // Ensure the loanId is valid
+        if ($loanId) {
             $loan = Loan::find($loanId);
 
             if ($loan) {
-                $loan->update(['status' => 'Approved']);
-                Mail::to($loan->employee->user->email)->send(new LoanApprovalMail($loan));
+                // Proceed with loan approval logic
+                $content = $request->json('Result.ResultParameters.ResultParameter', []);
+                $data = [];
+
+                foreach ($content as $row) {
+                    $data[$row['Key']] = $row['Value'];
+                }
+
+                Log::info('data: ', $data);
+
+                // Process the loan if the Occasion matches the expected format
+                $occasion = $data['Occasion'] ?? null;
+                if ($occasion && str_starts_with($occasion, 'LoanID_')) {
+                    $loan->update(['status' => 'Approved']);
+                    Mail::to($loan->employee->user->email)->send(new LoanApprovalMail($loan));
+                }
+            } else {
+                Log::warning('Loan not found for ID: ' . $loanId);
             }
+        } else {
+            Log::warning('No loanId found in callback');
         }
 
         return response()->json(['message' => 'Callback processed']);
     }
+
     
     
     
