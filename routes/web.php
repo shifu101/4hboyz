@@ -67,6 +67,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    Route::post('/phone/send-otp', [ProfileController::class, 'sendOtp'])->name('phone.send-otp');
+    Route::post('/phone/verify-otp', [ProfileController::class, 'verifyOtp'])->name('phone.verify-otp');
+
     Route::resource('companies', CompanyController::class);
     
     Route::get('/companies/list', [CompanyController::class, 'list'])->name('companies.list');
@@ -108,6 +111,8 @@ Route::middleware('auth')->group(function () {
     
         return redirect()->back()->with('success', 'Permissions updated successfully');
     });
+
+
 });
 
 

@@ -9,6 +9,7 @@ import * as XLSX from 'xlsx';
 
 import DateRangePicker from 'react-daterange-picker';
 import 'react-daterange-picker/dist/css/react-calendar.css';
+import { FiPhone } from 'react-icons/fi';
 
 const Index = () => {
   const { loans, flash, pagination, auth, params } = usePage().props; 
@@ -154,7 +155,7 @@ const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
               </h1>
               
               <div className="flex flex-wrap justify-center gap-2 w-full sm:w-auto">
-                {userPermission.includes('Create loan') &&
+                {(userPermission.includes('Create loan') && auth?.user?.phone_verified_at !== null)?
                 <Link
                   href={route('loans.create')}
                   className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
@@ -163,7 +164,12 @@ const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
                   <span className='my-auto flex items-center'>
                   Request for an advance
                   </span>
-                </Link>}
+                </Link>
+                :
+                <Link href={route('update-phone')} className="ml-2 text-blue-300 hover:text-blue-500 flex items-center gap-2">
+                    <FiPhone className="inline-block" /> Confirm phone in order to request advance
+                </Link>
+                }
                 {userPermission.includes('Export loan') &&
                 <button
                   onClick={generatePDF}

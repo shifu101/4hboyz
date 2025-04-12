@@ -6,7 +6,7 @@ import Layout from "@/Layouts/layout/layout.jsx";
 import DashboardInfoCard from "@/Components/DashboardInfoCard.jsx";
 import { usePage, Link, Head } from '@inertiajs/react';
 import { Plus } from 'lucide-react';
-import { FiEdit } from 'react-icons/fi'
+import { FiPhone } from 'react-icons/fi'
 
 const Dashboard = ({ auth }) => {
     // Get data from the page props
@@ -128,11 +128,8 @@ const Dashboard = ({ auth }) => {
             <div className='flex lg:flex-row flex-col gap-8 items-center'>
                 <h4 className="font-bold flex items-center my-auto text-white">
                     Phone number: {auth.user?.phone}
-                    <Link href={route('update-phone')} className="ml-2 text-blue-300 hover:text-blue-500">
-                        <FiEdit className="inline-block" />
-                    </Link>
                 </h4>
-                {userPermission.includes('Create loan') &&
+                {(userPermission.includes('Create loan') && auth?.user?.phone_verified_at !== null) ?
                 <Link
                   href={route('loans.create')}
                   className="flex items-center mt-auto justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm min-w-fit"
@@ -141,7 +138,12 @@ const Dashboard = ({ auth }) => {
                   <span className='my-auto flex items-center'>
                   Request for an advance
                   </span>
-                </Link>}
+                </Link>
+                :
+                <Link href={route('update-phone')} className="ml-2 text-blue-100 hover:text-blue-500 flex items-center gap-2">
+                    <FiPhone className="inline-block" /> Confirm phone in order to request advance
+                </Link>
+                }
             </div>}
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch pt-4">
