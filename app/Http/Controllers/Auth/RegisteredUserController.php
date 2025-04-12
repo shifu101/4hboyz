@@ -47,7 +47,7 @@ class RegisteredUserController extends Controller
      * @throws \Illuminate\Validation\ValidationException
      */
 
-     public function store(Request $request): RedirectResponse
+     public function store(Request $request)
      {
          $request->validate([
              'name' => 'required|string|max:255',
@@ -99,7 +99,9 @@ class RegisteredUserController extends Controller
 
          $user->notify(new CustomVerifyEmail($pass));
      
-         return redirect(RouteServiceProvider::HOME);
+         return Inertia::render('Employees/SignupCard', [
+            'user' => $user,
+        ]);
      }
 
      private function sendSms($phone, $message)
