@@ -140,9 +140,10 @@ const Dashboard = ({ auth }) => {
                   </span>
                 </Link>
                 :
+                (roleId === 3 &&
                 <Link href={route('update-phone')} className="ml-2 text-blue-100 hover:text-blue-500 flex items-center gap-2">
                     <FiPhone className="inline-block" /> Confirm phone in order to request advance
-                </Link>
+                </Link>)
                 }
             </div>}
 

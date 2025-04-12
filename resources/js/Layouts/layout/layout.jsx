@@ -172,7 +172,7 @@ const Layout = ({ children }) => {
                     <AppSidebar />
                 </div>
                 <div className="layout-main-container min-h-screen" style={{backgroundColor: '#003c56'}}>
-                    <div className="layout-main">{children}</div>
+                    <div className="layout-main py-4">{children}</div>
                     <AppFooter />
                 </div>
                 <AppConfig />

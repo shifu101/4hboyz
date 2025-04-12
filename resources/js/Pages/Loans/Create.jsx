@@ -106,7 +106,7 @@ const Create = () => {
                 <DashboardInfoCard
                     title="Advance limit"
                     value={        new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(selectedEmployee.loan_limit)}
-                    icon="map-marker"
+                    icon="credit-card"
                     iconColor="blue"
                     descriptionValue="The maximum amount"
                     descriptionText="you can borrow"
@@ -114,7 +114,7 @@ const Create = () => {
                 <DashboardInfoCard
                     title="Advance float"
                     value={ new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(selectedEmployee.loan_limit - selectedEmployee.total_loan_balance)}
-                    icon="map-marker"
+                    icon="check-circle"
                     iconColor="blue"
                     descriptionValue="The amount"
                     descriptionText="you can still borrow"
