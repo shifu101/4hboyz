@@ -31,6 +31,7 @@ use Illuminate\Support\Facades\Log;
 
 use App\Services\SmsService;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Cache;
 
 class LoanController extends Controller
 {
@@ -414,15 +415,19 @@ class LoanController extends Controller
         DB::beginTransaction();
         try {
             $phone = $loan->employee->user->phone;
-
+    
             $loanAmount = (float) $loan->amount;
             $company = $loan->employee->company;
             $companyPercentage = (float) $company->percentage;
-
+    
             $amountToSend = (int) ($loanAmount - ($loanAmount * $companyPercentage / 100));
-
+    
+            $cacheKey = 'loan_' . $loan->id;
+            Cache::put($cacheKey, $loan->id, now()->addMinutes(30)); 
+    
+      
             $response = $this->mpesaService->sendB2CPayment($phone, $amountToSend, $loan->id);
-
+    
             DB::commit();
             return true;
         } catch (\Exception $e) {
@@ -431,7 +436,6 @@ class LoanController extends Controller
             return false;
         }
     }
-
 
 
     public function approveLoan(Request $request)
@@ -529,28 +533,40 @@ class LoanController extends Controller
     public function handleMpesaCallback(Request $request)
     {
         Log::info('B2C Callback Received: ', $request->all());
-    
+
         $content = $request->json('Result.ResultParameters.ResultParameter', []);
         $data = [];
-    
+
         foreach ($content as $row) {
             $data[$row['Key']] = $row['Value'];
         }
 
         Log::info('data: ', $data);
-    
+
+        // Get the Occasion from the callback data
         $occasion = $data['Occasion'] ?? null;
-    
+
+        // If Occasion is missing, try fetching it from cache
+        if (!$occasion) {
+            $transactionId = $data['TransactionReceipt'] ?? null;  
+
+            if ($transactionId) {
+                $cacheKey = 'loan_' . $transactionId; 
+                $occasion = Cache::get($cacheKey); 
+            }
+        }
+
+        // Proceed with loan processing
         if ($occasion && str_starts_with($occasion, 'LoanID_')) {
             $loanId = (int) str_replace('LoanID_', '', $occasion);
             $loan = Loan::find($loanId);
-    
+
             if ($loan) {
                 $loan->update(['status' => 'Approved']);
                 Mail::to($loan->employee->user->email)->send(new LoanApprovalMail($loan));
             }
         }
-    
+
         return response()->json(['message' => 'Callback processed']);
     }
     
