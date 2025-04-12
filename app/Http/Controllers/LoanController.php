@@ -536,6 +536,8 @@ class LoanController extends Controller
         foreach ($content as $row) {
             $data[$row['Key']] = $row['Value'];
         }
+
+        Log::info('data: ', $data);
     
         $occasion = $data['Occasion'] ?? null;
     
@@ -543,7 +545,7 @@ class LoanController extends Controller
             $loanId = (int) str_replace('LoanID_', '', $occasion);
             $loan = Loan::find($loanId);
     
-            if ($loan && $loan->status !== 'Approved') {
+            if ($loan) {
                 $loan->update(['status' => 'Approved']);
                 Mail::to($loan->employee->user->email)->send(new LoanApprovalMail($loan));
             }
