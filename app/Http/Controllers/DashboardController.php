@@ -243,11 +243,13 @@ class DashboardController extends Controller
 
             $companyStatus = Company::find($user->company_id);
 
-            if($companyStatus->status !== 'Activated' && ($user->role_id !== '1' || $user->role_id !== '4')) {
-                return Inertia::render('Employees/CompanyStatus', [
-                    'company' => $companyStatus,
-                    'user' => $user,
-                ]);
+            if($companyStatus){
+                if($companyStatus->status !== 'Activated' && ($user->role_id !== '1' || $user->role_id !== '4')) {
+                    return Inertia::render('Employees/CompanyStatus', [
+                        'company' => $companyStatus,
+                        'user' => $user,
+                    ]);
+                }
             }
 
             $employeesCount = 0; 
