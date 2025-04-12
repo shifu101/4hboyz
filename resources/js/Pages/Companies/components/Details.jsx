@@ -69,6 +69,21 @@ function Details({ company }) {
           <span className="text-gray-800">{company.status}</span>
         </div>
 
+        <div className="flex justify-between">
+          <strong className="text-gray-600">Created at:</strong> 
+          <span className="text-gray-800">
+            {new Date(company.created_at).toLocaleString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: '2-digit',
+              hour: 'numeric',
+              minute: '2-digit',
+              hour12: true,
+            })}
+          </span>
+        </div>
+
+
         {/* Document Links */}
         <div className="border-t pt-4">
           <strong className="text-gray-600 mb-4">Documents:</strong>

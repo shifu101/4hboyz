@@ -44,6 +44,11 @@ class EmployeeController extends Controller
                   ->orWhere('email', 'LIKE', "%$search%");
             });
         }
+
+        if ($request->has('status')) {
+            $status = $request->input('status');
+            $query->where('approved','=', null);
+        }
     
         $query->orderBy('created_at', 'desc');
 

@@ -131,6 +131,20 @@ const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
               <strong className="text-gray-600">Total loan balance:</strong> 
               <span className="text-gray-800">{employee.total_loan_balance}</span>
             </div>
+
+            <div className="flex justify-between">
+              <strong className="text-gray-600">Created at:</strong> 
+              <span className="text-gray-800">
+                {new Date(user?.created_at).toLocaleString('en-US', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: '2-digit',
+                  hour: 'numeric',
+                  minute: '2-digit',
+                  hour12: true,
+                })}
+              </span>
+            </div>
           </div>
 
           <div className="card">
