@@ -51,8 +51,7 @@ class MpesaService
                 'ResultURL' => env('MPESA_RESULT_URL'),
                 'Occasion' => 'LoanID_' . $loanId,
             ]);
-
-        Log::info('payment Response:', ['response' => $response->body()]);   
+  
     
         return $response->json();
     }
