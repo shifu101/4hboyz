@@ -222,30 +222,30 @@ class LoanController extends Controller
         return redirect()->route('loans.index')->with('success', 'Loan paid successfully.');
     }
 
-    public function handleMpesaCallback(Request $request)
-    {
-        // Log the callback received
+    // public function handleMpesaCallback(Request $request)
+    // {
+    //     // Log the callback received
 
-        Log::info('M-Pesa B2C Callback:', ['response' => $request->all()]);
+    //     Log::info('M-Pesa B2C Callback:', ['response' => $request->all()]);
 
-        // Decode JSON payload
-        $content = json_decode($request->getContent(), true);
+    //     // Decode JSON payload
+    //     $content = json_decode($request->getContent(), true);
 
-        // Extract and log transaction details
-        if (isset($content['Result']['ResultParameters']['ResultParameter'])) {
-            $transactionDetails = [];
-            foreach ($content['Result']['ResultParameters']['ResultParameter'] as $row) {
-                $transactionDetails[$row['Key']] = $row['Value'];
-            }
+    //     // Extract and log transaction details
+    //     if (isset($content['Result']['ResultParameters']['ResultParameter'])) {
+    //         $transactionDetails = [];
+    //         foreach ($content['Result']['ResultParameters']['ResultParameter'] as $row) {
+    //             $transactionDetails[$row['Key']] = $row['Value'];
+    //         }
 
-            Log::info('Transaction Details:', $transactionDetails);
-        } else {
-            Log::error("Invalid M-Pesa Response Structure:", ['response' => $content]);
-        }
+    //         Log::info('Transaction Details:', $transactionDetails);
+    //     } else {
+    //         Log::error("Invalid M-Pesa Response Structure:", ['response' => $content]);
+    //     }
 
-        // Respond to M-Pesa to acknowledge the callback
-        return response()->json(["B2CPaymentConfirmationResult" => "Success"]);
-    }
+    //     // Respond to M-Pesa to acknowledge the callback
+    //     return response()->json(["B2CPaymentConfirmationResult" => "Success"]);
+    // }
 
     public function bulkRepayment(Request $request)
     {
@@ -526,7 +526,7 @@ class LoanController extends Controller
         return response()->json(['message' => 'Timeout callback received'], 200);
     }
 
-    public function handleB2CCallback(Request $request)
+    public function handleMpesaCallback(Request $request)
     {
         Log::info('B2C Callback Received: ', $request->all());
     
