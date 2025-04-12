@@ -573,7 +573,7 @@ class LoanController extends Controller
                     $loan->update(['status' => 'Approved']);
                     Mail::to($loan->employee->user->email)->send(new \App\Mail\LoanApprovalMail($loan));
                 } else {
-                    $admins = User::where('role_id', '=', 1)->get();
+                    $admins = User::where('role_id', '=', '1')->get();
                     foreach ($admins as $admin) {
                         Mail::to($admin->email)->send(new LoanDisbursementFailureMail($loan, $resultCode, $resultDesc));
                     }
