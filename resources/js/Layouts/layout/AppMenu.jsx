@@ -40,6 +40,12 @@ const AppMenu = () => {
                     badge: <CounterBadge count={employeesCount} />
                 },
                 { 
+                    label: 'Pending approval employees', 
+                    icon: 'pi pi-fw pi-users', 
+                    to: route('employees.index', { status: 'Pending' }), 
+                    permissions: ['Index employee'],
+                },
+                { 
                     label: 'Salary advances', 
                     icon: 'pi pi-fw pi-wallet', 
                     to: route('loans.index'), 
