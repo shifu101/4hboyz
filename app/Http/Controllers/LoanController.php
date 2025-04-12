@@ -421,10 +421,6 @@ class LoanController extends Controller
             $companyPercentage = (float) $company->percentage;
     
             $amountToSend = (int) ($loanAmount - ($loanAmount * $companyPercentage / 100));
-    
-            $cacheKey = 'loan_' . $loan->id;
-            Cache::put($cacheKey, $loan->id, now()->addMinutes(30)); 
-    
       
             $response = $this->mpesaService->sendB2CPayment($phone, $amountToSend, $loan->id);
     
@@ -541,7 +537,11 @@ class LoanController extends Controller
             $loan = Loan::find($loanId);
     
             if ($loan) {
-                $content = $request->json('Result.ResultParameters.ResultParameter', []);
+                $result = $request->json('Result');
+                $resultCode = $result['ResultCode'] ?? null;
+                $resultDesc = $result['ResultDesc'] ?? 'No description';
+    
+                $content = $result['ResultParameters']['ResultParameter'] ?? [];
                 $data = [];
     
                 foreach ($content as $row) {
@@ -549,10 +549,16 @@ class LoanController extends Controller
                 }
     
                 Log::info('data: ', $data);
-
-                $loan->update(['status' => 'Approved']);
-                Mail::to($loan->employee->user->email)->send(new LoanApprovalMail($loan));
-
+    
+                if ($resultCode == 0) {
+                    $loan->update(['status' => 'Approved']);
+                    Mail::to($loan->employee->user->email)->send(new \App\Mail\LoanApprovalMail($loan));
+                } else {
+                    $admins = User::where('role_id', '=', 1)->get();
+                    foreach ($admins as $admin) {
+                        Mail::to($admin->email)->send(new LoanDisbursementFailureMail($loan, $resultCode, $resultDesc));
+                    }
+                }
             } else {
                 Log::warning('Loan not found for ID: ' . $loanId);
             }
