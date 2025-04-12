@@ -56,6 +56,10 @@ class User extends Authenticatable
         return $this->hasOne('App\Models\Company', 'id', 'company_id');
     }
 
+    public function employee(){
+        return $this->hasOne('App\Models\Employee', 'user_id', 'id');
+    }
+
     public function role(){
         return $this->hasOne('Spatie\Permission\Models\Role','id','role_id');
     }
