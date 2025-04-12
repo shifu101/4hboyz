@@ -162,7 +162,7 @@ const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
           <table className="min-w-full table-auto">
             <thead className="bg-gray-100">
               <tr>
-                {["Name", "Email", "Phone", "Salary", "Loan Limit","Unpaid loans","Total Loan Balance", "Actions"].map((header) => (
+                {["Name", "Salary", "Loan Limit","Unpaid loans","Total Loan Balance", "Actions"].map((header) => (
                   <th 
                     key={header} 
                     className={`
@@ -180,8 +180,6 @@ const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
                 employees.map((employee) => (
                   <tr key={employee.id}>
                     <td className="px-4 py-4">{employee.user?.name}</td>
-                    <td className="px-4 py-4">{employee.user?.email}</td>
-                    <td className="px-4 py-4">{employee.user?.phone || 'N/A'}</td>
                     <td className="px-4 py-4">{new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(employee.salary)}</td>
                     <td className="px-4 py-4">{new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(employee.loan_limit)}</td>
                     <td className="px-4 py-4">{employee.unpaid_loans_count}</td>

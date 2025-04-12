@@ -151,8 +151,6 @@ const Employees = ({ companyId, employees }) => {
           <thead>
             <tr className="bg-gray-200">
               <th className="px-4 py-2">Name</th>
-              <th className="px-4 py-2">Email</th>
-              <th className="px-4 py-2">Phone</th>
               <th className="px-4 py-2">Salary</th>
               <th className="px-4 py-2">Salary advance Limit</th>
               <th className="px-4 py-2">Unpaid Loans</th>
@@ -165,8 +163,6 @@ const Employees = ({ companyId, employees }) => {
               employees.data.map((employee) => (
                 <tr key={employee.id} className="border-t">
                   <td className="px-4 py-4">{employee.user.name}</td>
-                  <td className="px-4 py-4">{employee.user.email}</td>
-                  <td className="px-4 py-4">{employee.user.phone || 'N/A'}</td>
                   <td className="px-4 py-4">{employee.salary}</td>
                   <td className="px-4 py-4">{employee.loan_limit}</td>
                   <td className="px-4 py-4">{employee.unpaid_loans_count || 0}</td>
