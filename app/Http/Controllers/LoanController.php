@@ -517,6 +517,25 @@ class LoanController extends Controller
             return redirect()->route('loans.index')->with('error', 'Salary advance approval process failed.');
         }}
     }
+
+
+    public function decline(Request $request, Loan $loan)
+    {
+        $request->validate([
+            'reason' => 'required|string|max:255',
+            'comment' => 'nullable|string',
+        ]);
+
+        $loan->update([
+            'status' => 'Declined',
+            'reason' => $request->reason,
+            'comment' => $request->comment,
+        ]);
+
+        Mail::to($loan->employee->user->email)->send(new LoanDeclinedMail($loan, $loan->reason));
+
+        return redirect()->route('loans.index')->with('success', 'Loan declined successfully.');
+    }
     
 
     public function handleTimeout(Request $request)

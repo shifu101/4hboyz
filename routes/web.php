@@ -85,6 +85,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/loans/{loan}/loanApproval', [LoanController::class, 'approveLoan'])->name('loans.approveLoan');
     Route::post('/loans/bulk-update', [LoanController::class, 'bulkUpdate'])->name('loans.bulkUpdate');
     Route::post('/loans/bulk-repayment', [LoanController::class, 'bulkRepayment'])->name('loans.bulkRepayment');
+    Route::post('/loans/{loan}/decline', [LoanController::class, 'decline'])->name('loans.decline');
     Route::resource('loanProviders', LoanProviderController::class);
     Route::resource('notifications', NotificationController::class);
     Route::resource('repayments', RepaymentController::class);
