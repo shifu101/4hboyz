@@ -28,16 +28,16 @@ class MpesaService
         return $response->json()['access_token'] ?? null;
     }    
 
-    public function sendB2CPayment($phone, $amount)
+    public function sendB2CPayment($phone, $amount, $loanId = null)
     {
         $accessToken = $this->generateAccessToken();
-
+    
         if (!$accessToken) {
             return ['error' => 'Failed to generate access token'];
         }
-
+    
         $formattedPhone = $this->formatPhoneNumber($phone);
-
+    
         $response = Http::withToken($accessToken)
             ->post("{$this->baseUrl}/mpesa/b2c/v1/paymentrequest", [
                 'InitiatorName' => env('MPESA_INITIATOR_NAME'),
@@ -46,14 +46,15 @@ class MpesaService
                 'Amount' => $amount,
                 'PartyA' => env('MPESA_BUSINESS_SHORTCODE'),
                 'PartyB' => $formattedPhone,
-                'Remarks' => 'Umeskia Withdrawal',
+                'Remarks' => 'Loan Disbursement',
                 'QueueTimeOutURL' => env('MPESA_QUEUE_TIMEOUT_URL'),
                 'ResultURL' => env('MPESA_RESULT_URL'),
-                'Occasion' => 'Online Payment'
+                'Occasion' => 'LoanID_' . $loanId,
             ]);
-
+    
         return $response->json();
     }
+    
 
     private function formatPhoneNumber($phone)
     {
