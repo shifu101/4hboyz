@@ -421,7 +421,7 @@ class LoanController extends Controller
 
             $amountToSend = (int) ($loanAmount - ($loanAmount * $companyPercentage / 100));
 
-            $response = $this->mpesaService->sendB2CPayment($phone, $amountToSend);
+            $response = $this->mpesaService->sendB2CPayment($phone, $amountToSend, $loan->id);
 
             DB::commit();
             return true;
@@ -526,19 +526,32 @@ class LoanController extends Controller
         return response()->json(['message' => 'Timeout callback received'], 200);
     }
 
-    public function handleB2CCallback($request)
+    public function handleB2CCallback(Request $request)
     {
         Log::info('B2C Callback Received: ', $request->all());
-
+    
         $content = $request->json('Result.ResultParameters.ResultParameter', []);
         $data = [];
-
+    
         foreach ($content as $row) {
             $data[$row['Key']] = $row['Value'];
         }
-
-        return redirect()->route('loans.index')->with('success', 'Loan updated successfully.');
+    
+        $occasion = $data['Occasion'] ?? null;
+    
+        if ($occasion && str_starts_with($occasion, 'LoanID_')) {
+            $loanId = (int) str_replace('LoanID_', '', $occasion);
+            $loan = Loan::find($loanId);
+    
+            if ($loan && $loan->status !== 'Approved') {
+                $loan->update(['status' => 'Approved']);
+                Mail::to($loan->employee->user->email)->send(new LoanApprovalMail($loan));
+            }
+        }
+    
+        return response()->json(['message' => 'Callback processed']);
     }
+    
     
     
 
