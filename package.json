@@ -34,6 +34,7 @@
         "react-calendar": "^5.1.0",
         "react-datepicker": "^7.6.0",
         "react-daterange-picker": "^2.0.1",
+        "react-hot-toast": "^2.5.2",
         "react-icons": "^5.5.0",
         "react-phone-number-input": "^3.4.12",
         "react-select": "^5.9.0",

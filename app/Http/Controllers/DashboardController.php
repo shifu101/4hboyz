@@ -222,7 +222,15 @@ class DashboardController extends Controller
                 'er'=>$er
             ]);
 
-        }else {
+        }elseif($user->role_id == "3" && $user->kyc == 'Incomplete') {
+            $er = '';
+            return Inertia::render('Employees/UpdateKyc', [
+                'user'=>$user->load('employee'),
+                'er'=>$er
+            ]);
+
+        }
+        else {
 
             $employee = Employee::where('user_id', '=', $user->id)->first();
 

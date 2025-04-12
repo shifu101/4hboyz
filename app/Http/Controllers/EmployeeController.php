@@ -15,6 +15,7 @@ use App\Mail\EmployeeApprovalMail;
 use App\Mail\EmployeeDeclinedMail;
 use App\Mail\DeactivatedMail;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Http\RedirectResponse;
 
 class EmployeeController extends Controller
 {
@@ -241,6 +242,14 @@ class EmployeeController extends Controller
         }
     
         $employee->update($validatedData);
+
+        if($validatedData['reason'] == 'Incomplete KYC'){
+            $incompleteUser = User::find($employee->user_id);
+
+            $incompleteUser->update([
+                'kyc'=>'Incomplete'
+            ]);
+        }
     
         if ($oldApprovedStatus !== $newApprovedStatus) {
             if ($newApprovedStatus === 'Approved') {
@@ -266,6 +275,72 @@ class EmployeeController extends Controller
     
         return redirect()->route('employees.index')->with('success', 'Employee updated successfully.');
     }
+
+
+    public function updateKyc(Request $request, Employee $employee): RedirectResponse
+    {
+        $user = Auth::user();
+    
+        $validatedData = $request->all();
+    
+        $fileFields = ['id_front', 'id_back', 'passport_front', 'passport_back'];
+
+        // Handle id_front
+        if ($request->hasFile('id_front')) {
+            if (!empty($employee->id_front)) {
+                \Storage::disk('public')->delete($employee->id_front);
+            }
+            $path = $request->file('id_front')->store('employee_documents', 'public');
+            $validatedData['id_front'] = $path;
+        } else {
+            unset($validatedData['id_front']);
+        }
+        
+        // Handle id_back
+        if ($request->hasFile('id_back')) {
+            if (!empty($employee->id_back)) {
+                \Storage::disk('public')->delete($employee->id_back);
+            }
+            $path = $request->file('id_back')->store('employee_documents', 'public');
+            $validatedData['id_back'] = $path;
+        } else {
+            unset($validatedData['id_back']);
+        }
+        
+        // Handle passport_front
+        if ($request->hasFile('passport_front')) {
+            if (!empty($employee->passport_front)) {
+                \Storage::disk('public')->delete($employee->passport_front);
+            }
+            $path = $request->file('passport_front')->store('employee_documents', 'public');
+            $validatedData['passport_front'] = $path;
+        } else {
+            unset($validatedData['passport_front']);
+        }
+        
+        // Handle passport_back
+        if ($request->hasFile('passport_back')) {
+            if (!empty($employee->passport_back)) {
+                \Storage::disk('public')->delete($employee->passport_back);
+            }
+            $path = $request->file('passport_back')->store('employee_documents', 'public');
+            $validatedData['passport_back'] = $path;
+        } else {
+            unset($validatedData['passport_back']);
+        }
+        
+    
+        $employee->update($validatedData);
+    
+        if ($user) {
+            $user->update([
+                'kyc' => 'Added'
+            ]);
+        }
+    
+        return redirect(RouteServiceProvider::HOME);
+    }
+    
     
 
 

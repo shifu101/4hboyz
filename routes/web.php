@@ -74,6 +74,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('employees', EmployeeController::class);
     Route::get('/companies/{company}/employees', [EmployeeController::class, 'getEmployeesByCompany'])
     ->name('company.employees');
+    Route::put('/complete-kyc/{id}', [EmployeeController::class, 'updateKyc'])
+    ->name('complete-kyc');
     
     Route::resource('loans', LoanController::class);
     Route::get('/loans/{loan}/approve', [LoanController::class, 'approve'])->name('loans.approval');
