@@ -121,7 +121,7 @@ const Create = () => {
                 />
             </div>}
             <div className="max-w-full my-4 px-2">
-                <h1 className="text-3xl font-semibold">Request for a salary advance</h1>
+                <h1 className="text-3xl font-semibold text-white">Request for a salary advance</h1>
                 <div className="grid gap-4">
                 <form onSubmit={handleSubmit} className="space-y-6 bg-white p-6 rounded-lg shadow-md mt-2">
                     {/* Name Input */}
@@ -194,6 +194,12 @@ const Create = () => {
                             <strong className="text-gray-600">Amount to repay:</strong> 
                             <span className="text-gray-800 font-bold text-2xl">
                                 {new Intl.NumberFormat('en-KE', { style: 'currency', currency: 'KES' }).format(parseFloat(data?.amount) || 0)}
+                            </span>
+                        </div>
+                        <div className="flex justify-between items-center gap-4">
+                            <strong className="text-gray-600">Phone to salary advance:</strong> 
+                            <span className="text-gray-800 font-bold text-2xl">
+                                {auth?.user?.phone}
                             </span>
                         </div>
                     </div>
