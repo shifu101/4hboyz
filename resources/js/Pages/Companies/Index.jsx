@@ -77,36 +77,76 @@ const Index = () => {
   };
 
   const generatePDF = () => {
-    const doc = new jsPDF();
-    const logoUrl = '/images/logo-dark.png';
-    doc.addImage(logoUrl, 'PNG', 10, 10, 80, 30);
-    doc.setFontSize(14);
-    doc.text(`All Companies Report`, 14, 50);
-    
-    const columns = [
-      "Name", 
-      "Industry", 
-      "Address", 
-      "Email", 
-      "Phone"
-    ];
-    
-    const rows = companies.map(data => [
-      data.name, 
-      data.industry, 
-      data.address, 
-      data.email,
-      data.phone
-    ]);
-    
-    doc.autoTable({
-      head: [columns],
-      body: rows,
-      startY: 60,
-    });
-    
-    doc.save("companies_reports.pdf");
+    const logoImg = new Image();
+    logoImg.src = '/images/logo-dark.png';
+  
+    logoImg.onload = () => {
+      const doc = new jsPDF();
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const totalPagesExp = "{total_pages_count_string}";
+      const today = new Date().toLocaleDateString('en-GB', {
+        year: 'numeric', month: 'long', day: 'numeric'
+      });
+  
+      // Add logo
+      doc.addImage(logoImg, 'PNG', 10, 10, 50, 20);
+  
+      // Report title
+      doc.setFontSize(18);
+      doc.setFont('helvetica', 'bold');
+      doc.text("All Companies Report", pageWidth / 2, 35, { align: 'center' });
+  
+      // Date
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'normal');
+      doc.text(`As at ${today}`, pageWidth / 2, 43, { align: 'center' });
+  
+      const columns = ["Name", "Industry", "Address", "Email", "Phone"];
+      const rows = companies.map(data => [
+        data.name,
+        data.industry,
+        data.address,
+        data.email,
+        data.phone
+      ]);
+  
+      doc.autoTable({
+        head: [columns],
+        body: rows,
+        startY: 50,
+        margin: { top: 50, bottom: 30 },
+        styles: {
+          fontSize: 10,
+          cellPadding: 3,
+        },
+        headStyles: {
+          fillColor: [22, 160, 133],
+          textColor: 255,
+          halign: 'center',
+        },
+        didDrawPage: function (data) {
+          // Footer with page numbers
+          const pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
+          const str = "Page " + doc.internal.getNumberOfPages();
+          doc.setFontSize(10);
+          doc.text(str, data.settings.margin.left, pageHeight - 10);
+        }
+      });
+  
+      // Fix total page count
+      const pageCount = doc.internal.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+      }
+  
+      doc.save("companies_report.pdf");
+    };
+  
+    logoImg.onerror = () => {
+      console.error("Failed to load logo image");
+    };
   };
+  
 
   const generateExcel = () => {
     const ws = XLSX.utils.json_to_sheet(companies.map((data) => ({
