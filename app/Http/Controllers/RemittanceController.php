@@ -19,6 +19,11 @@ class RemittanceController extends Controller
             return Inertia::render('Auth/Forbidden');
         }
 
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
+
+        $filterByDate = !empty($startDate) && !empty($endDate);
+
         $query = Remittance::with('company');
 
         // Filter based on user role
@@ -31,6 +36,10 @@ class RemittanceController extends Controller
             $search = trim($request->input('search'));
             $query->whereHas('company', fn($q) => $q->where('name', 'LIKE', "%$search%"));
         }
+
+        $query->when($filterByDate, function ($query) use ($startDate, $endDate) {
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        });
 
         $remittances = $query->orderBy('created_at', 'desc')->paginate(10);
 
