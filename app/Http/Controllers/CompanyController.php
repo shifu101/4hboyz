@@ -48,6 +48,11 @@ class CompanyController extends Controller
 
         $user = Auth::user();
 
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
+
+        $filterByDate = !empty($startDate) && !empty($endDate);
+
         if (!$user->hasPermissionTo('Index company')) {
             return Inertia::render('Auth/Forbidden');
         }
@@ -56,6 +61,10 @@ class CompanyController extends Controller
             $search = $request->input('search');
             $query->where('name', 'LIKE', "%$search%");
         }
+
+        $query->when($filterByDate, function ($query) use ($startDate, $endDate) {
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        });
 
         $query->orderBy('created_at', 'desc');
     
