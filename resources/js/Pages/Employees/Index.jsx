@@ -1,29 +1,80 @@
 import React, { useState } from 'react';
 import { Link, usePage, router, Head} from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
-import { FileText, FileSpreadsheet, Plus, Filter, X } from 'lucide-react';
+import { FileText, FileSpreadsheet, Plus, Filter, X, Calendar } from 'lucide-react';
 import { jsPDF } from "jspdf";
 import "jspdf-autotable"; 
 import * as XLSX from 'xlsx';
+import { format } from 'date-fns';
+import { DateRange } from 'react-date-range';
+import 'react-date-range/dist/styles.css';
+import 'react-date-range/dist/theme/default.css';
+import { FiPhone } from 'react-icons/fi';
 
 const Index = () => {
   const { employees, flash, pagination, auth } = usePage().props;
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
-const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
+  const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
 
+  // Date range state
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
+  const [dateRange, setDateRange] = useState([
+    {
+      startDate: new Date(),
+      endDate: new Date(),
+      key: 'selection'
+    }
+  ]);
+  const [dateFilterActive, setDateFilterActive] = useState(false);
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
     setLoading(true);
 
-    router.get(route('employees.index'), { search: e.target.value }, {
+    router.get(route('employees.index'), { 
+      search: e.target.value,
+      ...getDateParams()
+     }, {
       preserveState: true,
       onFinish: () => setLoading(false),
     });
   };
 
+
+  const getDateParams = () => {
+      return {
+        start_date: format(dateRange[0].startDate, 'yyyy-MM-dd'),
+        end_date: format(dateRange[0].endDate, 'yyyy-MM-dd')
+      };
+    };
+  
+  const applyDateFilter = () => {
+    setLoading(true);
+    setDateFilterActive(true);
+    setDatePickerOpen(false);
+    
+    router.get(route('employees.index'), {
+      search: searchTerm,
+      ...getDateParams()
+    }, {
+      preserveState: true,
+      onFinish: () => setLoading(false),
+    });
+  };
+
+  const clearDateFilter = () => {
+    setDateFilterActive(false);
+    setLoading(true);
+    
+    router.get(route('employees.index'), {
+      search: searchTerm
+    }, {
+      preserveState: true,
+      onFinish: () => setLoading(false),
+    });
+  };
 
   const generatePDF = () => {
     const doc = new jsPDF();
@@ -137,16 +188,69 @@ const userPermission = auth.user?.permissions?.map(perm => perm.name) || [];
             </div>
           </div>
 
-          {/* Search Input */}
-          <div className="mt-4">
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={handleSearchChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Search employees..."
-            />
-            {loading && <p className="text-sm text-gray-500 mt-2">Searching...</p>}
+        
+          {/* Search and Date Range Controls */}
+          <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="md:col-span-2">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Search name..."
+              />
+              {loading && <p className="text-sm text-gray-500 mt-2">Searching...</p>}
+            </div>
+            
+            <div className="relative">
+              <button 
+                onClick={() => setDatePickerOpen(!datePickerOpen)}
+                className="w-full flex items-center justify-between px-4 py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-50"
+              >
+                <span>
+                  {dateFilterActive 
+                    ? `${format(dateRange[0].startDate, 'MMM dd, yyyy')} - ${format(dateRange[0].endDate, 'MMM dd, yyyy')}`
+                    : 'Date Range Filter'
+                  }
+                </span>
+                <Calendar className="w-5 h-5 text-gray-500" />
+              </button>
+              
+              {dateFilterActive && (
+                <button
+                  onClick={clearDateFilter}
+                  className="absolute right-10 top-2 text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              )}
+              
+              {datePickerOpen && (
+                <div className="absolute right-0 mt-2 z-10 bg-white rounded-lg shadow-lg border border-gray-200 p-4">
+                  <DateRange
+                    editableDateInputs={true}
+                    onChange={item => setDateRange([item.selection])}
+                    moveRangeOnFirstSelection={false}
+                    ranges={dateRange}
+                    rangeColors={['#3b82f6']}
+                  />
+                  <div className="flex justify-end mt-2 space-x-2">
+                    <button
+                      onClick={() => setDatePickerOpen(false)}
+                      className="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-100"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={applyDateFilter}
+                      className="px-3 py-1 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    >
+                      Apply
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 

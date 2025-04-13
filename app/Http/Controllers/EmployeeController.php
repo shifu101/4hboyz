@@ -27,6 +27,11 @@ class EmployeeController extends Controller
         if (!$user->hasPermissionTo('Index employee')) {
             return Inertia::render('Auth/Forbidden');
         }
+
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
+
+        $filterByDate = !empty($startDate) && !empty($endDate);
     
         // Base query with eager loading
         $query = Employee::with('user', 'loans', 'company');
@@ -49,6 +54,10 @@ class EmployeeController extends Controller
             $status = $request->input('status');
             $query->where('approved','=', null);
         }
+
+        $query->when($filterByDate, function ($query) use ($startDate, $endDate) {
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        });
     
         $query->orderBy('created_at', 'desc');
 
