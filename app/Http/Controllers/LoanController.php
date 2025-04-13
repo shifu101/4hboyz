@@ -53,6 +53,11 @@ class LoanController extends Controller
             return Inertia::render('Auth/Forbidden');
         }
 
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
+
+        $filterByDate = !empty($startDate) && !empty($endDate);
+
         $query = Loan::with(['employee.user', 'employee.company']);
     
         // Filter based on role
@@ -95,6 +100,10 @@ class LoanController extends Controller
                 });
             });
         }
+
+        $query->when($filterByDate, function ($query) use ($startDate, $endDate) {
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        });
 
         $query->orderBy('created_at', 'desc');
     
