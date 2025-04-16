@@ -20,6 +20,8 @@ class DashboardController extends Controller
         // Fetching basic statistics
         $companyCount = Company::count();
 
+        $pendingApprovalCompanyCount = Company::where('status','=','Pending Approval')->count();
+
         $currentYear = Carbon::now()->year;
 
         $companies = Company::all();
@@ -253,22 +255,26 @@ class DashboardController extends Controller
             }
 
             $employeesCount = 0; 
+            $employeesPendingApprovalCount = 0; 
             $usersCount = 0; 
             $remittancesCount = 0; 
 
             if ($user->role_id == "2" || $user->role_id == "4" || $user->role_id == "6") {
                 $employeesCount = Employee::where('company_id', $user->company_id)->count();
+                $employeesPendingApprovalCount = Employee::where('company_id', $user->company_id)->where('status','=','Pending Approval')->count();
                 $usersCount = User::where('company_id', $user->company_id)->count();
                 $remittancesCount = Remittance::where('company_id', $user->company_id)->count();
             }
             
             if ($user->role_id == "1" || $user->role_id == "4") {
                 $employeesCount = Employee::count();
+                $employeesPendingApprovalCount = Employee::where('status','=','Pending Approval')->count();
                 $usersCount = User::whereIn('role_id', [1, 4])->count();
                 $remittancesCount = Remittance::count();
             }
             
             return Inertia::render('Dashboard', [
+                'pendingApprovalCompanyCount'=> $pendingApprovalCompanyCount,
                 'companyCount' => $companyCount,
                 'activeLoansCount' => $activeLoansCount,
                 'activeLoansValue'=> $activeLoansValue,
@@ -281,6 +287,7 @@ class DashboardController extends Controller
                 'loanTrends' => $loanTrends,
                 'repaymentTrends' => $repaymentTrends,
                 'employeesCount' => $employeesCount,
+                'employeesPendingApprovalCount'=> $employeesPendingApprovalCount,
                 'employee'=>$employee,
                 'motherCompany'=>$motherCompany ?? null,
                 'usersCount'=> $usersCount,
@@ -291,4 +298,71 @@ class DashboardController extends Controller
             
         }
     }
+
+    public function menuStatsJson(Request $request)
+    {
+        $user = Auth::user();
+    
+        $companyCount = Company::count();
+        $pendingApprovalCompanyCount = Company::where('status','=','Pending Approval')->count();
+    
+        $employeesCount = 0; 
+        $employeesPendingApprovalCount = 0; 
+        $usersCount = 0; 
+        $remittancesCount = 0;
+    
+        // Loan-related counts
+        $salaryAdvanceCount = 0;
+        $approvedLoansCount = 0;
+        $pendingLoansCount = 0;
+        $declinedLoansCount = 0;
+        $paidLoansCount = 0;
+        $pendingPaidLoansCount = 0;
+    
+        if (in_array($user->role_id, [2, 4, 6])) {
+            $employeesCount = Employee::where('company_id', $user->company_id)->count();
+            $employeesPendingApprovalCount = Employee::where('company_id', $user->company_id)->where('status','=','Pending Approval')->count();
+            $usersCount = User::where('company_id', $user->company_id)->count();
+            $remittancesCount = Remittance::where('company_id', $user->company_id)->count();
+    
+            $salaryAdvanceCount = Loan::where('company_id', $user->company_id)->count();
+            $approvedLoansCount = Loan::where('company_id', $user->company_id)->where('status', 'Approved')->count();
+            $pendingLoansCount = Loan::where('company_id', $user->company_id)->where('status', 'Pending')->count();
+            $declinedLoansCount = Loan::where('company_id', $user->company_id)->where('status', 'Declined')->count();
+            $paidLoansCount = Loan::where('company_id', $user->company_id)->where('status', 'Paid')->count();
+            $pendingPaidLoansCount = Loan::where('company_id', $user->company_id)->where('status', 'Pending Paid')->count();
+        }
+    
+        if (in_array($user->role_id, [1, 4])) {
+            $employeesCount = Employee::count();
+            $employeesPendingApprovalCount = Employee::where('status','=','Pending Approval')->count();
+            $usersCount = User::whereIn('role_id', [1, 4])->count();
+            $remittancesCount = Remittance::count();
+    
+            $salaryAdvanceCount = Loan::count();
+            $approvedLoansCount = Loan::where('status', 'Approved')->count();
+            $pendingLoansCount = Loan::where('status', 'Pending')->count();
+            $declinedLoansCount = Loan::where('status', 'Declined')->count();
+            $paidLoansCount = Loan::where('status', 'Paid')->count();
+            $pendingPaidLoansCount = Loan::where('status', 'Pending Paid')->count();
+        }
+    
+        return response()->json([
+            'companyCount' => $companyCount,
+            'pendingApprovalCompanyCount' => $pendingApprovalCompanyCount,
+            'employeesCount' => $employeesCount,
+            'employeesPendingApprovalCount' => $employeesPendingApprovalCount,
+            'usersCount' => $usersCount,
+            'remittancesCount' => $remittancesCount,
+    
+            // Add new stats here
+            'salaryAdvanceCount' => $salaryAdvanceCount,
+            'approvedLoansCount' => $approvedLoansCount,
+            'pendingLoansCount' => $pendingLoansCount,
+            'declinedLoansCount' => $declinedLoansCount,
+            'paidLoansCount' => $paidLoansCount,
+            'pendingPaidLoansCount' => $pendingPaidLoansCount,
+        ]);
+    }
+    
 }

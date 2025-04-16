@@ -62,6 +62,11 @@ class CompanyController extends Controller
             $query->where('name', 'LIKE', "%$search%");
         }
 
+        if ($request->has('status')) {
+            $status = $request->input('status');
+            $query->where('status','=', $status);
+        }
+
         $query->when($filterByDate, function ($query) use ($startDate, $endDate) {
             $query->whereBetween('created_at', [$startDate, $endDate]);
         });

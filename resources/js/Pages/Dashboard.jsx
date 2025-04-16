@@ -10,7 +10,7 @@ import { FiPhone } from 'react-icons/fi'
 
 const Dashboard = ({ auth }) => {
     // Get data from the page props
-    const { companyCount, activeLoansCount, inactiveLoansCount, pendingLoansCount, pendingLoansValue, repaidLoansValue,activeLoansValue, inactiveLoansValue, loanTrends, repaymentTrends, employee, motherCompany, pendingPaidLoansCount, pendingPaidLoansValue } = usePage().props;
+    const { companyCount, activeLoansCount, inactiveLoansCount, pendingLoansCount, pendingLoansValue, repaidLoansValue,activeLoansValue, inactiveLoansValue, loanTrends, repaymentTrends, employee, motherCompany, pendingPaidLoansCount, pendingPaidLoansValue, employeesPendingApprovalCount, pendingApprovalCompanyCount } = usePage().props;
     
     const [lineOptions, setLineOptions] = useState({});
     const { layoutConfig } = useContext(LayoutContext);
