@@ -62,6 +62,9 @@ Route::get('/companies/search/{uniqueNumber}', [CompanyController::class, 'searc
 
 
 Route::middleware('auth')->group(function () {
+
+    Route::get('/menu/counts', [DashboardController::class, 'menuStatsJson'])->name('menu.counts');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::get('/update-phone', [ProfileController::class, 'updatePhone'])->name('update-phone');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

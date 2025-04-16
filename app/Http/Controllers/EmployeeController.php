@@ -52,7 +52,7 @@ class EmployeeController extends Controller
 
         if ($request->has('status')) {
             $status = $request->input('status');
-            $query->where('approved','=', null);
+            $query->where('status','=', $status);
         }
 
         $query->when($filterByDate, function ($query) use ($startDate, $endDate) {
@@ -158,6 +158,8 @@ class EmployeeController extends Controller
                $validatedData[$field] = $path;
            }
        }
+
+       $validatedData['status'] = 'Pending Approval';
     
        $employee = Employee::create($validatedData);
     
