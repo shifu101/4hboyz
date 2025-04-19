@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, Head, useForm, usePage } from '@inertiajs/react';
+import { Link, Head, useForm, usePage, router } from '@inertiajs/react';
 import Layout from "@/Layouts/layout/layout.jsx";
 import Swal from 'sweetalert2';
 import { Check, XCircle } from 'lucide-react';
