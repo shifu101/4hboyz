@@ -325,12 +325,29 @@ class DashboardController extends Controller
             $usersCount = User::where('company_id', $user->company_id)->count();
             $remittancesCount = Remittance::where('company_id', $user->company_id)->count();
     
-            $salaryAdvanceCount = Loan::where('company_id', $user->company_id)->count();
-            $approvedLoansCount = Loan::where('company_id', $user->company_id)->where('status', 'Approved')->count();
-            $pendingLoansCount = Loan::where('company_id', $user->company_id)->where('status', 'Pending')->count();
-            $declinedLoansCount = Loan::where('company_id', $user->company_id)->where('status', 'Declined')->count();
-            $paidLoansCount = Loan::where('company_id', $user->company_id)->where('status', 'Paid')->count();
-            $pendingPaidLoansCount = Loan::where('company_id', $user->company_id)->where('status', 'Pending Paid')->count();
+            $salaryAdvanceCount = Loan::whereHas('employee', function ($query) use ($user) {
+                $query->where('company_id', $user->company_id);
+            })->count();
+            
+            $approvedLoansCount = Loan::whereHas('employee', function ($query) use ($user) {
+                $query->where('company_id', $user->company_id);
+            })->where('status', 'Approved')->count();
+            
+            $pendingLoansCount = Loan::whereHas('employee', function ($query) use ($user) {
+                $query->where('company_id', $user->company_id);
+            })->where('status', 'Pending')->count();
+            
+            $declinedLoansCount = Loan::whereHas('employee', function ($query) use ($user) {
+                $query->where('company_id', $user->company_id);
+            })->where('status', 'Declined')->count();
+            
+            $paidLoansCount = Loan::whereHas('employee', function ($query) use ($user) {
+                $query->where('company_id', $user->company_id);
+            })->where('status', 'Paid')->count();
+            
+            $pendingPaidLoansCount = Loan::whereHas('employee', function ($query) use ($user) {
+                $query->where('company_id', $user->company_id);
+            })->where('status', 'Pending Paid')->count();            
         }
     
         if (in_array($user->role_id, [1, 4])) {
